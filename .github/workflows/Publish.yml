@@ -1,0 +1,22 @@
+name: Project Publishing
+permissions:
+  contents: write
+on:
+  push:
+    paths: [ 'ConsoleJson/**', '**/Publish.yml' ]
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/cache@main
+        with:
+          path: ~/.nuget/packages
+          key: nuget-cache
+      - run: dotnet publish -r win-x64 -p:PublishAot=true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Release
+          path: |
+            **/publish
+            !**/*.pdb
