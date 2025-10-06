@@ -1,16 +1,95 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-namespace ConsoleJson.Forecast;
+namespace ChmlFrp.SDK.Results;
 
-public class UserForecast : GetForecast
+public class UserResult : BaseResult
 {
     /// <summary>
     ///     用户数据
     /// </summary>
     [JsonPropertyName("data")]
     public UserData Data { get; set; }
+
+    private static readonly string TokenFilePath =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "ChmlFrp", "user.json");
+
+    /// <summary>
+    ///     使用用户名和密码登录获取用户信息
+    /// </summary>
+    public static async Task<UserResult> LoginAsync(string username, string password)
+    {
+        HttpClientExtensions.MainClient ??= new HttpClient();
+
+        try
+        {
+            var forecast = await HttpClientExtensions.MainClient.GetFromJsonAsync(
+                $"https://cf-v2.uapis.cn/login?username={username}&password={password}",
+                SourceGeneration.Default.UserResult
+            );
+            if (forecast.State)
+                await SaveTokenAsync(forecast.Data.UserToken);
+            return forecast;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or JsonException)
+        {
+            return new UserResult
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
+        }
+    }
+
+    /// <summary>
+    ///     使用用户令牌获取用户信息
+    /// </summary>
+    public static async Task<UserResult> LoginByTokenAsync(string userToken)
+    {
+        HttpClientExtensions.MainClient ??= new HttpClient();
+
+        try
+        {
+            var forecast = await HttpClientExtensions.MainClient.GetFromJsonAsync(
+                $"https://cf-v2.uapis.cn/userinfo?token={userToken}",
+                SourceGeneration.Default.UserResult
+            );
+            if (forecast.State)
+                await SaveTokenAsync(forecast.Data.UserToken);
+            return forecast;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or JsonException)
+        {
+            return new UserResult
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
+        }
+    }
+
+    private static async Task SaveTokenAsync(string userToken)
+    {
+        var directory = Path.GetDirectoryName(TokenFilePath);
+        if (!Directory.Exists(directory))
+            Directory.CreateDirectory(directory!);
+        await File.WriteAllTextAsync(TokenFilePath, JsonSerializer.Serialize(new TokenData
+        {
+            UserToken = userToken
+        }, SourceGeneration.Default.TokenData));
+    }
+
+    public static async Task<UserResult> AutoLogin()
+    {
+        if (!File.Exists(TokenFilePath))
+            return new UserResult
+            {
+                StateString = "fail"
+            };
+        var json = await File.ReadAllTextAsync(TokenFilePath);
+        var tokenData = JsonSerializer.Deserialize(json, SourceGeneration.Default.TokenData);
+        return await LoginByTokenAsync(tokenData.UserToken);
+    }
 }
 
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -159,15 +238,19 @@ public class UserData
     // ReSharper disable once InconsistentNaming
     public double TotalDownloadGB => TotalDownloadBytes / 1024.0 / 1024.0 / 1024.0;
 
-    public async Task<List<TunnelData>> GetTunnelList(HttpClient client = null)
+    /// <summary>
+    ///     获取用户的隧道列表
+    /// </summary>
+    public async Task<List<TunnelData>> GetTunnelsAsync()
     {
-        client ??= new HttpClient();
-        TunnelForecast forecast;
+        HttpClientExtensions.MainClient ??= new HttpClient();
+
+        TunnelResult result;
         try
         {
-            forecast = await client.GetFromJsonAsync(
+            result = await HttpClientExtensions.MainClient.GetFromJsonAsync(
                 $"https://cf-v2.uapis.cn/tunnel?token={UserToken}",
-                TunnelForecastContext.Default.TunnelForecast
+                SourceGeneration.Default.TunnelResult
             );
         }
         catch (Exception ex) when (ex is HttpRequestException or JsonException)
@@ -175,9 +258,35 @@ public class UserData
             return [];
         }
 
-        return forecast.Data;
+        return result?.Data ?? [];
+    }
+
+    /// <summary>
+    ///     获取节点列表
+    /// </summary>
+    public async Task<List<NodeData>> GetNodesAsync()
+    {
+        HttpClientExtensions.MainClient ??= new HttpClient();
+
+        NodeResult result;
+        try
+        {
+            result = await HttpClientExtensions.MainClient.GetFromJsonAsync(
+                $"https://cf-v2.uapis.cn/node?token={UserToken}",
+                SourceGeneration.Default.NodeResult
+            );
+        }
+        catch (Exception ex) when (ex is HttpRequestException or JsonException)
+        {
+            return [];
+        }
+
+        return result?.Data ?? [];
     }
 }
 
-[JsonSerializable(typeof(UserForecast))]
-public partial class UserForecastContext : JsonSerializerContext;
+public class TokenData
+{
+    // ReSharper disable once StringLiteralTypo
+    [JsonPropertyName("usertoken")] public string UserToken { get; set; }
+}

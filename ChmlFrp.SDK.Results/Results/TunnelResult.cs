@@ -1,9 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
+using System.Diagnostics;
 
-namespace ConsoleJson.Forecast;
+namespace ChmlFrp.SDK.Results;
 
-public class TunnelForecast : GetForecast
+public class TunnelResult : BaseResult
 {
     /// <summary>
     ///     用户隧道数据
@@ -184,15 +183,16 @@ public class TunnelData
         TunnelType.Tcp or TunnelType.Udp => $"{NodeIp}:{RemoteEndpoint}",
         _ => throw new ArgumentOutOfRangeException()
     };
-}
 
-public enum TunnelType
-{
-    Tcp,
-    Udp,
-    Http,
-    Https
-}
+    public enum TunnelType
+    {
+        Tcp,
+        Udp,
+        Http,
+        Https
+    }
 
-[JsonSerializable(typeof(TunnelForecast))]
-public partial class TunnelForecastContext : JsonSerializerContext;
+    [JsonIgnore] public Process FrpProcess { get; set; }
+
+    [JsonIgnore] public bool IsRunning => FrpProcess is { HasExited: false };
+}

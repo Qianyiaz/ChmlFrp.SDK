@@ -1,8 +1,6 @@
-using System.Text.Json.Serialization;
+namespace ChmlFrp.SDK.Results;
 
-namespace ConsoleJson.Forecast;
-
-public class GetForecast
+public class BaseResult
 {
     /// <summary>
     ///     返回消息
@@ -23,6 +21,3 @@ public class GetForecast
     // ReSharper disable once UnusedMember.Global
     public bool State => StateString == "success";
 }
-
-[JsonSerializable(typeof(GetForecast))]
-public partial class GetForecastContext : JsonSerializerContext;

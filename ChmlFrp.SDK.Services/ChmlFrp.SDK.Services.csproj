@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>ChmlFrp.SDK.Services</RootNamespace>
+        <Copyright>© Qusay Diaz 2025</Copyright>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>2.0.0</Version>
+        <Authors>Qusay Diaz</Authors>
+        <Description>一个为 ChmlFrp.SDK 提供FRPC操作的扩展包.</Description>
+        <PackageProjectUrl>https://github.com/Qianyiaz/ChmlFrp.SDK.AOT</PackageProjectUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\"/>
+        <ProjectReference Include="..\ChmlFrp.SDK.Results\ChmlFrp.SDK.Results.csproj"/>
+    </ItemGroup>
+
+</Project>

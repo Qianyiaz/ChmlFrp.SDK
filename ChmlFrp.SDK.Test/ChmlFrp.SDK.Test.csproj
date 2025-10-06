@@ -8,4 +8,9 @@
         <PublishAot>true</PublishAot>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\ChmlFrp.SDK.Results\ChmlFrp.SDK.Results.csproj"/>
+        <ProjectReference Include="..\ChmlFrp.SDK.Services\ChmlFrp.SDK.Services.csproj"/>
+    </ItemGroup>
+
 </Project>

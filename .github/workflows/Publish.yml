@@ -13,10 +13,14 @@ jobs:
         with:
           path: ~/.nuget/packages
           key: nuget-cache
-      - run: dotnet publish -r win-x64 -p:PublishAot=true
+      - run: dotnet publish -r win-x64 -p:PublishAot=true -p:GeneratePackageOnBuild=false
       - uses: actions/upload-artifact@v4
         with:
           name: Release
           path: |
             **/publish
             !**/*.pdb
+      - run: |
+          dotnet pack
+          dotnet nuget push **\Release\*.nupkg --source "https://nuget.pkg.github.com/ChmlFrp/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+          dotnet nuget push **\Release\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGETKEY }} --skip-duplicate
