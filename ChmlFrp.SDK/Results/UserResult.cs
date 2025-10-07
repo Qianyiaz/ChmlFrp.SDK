@@ -2,6 +2,9 @@ using System.Text.Json;
 
 namespace ChmlFrp.SDK.Results;
 
+/// <summary>
+///     用户请求
+/// </summary>
 public class UserResult : BaseResult
 {
     /// <summary>
@@ -84,7 +87,8 @@ public class UserResult : BaseResult
         if (!File.Exists(TokenFilePath))
             return new UserResult
             {
-                StateString = "fail"
+                StateString = "fail",
+                Message = "File not found."
             };
         var json = await File.ReadAllTextAsync(TokenFilePath);
         var tokenData = JsonSerializer.Deserialize(json, SourceGeneration.Default.TokenData);
@@ -92,7 +96,11 @@ public class UserResult : BaseResult
     }
 }
 
+/// <summary>
+///     用户数据
+/// </summary>
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class UserData
 {
     /// <summary>
@@ -123,7 +131,6 @@ public class UserData
     ///     用户的QQ号码
     /// </summary>
     [JsonPropertyName("qq")]
-    // ReSharper disable once InconsistentNaming
     public string QQNumber { get; set; }
 
     /// <summary>
@@ -169,7 +176,7 @@ public class UserData
     public int CurrentConnectionCount { get; set; }
 
     /// <summary>
-    ///     累计上传数据量（字节）
+    ///     累计上传数据量(字节)
     /// </summary>
     [JsonPropertyName("total_upload")]
     public long TotalUploadBytes { get; set; }
@@ -181,13 +188,13 @@ public class UserData
     public long TotalDownloadBytes { get; set; }
 
     /// <summary>
-    ///     国内带宽限制（Mbps）
+    ///     国内带宽限制(Mbps)
     /// </summary>
     [JsonPropertyName("bandwidth")]
     public int DomesticBandwidth { get; set; }
 
     /// <summary>
-    ///     国外带宽限制（国内带宽的4倍）
+    ///     国外带宽限制国(内带宽的4倍)(Mbps)
     /// </summary>
     [JsonIgnore]
     public int InternationalBandwidth => DomesticBandwidth * 4;
@@ -214,34 +221,30 @@ public class UserData
     ///     累计上传数据量（MB）
     /// </summary>
     [JsonIgnore]
-    // ReSharper disable once InconsistentNaming
     public double TotalUploadMB => TotalUploadBytes / 1024.0 / 1024.0;
 
     /// <summary>
     ///     累计下载数据量（MB）
     /// </summary>
     [JsonIgnore]
-    // ReSharper disable once InconsistentNaming
     public double TotalDownloadMB => TotalDownloadBytes / 1024.0 / 1024.0;
 
     /// <summary>
-    ///     累计上传数据量（GB）
+    ///     累计上传数据量(GB)
     /// </summary>
     [JsonIgnore]
-    // ReSharper disable once InconsistentNaming
     public double TotalUploadGB => TotalUploadBytes / 1024.0 / 1024.0 / 1024.0;
 
     /// <summary>
-    ///     累计下载数据量（GB）
+    ///     累计下载数据量(GB)
     /// </summary>
     [JsonIgnore]
-    // ReSharper disable once InconsistentNaming
     public double TotalDownloadGB => TotalDownloadBytes / 1024.0 / 1024.0 / 1024.0;
 
     /// <summary>
-    ///     获取用户的隧道列表
+    ///     获取隧道请求
     /// </summary>
-    public async Task<List<TunnelData>> GetTunnelsAsync()
+    public async Task<TunnelResult> GetTunnelResultAsync()
     {
         HttpClientExtensions.MainClient ??= new HttpClient();
 
@@ -255,16 +258,20 @@ public class UserData
         }
         catch (Exception ex) when (ex is HttpRequestException or JsonException)
         {
-            return [];
+            return new TunnelResult
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
         }
 
-        return result?.Data ?? [];
+        return result;
     }
 
     /// <summary>
-    ///     获取节点列表
+    ///     获取节点请求
     /// </summary>
-    public async Task<List<NodeData>> GetNodesAsync()
+    public async Task<NodeResult> GetNodeResultAsync()
     {
         HttpClientExtensions.MainClient ??= new HttpClient();
 
@@ -278,10 +285,14 @@ public class UserData
         }
         catch (Exception ex) when (ex is HttpRequestException or JsonException)
         {
-            return [];
+            return new NodeResult
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
         }
 
-        return result?.Data ?? [];
+        return result;
     }
 }
 

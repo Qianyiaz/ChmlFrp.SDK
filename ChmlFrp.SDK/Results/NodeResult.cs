@@ -1,5 +1,8 @@
 namespace ChmlFrp.SDK.Results;
 
+/// <summary>
+///     节点请求
+/// </summary>
 public class NodeResult : BaseResult
 {
     /// <summary>
@@ -9,6 +12,9 @@ public class NodeResult : BaseResult
     public List<NodeData> Data { get; set; }
 }
 
+/// <summary>
+///     节点数据
+/// </summary>
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
 public class NodeData
 {
@@ -70,7 +76,7 @@ public class NodeData
     ///     是否允许UDP
     /// </summary>
     [JsonIgnore]
-    public bool SupportsUdp => SupportsUdpString == "true";
+    public bool SupportsUdp => bool.Parse(SupportsUdpString);
 
     /// <summary>
     ///     是否有防御(字符串)
@@ -82,7 +88,7 @@ public class NodeData
     ///     是否有防御(字符串)
     /// </summary>
     [JsonIgnore]
-    public bool HasDefense => HasDefenseString == "true";
+    public bool HasDefense => bool.Parse(HasDefenseString);
 
     /// <summary>
     ///     介绍

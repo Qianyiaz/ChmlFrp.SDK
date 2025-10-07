@@ -2,6 +2,9 @@ using System.Diagnostics;
 
 namespace ChmlFrp.SDK.Results;
 
+/// <summary>
+///     隧道请求
+/// </summary>
 public class TunnelResult : BaseResult
 {
     /// <summary>
@@ -11,6 +14,9 @@ public class TunnelResult : BaseResult
     public List<TunnelData> Data { get; set; }
 }
 
+/// <summary>
+///     隧道数据
+/// </summary>
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public class TunnelData
@@ -92,7 +98,7 @@ public class TunnelData
     ///     隧道是否在线
     /// </summary>
     [JsonIgnore]
-    public bool State => StateString?.ToLower() != "false";
+    public bool State => bool.Parse(StateString);
 
     /// <summary>
     ///     加密状态字符串
@@ -104,7 +110,7 @@ public class TunnelData
     ///     是否启用加密
     /// </summary>
     [JsonIgnore]
-    public bool IsEncrypted => EncryptionString?.ToLower() != "false";
+    public bool IsEncrypted => bool.Parse(EncryptionString);
 
     /// <summary>
     ///     压缩状态字符串
@@ -116,7 +122,7 @@ public class TunnelData
     ///     是否启用压缩
     /// </summary>
     [JsonIgnore]
-    public bool IsCompressed => CompressionString?.ToLower() != "false";
+    public bool IsCompressed => bool.Parse(CompressionString);
 
     /// <summary>
     ///     附加参数
@@ -125,40 +131,28 @@ public class TunnelData
     public string AdditionalParameters { get; set; }
 
     /// <summary>
-    ///     今日上传流量（字节）
+    ///     今日上传流量(字节)
     /// </summary>
     [JsonPropertyName("today_traffic_in")]
     public long TodayUploadBytes { get; set; }
 
     /// <summary>
-    ///     今日下载流量（字节）
+    ///     今日下载流量(字节)
     /// </summary>
     [JsonPropertyName("today_traffic_out")]
     public long TodayDownloadBytes { get; set; }
 
     /// <summary>
-    ///     今日总流量（字节）
+    ///     今日上传流量(MB)
     /// </summary>
     [JsonIgnore]
-    public long TodayTotalBytes => TodayUploadBytes + TodayDownloadBytes;
+    public double TodayUploadMB =>  TodayUploadBytes / 1024.0 / 1024.0;
 
     /// <summary>
-    ///     今日上传流量（MB）
-    /// </summary>
-    [JsonIgnore]
-    public double TodayUploadMB => TodayUploadBytes / 1024.0 / 1024.0;
-
-    /// <summary>
-    ///     今日下载流量（MB）
+    ///     今日下载流量(MB)
     /// </summary>
     [JsonIgnore]
     public double TodayDownloadMB => TodayDownloadBytes / 1024.0 / 1024.0;
-
-    /// <summary>
-    ///     今日总流量（MB）
-    /// </summary>
-    [JsonIgnore]
-    public double TodayTotalMB => TodayTotalBytes / 1024.0 / 1024.0;
 
     /// <summary>
     ///     当前连接数
@@ -184,6 +178,9 @@ public class TunnelData
         _ => throw new ArgumentOutOfRangeException()
     };
 
+    /// <summary>
+    ///     隧道类型
+    /// </summary>
     public enum TunnelType
     {
         Tcp,
@@ -192,7 +189,15 @@ public class TunnelData
         Https
     }
 
-    [JsonIgnore] public Process FrpProcess { get; set; }
+    /// <summary>
+    ///     用于 ChmlFrp.SDK.Services
+    /// </summary>
+    [JsonIgnore]
+    public Process FrpProcess { get; set; }
 
-    [JsonIgnore] public bool IsRunning => FrpProcess is { HasExited: false };
+    /// <summary>
+    ///     用于 ChmlFrp.SDK.Services
+    /// </summary>
+    [JsonIgnore]
+    public bool IsRunning => FrpProcess is { HasExited: false };
 }

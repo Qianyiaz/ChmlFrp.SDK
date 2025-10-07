@@ -7,33 +7,46 @@ if (!forecast.State)
     while (true)
     {
         forecast = await UserResult.LoginAsync(ReadLine(), ReadLine());
-        if (forecast == null)
-            continue;
         WriteLine(forecast.Message);
-        if (forecast.State) break;
+        if (forecast.State)
+            break;
     }
 }
 
 var user = forecast.Data;
 
 /*
-var nodes = await user.GetNodesAsync();
-var i = 1;
-foreach (var tunnel in nodes)
+var nodeResult = await user.GetNodeResultAsync();
+if (nodeResult.State)
 {
-    WriteLine($"{i}. {tunnel.Name}");
-    i++;
+    var i = 1;
+    foreach (var node in nodeResult.Data)
+    {
+        WriteLine($"{i}. {node.Name}");
+        i++;
+    }
+}
+else
+{
+    WriteLine(nodeResult.Message);
 }
 */
 
-var tunnels = await user.GetTunnelsAsync();
-var i = 1;
-foreach (var tunnel in tunnels)
+var tunnelResult = await user.GetTunnelResultAsync();
+if (tunnelResult.State)
 {
-    WriteLine($"{i}. {tunnel.Name}");
-    // 你需要把FRPC文件放在当前执行目录才能启动
-    // user.StartTunnel(tunnel, isStart => WriteLine(isStart == TunnelStatus.Succeed ? "启动FRPC成功" : "启动FRPC失败"));
-    i++;
+    var i = 1;
+    foreach (var tunnel in tunnelResult.Data)
+    {
+        WriteLine($"{i}. {tunnel.Name}");
+        // 你需要把FRPC文件放在当前执行目录才能启动
+        // user.StartTunnel(tunnel, isStart => WriteLine(isStart == TunnelStatus.Succeed ? "启动FRPC成功" : "启动FRPC失败"));
+        i++;
+    }
+}
+else
+{
+    WriteLine(tunnelResult.Message);
 }
 
 ReadKey();

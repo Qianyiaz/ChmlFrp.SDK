@@ -1,5 +1,8 @@
 namespace ChmlFrp.SDK.Results;
 
+/// <summary>
+///     基本请求
+/// </summary>
 public class BaseResult
 {
     /// <summary>

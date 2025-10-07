@@ -6,7 +6,7 @@ namespace ChmlFrp.SDK;
 public static class HttpClientExtensions
 {
     /// <summary>
-    ///     自定义HttpClient,没配置也没关系,自动配置.
+    ///     自定义HttpClient,没配置也没关系.
     /// </summary>
     public static HttpClient MainClient;
 

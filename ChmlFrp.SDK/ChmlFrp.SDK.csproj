@@ -1,17 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageId>ChmlFrp.SDK</PackageId>
         <LangVersion>preview</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>ChmlFrp.SDK</RootNamespace>
         <Copyright>© Qusay Diaz 2025</Copyright>
-        <TargetFramework>net9.0</TargetFramework>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>2.0.0</Version>
+        <Version>2.0.2</Version>
         <Authors>Qusay Diaz</Authors>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <Description>一个为 .NET 开发者提供的第三方 ChmlFrp 客户端开发工具包.</Description>
-        <PackageProjectUrl>https://github.com/Qianyiaz/ChmlFrp.SDK.AOT</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Qianyiaz/ChmlFrp.SDK.AOT</RepositoryUrl>
+        <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
