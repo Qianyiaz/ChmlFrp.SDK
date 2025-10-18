@@ -9,12 +9,19 @@ namespace ChmlFrp.SDK.Services;
 /// </summary>
 public static class TunnelServices
 {
+    public enum TunnelStatus
+    {
+        Failed,
+        Succeed,
+        AlreadyRunning
+    }
+
     /// <summary>
     ///     你需要把FRPC文件放在当前执行目录才能启动
     /// </summary>
     public static void StartTunnel
     (
-        this UserData user,
+        this UserResult user,
         TunnelData tunnel,
         Action<TunnelStatus> onStatus = null,
         string logFilePath = null
@@ -36,8 +43,8 @@ public static class TunnelServices
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 StandardOutputEncoding = Encoding.UTF8,
-                Arguments = $"-u {user.UserToken} -p {tunnel.Id}",
-                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                Arguments = $"-u {user.Data.UserToken} -p {tunnel.Id}",
+                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
             }
         };
 
@@ -69,7 +76,7 @@ public static class TunnelServices
 
     public static bool StopTunnel
     (
-        this UserData _,
+        this UserResult _,
         TunnelData tunnel
     )
     {
@@ -79,12 +86,5 @@ public static class TunnelServices
         if (!tunnel.FrpProcess.WaitForExit(100))
             tunnel.FrpProcess.Kill();
         return true;
-    }
-
-    public enum TunnelStatus
-    {
-        Failed,
-        Succeed,
-        AlreadyRunning
     }
 }

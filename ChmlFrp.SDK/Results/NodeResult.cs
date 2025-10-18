@@ -15,7 +15,6 @@ public class NodeResult : BaseResult
 /// <summary>
 ///     节点数据
 /// </summary>
-[SuppressMessage("ReSharper", "StringLiteralTypo")]
 public class NodeData
 {
     /// <summary>

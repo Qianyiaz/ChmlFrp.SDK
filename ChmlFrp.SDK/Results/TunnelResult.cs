@@ -17,10 +17,19 @@ public class TunnelResult : BaseResult
 /// <summary>
 ///     隧道数据
 /// </summary>
-[SuppressMessage("ReSharper", "StringLiteralTypo")]
-[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class TunnelData
 {
+    /// <summary>
+    ///     隧道类型
+    /// </summary>
+    public enum TunnelType
+    {
+        Tcp,
+        Udp,
+        Http,
+        Https
+    }
+
     /// <summary>
     ///     隧道的唯一标识ID
     /// </summary>
@@ -146,13 +155,25 @@ public class TunnelData
     ///     今日上传流量(MB)
     /// </summary>
     [JsonIgnore]
-    public double TodayUploadMB =>  TodayUploadBytes / 1024.0 / 1024.0;
+    public double TodayUploadMB => TodayUploadBytes / 1024.0 / 1024.0;
 
     /// <summary>
     ///     今日下载流量(MB)
     /// </summary>
     [JsonIgnore]
     public double TodayDownloadMB => TodayDownloadBytes / 1024.0 / 1024.0;
+
+    /// <summary>
+    ///     今日上传数据量(GB)
+    /// </summary>
+    [JsonIgnore]
+    public double TodayUploadGB => TodayUploadMB / 1024.0;
+
+    /// <summary>
+    ///     今日下载数据量(GB)
+    /// </summary>
+    [JsonIgnore]
+    public double TodayDownloadGB => TodayDownloadMB / 1024.0;
 
     /// <summary>
     ///     当前连接数
@@ -177,17 +198,6 @@ public class TunnelData
         TunnelType.Tcp or TunnelType.Udp => $"{NodeIp}:{RemoteEndpoint}",
         _ => throw new ArgumentOutOfRangeException()
     };
-
-    /// <summary>
-    ///     隧道类型
-    /// </summary>
-    public enum TunnelType
-    {
-        Tcp,
-        Udp,
-        Http,
-        Https
-    }
 
     /// <summary>
     ///     用于 ChmlFrp.SDK.Services

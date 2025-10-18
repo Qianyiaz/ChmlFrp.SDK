@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace ChmlFrp.SDK.Results;
@@ -13,6 +14,8 @@ public class UserResult : BaseResult
     [JsonPropertyName("data")]
     public UserData Data { get; set; }
 
+    #region HttpServices
+
     private static readonly string TokenFilePath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "ChmlFrp", "user.json");
@@ -22,12 +25,10 @@ public class UserResult : BaseResult
     /// </summary>
     public static async Task<UserResult> LoginAsync(string username, string password)
     {
-        HttpClientExtensions.MainClient ??= new HttpClient();
-
         try
         {
-            var forecast = await HttpClientExtensions.MainClient.GetFromJsonAsync(
-                $"https://cf-v2.uapis.cn/login?username={username}&password={password}",
+            var forecast = await MainClient.GetFromJsonAsync(
+                $"/login?username={username}&password={password}",
                 SourceGeneration.Default.UserResult
             );
             if (forecast.State)
@@ -49,12 +50,10 @@ public class UserResult : BaseResult
     /// </summary>
     public static async Task<UserResult> LoginByTokenAsync(string userToken)
     {
-        HttpClientExtensions.MainClient ??= new HttpClient();
-
         try
         {
-            var forecast = await HttpClientExtensions.MainClient.GetFromJsonAsync(
-                $"https://cf-v2.uapis.cn/userinfo?token={userToken}",
+            var forecast = await MainClient.GetFromJsonAsync(
+                $"/userinfo?token={userToken}",
                 SourceGeneration.Default.UserResult
             );
             if (forecast.State)
@@ -71,17 +70,6 @@ public class UserResult : BaseResult
         }
     }
 
-    private static async Task SaveTokenAsync(string userToken)
-    {
-        var directory = Path.GetDirectoryName(TokenFilePath);
-        if (!Directory.Exists(directory))
-            Directory.CreateDirectory(directory!);
-        await File.WriteAllTextAsync(TokenFilePath, JsonSerializer.Serialize(new TokenData
-        {
-            UserToken = userToken
-        }, SourceGeneration.Default.TokenData));
-    }
-
     public static async Task<UserResult> AutoLogin()
     {
         if (!File.Exists(TokenFilePath))
@@ -94,13 +82,80 @@ public class UserResult : BaseResult
         var tokenData = JsonSerializer.Deserialize(json, SourceGeneration.Default.TokenData);
         return await LoginByTokenAsync(tokenData.UserToken);
     }
+
+    private static async Task SaveTokenAsync(string userToken)
+    {
+        var directory = Path.GetDirectoryName(TokenFilePath);
+        if (!Directory.Exists(directory))
+            Directory.CreateDirectory(directory!);
+        await File.WriteAllTextAsync(TokenFilePath, JsonSerializer.Serialize(new TokenData
+        {
+            UserToken = userToken
+        }, SourceGeneration.Default.TokenData));
+    }
+
+    /// <summary>
+    ///     获取隧道请求
+    /// </summary>
+    public async Task<TunnelResult> GetTunnelResultAsync()
+    {
+        if (!State)
+            return new TunnelResult
+            {
+                StateString = "fail",
+                Message = "You don't login."
+            };
+        try
+        {
+            return await MainClient.GetFromJsonAsync(
+                $"/tunnel?token={Data.UserToken}",
+                SourceGeneration.Default.TunnelResult
+            );
+        }
+        catch (Exception ex) when (ex is HttpRequestException or JsonException)
+        {
+            return new TunnelResult
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
+        }
+    }
+
+    /// <summary>
+    ///     获取节点请求
+    /// </summary>
+    public async Task<NodeResult> GetNodeResultAsync()
+    {
+        if (!State)
+            return new NodeResult
+            {
+                StateString = "fail",
+                Message = "You don't login."
+            };
+        try
+        {
+            return await MainClient.GetFromJsonAsync(
+                $"/node?token={Data.UserToken}",
+                SourceGeneration.Default.NodeResult
+            );
+        }
+        catch (Exception ex) when (ex is HttpRequestException or JsonException)
+        {
+            return new NodeResult
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
+        }
+    }
+
+    #endregion
 }
 
 /// <summary>
 ///     用户数据
 /// </summary>
-[SuppressMessage("ReSharper", "StringLiteralTypo")]
-[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class UserData
 {
     /// <summary>
@@ -233,71 +288,16 @@ public class UserData
     ///     累计上传数据量(GB)
     /// </summary>
     [JsonIgnore]
-    public double TotalUploadGB => TotalUploadBytes / 1024.0 / 1024.0 / 1024.0;
+    public double TotalUploadGB => TotalUploadMB / 1024.0;
 
     /// <summary>
     ///     累计下载数据量(GB)
     /// </summary>
     [JsonIgnore]
-    public double TotalDownloadGB => TotalDownloadBytes / 1024.0 / 1024.0 / 1024.0;
-
-    /// <summary>
-    ///     获取隧道请求
-    /// </summary>
-    public async Task<TunnelResult> GetTunnelResultAsync()
-    {
-        HttpClientExtensions.MainClient ??= new HttpClient();
-
-        TunnelResult result;
-        try
-        {
-            result = await HttpClientExtensions.MainClient.GetFromJsonAsync(
-                $"https://cf-v2.uapis.cn/tunnel?token={UserToken}",
-                SourceGeneration.Default.TunnelResult
-            );
-        }
-        catch (Exception ex) when (ex is HttpRequestException or JsonException)
-        {
-            return new TunnelResult
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    ///     获取节点请求
-    /// </summary>
-    public async Task<NodeResult> GetNodeResultAsync()
-    {
-        HttpClientExtensions.MainClient ??= new HttpClient();
-
-        NodeResult result;
-        try
-        {
-            result = await HttpClientExtensions.MainClient.GetFromJsonAsync(
-                $"https://cf-v2.uapis.cn/node?token={UserToken}",
-                SourceGeneration.Default.NodeResult
-            );
-        }
-        catch (Exception ex) when (ex is HttpRequestException or JsonException)
-        {
-            return new NodeResult
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
-
-        return result;
-    }
+    public double TotalDownloadGB => TotalDownloadMB / 1024.0;
 }
 
 public class TokenData
 {
-    // ReSharper disable once StringLiteralTypo
     [JsonPropertyName("usertoken")] public string UserToken { get; set; }
 }

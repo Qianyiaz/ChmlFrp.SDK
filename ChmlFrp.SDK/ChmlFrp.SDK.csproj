@@ -4,12 +4,12 @@
         <LangVersion>preview</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Copyright>© Qusay Diaz 2025</Copyright>
-        <Version>2.0.2</Version>
+        <Version>2.0.3</Version>
         <Authors>Qusay Diaz</Authors>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Description>一个为 .NET 开发者提供的第三方 ChmlFrp 客户端开发工具包.</Description>
         <RepositoryUrl>https://github.com/Qianyiaz/ChmlFrp.SDK.AOT</RepositoryUrl>
-        <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
