@@ -43,10 +43,12 @@ if (tunnelResult.State)
     foreach (var tunnel in tunnelResult.Data)
     {
         WriteLine($"{i}. {tunnel.Name}");
-        // 你需要把FRPC文件放在当前执行目录才能启动
-        // forecast.StartTunnel(tunnel, isStart => WriteLine(isStart == TunnelStatus.Succeed ? "启动FRPC成功" : "启动FRPC失败"));
         i++;
     }
+
+    // 你需要把FRPC文件放在当前执行目录才能启动
+    forecast.StartTunnels(tunnelResult.Data,
+        isStart => WriteLine(isStart == TunnelServices.TunnelStatus.Succeed ? "启动FRPC成功" : "启动FRPC失败"));
 }
 else
 {
@@ -55,5 +57,4 @@ else
 
 ReadKey();
 
-// foreach (var tunnel in tunnels)
-//    forecast.StopTunnel(tunnel);
+forecast.StopTunnels(tunnelResult.Data);

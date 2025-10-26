@@ -11,3 +11,60 @@
 ```
 <PackageReference Include="ChmlFrp.SDK" Version="*"/>
 ```
+
+### 使用
+
+登录
+
+```
+forecast = await UserResult.LoginAsync(【用户名】, 【密码】);
+WriteLine(forecast.Message);
+```
+
+隧道
+
+```
+var forecast = await UserResult.AutoLogin(); // 自动登录 前提已登录
+var tunnelResult = await forecast.GetTunnelResultAsync();
+if (tunnelResult.State)
+{
+    var i = 1;
+    foreach (var tunnel in tunnelResult.Data)
+    {
+        WriteLine($"{i}. {tunnel.Name}");
+        i++;
+    }
+}
+else
+{
+    WriteLine(tunnelResult.Message);
+}
+```
+
+节点
+
+```
+var forecast = await UserResult.AutoLogin(); // 自动登录 前提已登录
+var nodeResult = await forecast.GetNodeResultAsync();
+if (nodeResult.State)
+{
+    var i = 1;
+    foreach (var node in nodeResult.Data)
+    {
+        if (i == 1)
+        {
+            var nodeInfo = await forecast.GetNodeInfoResultAsync(node);
+            WriteLine(nodeInfo.State ? nodeInfo.Data.Ip : nodeInfo.Message);
+        }
+
+        WriteLine($"{i}. {node.Name}");
+        i++;
+    }
+}
+else
+{
+    WriteLine(nodeResult.Message);
+}
+```
+
+模板项目:https://github.com/Qianyiaz/ChmlFrp.SDK.AOT/blob/main/ChmlFrp.SDK.Test/Program.cs
