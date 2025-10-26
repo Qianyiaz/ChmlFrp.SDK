@@ -8,7 +8,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/ChmlFrp.SDK.Services.svg)](https://www.nuget.org/packages/ChmlFrp.SDK.Services/)
 
-```
+```xml
 <PackageReference Include="ChmlFrp.SDK.Services" Version="*"/>
 ```
 
@@ -16,8 +16,8 @@
 
 隧道
 
-```
-var forecast = await UserResult.AutoLogin(); // 自动登录 前提已登录
+```csharp
+var forecast = await UserResult.AutoLogin();
 
 var tunnelResult = await forecast.GetTunnelResultAsync();
 if (tunnelResult.State)
@@ -45,8 +45,8 @@ forecast.StopTunnels(tunnelResult.Data);
 
 节点
 
-```
-var forecast = await UserResult.AutoLogin(); // 自动登录 前提已登录
+```csharp
+var forecast = await UserResult.AutoLogin();
 
 var nodeResult = await forecast.GetNodeResultAsync();
 if (nodeResult.State)

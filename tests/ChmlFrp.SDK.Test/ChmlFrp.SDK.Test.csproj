@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ChmlFrp.SDK\ChmlFrp.SDK.csproj"/>
-        <ProjectReference Include="..\ChmlFrp.SDK.Services\ChmlFrp.SDK.Services.csproj"/>
+        <ProjectReference Include="..\..\src\ChmlFrp.SDK\ChmlFrp.SDK.csproj"/>
+        <ProjectReference Include="..\..\src\ChmlFrp.SDK.Services\ChmlFrp.SDK.Services.csproj"/>
     </ItemGroup>
 
 </Project>

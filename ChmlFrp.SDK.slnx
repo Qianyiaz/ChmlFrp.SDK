@@ -1,0 +1,5 @@
+﻿<Solution>
+    <Project Path="src\ChmlFrp.SDK.Services\ChmlFrp.SDK.Services.csproj"/>
+    <Project Path="tests\ChmlFrp.SDK.Test\ChmlFrp.SDK.Test.csproj"/>
+    <Project Path="src\ChmlFrp.SDK\ChmlFrp.SDK.csproj"/>
+</Solution>
