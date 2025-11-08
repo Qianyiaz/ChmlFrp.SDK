@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using ChmlFrp.SDK.Results;
 
-namespace ChmlFrp.SDK.Services;
+namespace ChmlFrp.SDK.Extensions;
 
 public class NodeInfoResult : BaseResult
 {

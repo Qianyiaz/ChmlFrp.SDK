@@ -1,8 +1,6 @@
 ﻿using ChmlFrp.SDK.Results;
-using ChmlFrp.SDK.Services;
+using ChmlFrp.SDK.Extensions;
 using static System.Console;
-
-_ = Task.Run(BaseResult.WarmUpConnectionAsync);
 
 var forecast = await UserResult.AutoLogin();
 if (!forecast.State)
@@ -58,3 +56,4 @@ else
 ReadKey();
 
 forecast.StopTunnels(tunnelResult.Data);
+tunnelResult.Data.ForEach(tunnel => WriteLine(tunnel.IsRunning()));

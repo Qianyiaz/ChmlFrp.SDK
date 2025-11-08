@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\ChmlFrp.SDK\ChmlFrp.SDK.csproj"/>
-        <ProjectReference Include="..\..\src\ChmlFrp.SDK.Services\ChmlFrp.SDK.Services.csproj"/>
+        <ProjectReference Include="..\..\src\ChmlFrp.SDK.Extensions\ChmlFrp.SDK.Extensions.csproj"/>
     </ItemGroup>
 
 </Project>

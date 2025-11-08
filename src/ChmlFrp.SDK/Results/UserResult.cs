@@ -79,7 +79,7 @@ public class UserResult : BaseResult
                 Message = "File not found."
             };
         var json = await File.ReadAllTextAsync(TokenFilePath);
-        var tokenData = JsonSerializer.Deserialize(json, SourceGeneration.Default.TokenData);
+        var tokenData = JsonSerializer.Deserialize(json, SourceGeneration.Default.JsonData);
         return await LoginByTokenAsync(tokenData.UserToken);
     }
 
@@ -88,10 +88,10 @@ public class UserResult : BaseResult
         var directory = Path.GetDirectoryName(TokenFilePath);
         if (!Directory.Exists(directory))
             Directory.CreateDirectory(directory!);
-        await File.WriteAllTextAsync(TokenFilePath, JsonSerializer.Serialize(new TokenData
+        await File.WriteAllTextAsync(TokenFilePath, JsonSerializer.Serialize(new JsonData
         {
             UserToken = userToken
-        }, SourceGeneration.Default.TokenData));
+        }, SourceGeneration.Default.JsonData));
     }
 
     /// <summary>
@@ -297,7 +297,7 @@ public class UserData
     public double TotalDownloadGB => TotalDownloadMB / 1024.0;
 }
 
-public class TokenData
+public class JsonData
 {
     [JsonPropertyName("usertoken")] public string UserToken { get; set; }
 }

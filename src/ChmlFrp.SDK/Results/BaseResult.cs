@@ -16,7 +16,7 @@ public class BaseResult
         EnableMultipleHttp2Connections = true
     })
     {
-        BaseAddress = new Uri("https://cf-v2.uapis.cn"),
+        BaseAddress = new("https://cf-v2.uapis.cn"),
         DefaultRequestHeaders =
         {
             { "Accept", "application/json" },
@@ -46,6 +46,7 @@ public class BaseResult
     ///     预热HTTP连接(在应用启动时调用)
     ///     可在启动时使用 _ = Task.Run(BaseResult.WarmUpConnectionAsync);
     /// </summary>
+    [Obsolete("API更新,没必要")]
     public static async Task WarmUpConnectionAsync()
     {
         try

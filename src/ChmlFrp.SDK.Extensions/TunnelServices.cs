@@ -1,12 +1,39 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using ChmlFrp.SDK.Results;
 
-namespace ChmlFrp.SDK.Services;
+namespace ChmlFrp.SDK.Extensions;
+
+public static class TunnelDataExtensions
+{
+    private static readonly ConditionalWeakTable<TunnelData, ProcessInfo> ProcessInfos = new();
+
+    private class ProcessInfo
+    {
+        public Process FrpProcess { get; init; }
+    }
+
+    public static void SetFrpProcess(this TunnelData tunnel, Process process)
+    {
+        ProcessInfos.AddOrUpdate(tunnel, new() { FrpProcess = process });
+    }
+
+    public static Process GetFrpProcess(this TunnelData tunnel)
+    {
+        return ProcessInfos.TryGetValue(tunnel, out var info) ? info?.FrpProcess : null;
+    }
+
+    public static bool IsRunning(this TunnelData tunnel)
+    {
+        var process = tunnel.GetFrpProcess();
+        return process is { HasExited: false };
+    }
+}
 
 /// <summary>
-///     对FRPC相关的操作.
+///     对隧道相关的操作.
 /// </summary>
 public static class TunnelServices
 {
@@ -28,7 +55,7 @@ public static class TunnelServices
         string logFilePath = null
     )
     {
-        if (tunnel.IsRunning)
+        if (tunnel.IsRunning())
         {
             onStatus?.Invoke(TunnelStatus.AlreadyRunning);
             return;
@@ -36,20 +63,13 @@ public static class TunnelServices
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            new Process
+            Process.Start(new ProcessStartInfo
             {
-                StartInfo =
-                {
-                    FileName = "chmod",
-                    CreateNoWindow = true,
-                    Arguments = "+x frpc",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    StandardOutputEncoding = Encoding.UTF8,
-                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
-                }
-            }.Start();
-        } 
+                FileName = "chmod",
+                Arguments = "+x frpc",
+                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
+            })!.WaitForExit();
+        }
 
         logFilePath ??= Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"log{tunnel.Id}.text");
         var frpProcess = new Process
@@ -79,8 +99,8 @@ public static class TunnelServices
             if (!fail && !line.Contains("[I]"))
             {
                 fail = true;
+                frpProcess.Kill(true);
                 onStatus?.Invoke(TunnelStatus.Failed);
-                frpProcess.Kill();
             }
             else if (!succeed && line.Contains("启动成功"))
             {
@@ -91,7 +111,7 @@ public static class TunnelServices
 
         frpProcess.Start();
         frpProcess.BeginOutputReadLine();
-        tunnel.FrpProcess = frpProcess;
+        tunnel.SetFrpProcess(frpProcess);
     }
 
     /// <summary>
@@ -105,11 +125,19 @@ public static class TunnelServices
         string logFilePath = null
     )
     {
-        if (tunnels.Any(tunnel => tunnel.IsRunning))
+        if (tunnels.Any(tunnel => tunnel.IsRunning()))
         {
             onStatus?.Invoke(TunnelStatus.AlreadyRunning);
             return;
         }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "chmod",
+                Arguments = "+x frpc",
+                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
+            })!.WaitForExit();
 
         var ids = string.Join(",", tunnels.Select(t => t.Id.ToString()).ToArray());
         logFilePath ??= Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"log{ids}.text");
@@ -141,8 +169,8 @@ public static class TunnelServices
             if (!fail && !line.Contains("[I]"))
             {
                 fail = true;
+                frpProcess.Kill(true);
                 onStatus?.Invoke(TunnelStatus.Failed);
-                frpProcess.Kill();
             }
             else if (!succeed && line.Contains("启动成功"))
             {
@@ -153,7 +181,7 @@ public static class TunnelServices
 
         frpProcess.Start();
         frpProcess.BeginOutputReadLine();
-        tunnels.ForEach(x => x.FrpProcess = frpProcess);
+        tunnels.ForEach(tunnel => tunnel.SetFrpProcess(frpProcess));
     }
 
     public static bool StopTunnel
@@ -162,9 +190,9 @@ public static class TunnelServices
         TunnelData tunnel
     )
     {
-        if (!tunnel.IsRunning)
+        if (!tunnel.IsRunning())
             return false;
-        tunnel.FrpProcess?.Kill(true);
+        tunnel.GetFrpProcess()?.Kill(true);
         return true;
     }
 
@@ -174,8 +202,7 @@ public static class TunnelServices
         List<TunnelData> tunnels
     )
     {
-        foreach (var tunnel in tunnels)
-            StopTunnel(user, tunnel);
+        tunnels.ForEach(tunnel => StopTunnel(user, tunnel));
         return true;
     }
 }

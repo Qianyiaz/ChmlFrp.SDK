@@ -198,16 +198,4 @@ public class TunnelData
         TunnelType.Tcp or TunnelType.Udp => $"{NodeIp}:{RemoteEndpoint}",
         _ => throw new ArgumentOutOfRangeException()
     };
-
-    /// <summary>
-    ///     用于 ChmlFrp.SDK.Services
-    /// </summary>
-    [JsonIgnore]
-    public Process FrpProcess { get; set; }
-
-    /// <summary>
-    ///     用于 ChmlFrp.SDK.Services
-    /// </summary>
-    [JsonIgnore]
-    public bool IsRunning => FrpProcess is { HasExited: false };
 }

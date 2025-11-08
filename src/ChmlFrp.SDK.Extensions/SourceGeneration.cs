@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace ChmlFrp.SDK.Services;
+namespace ChmlFrp.SDK.Extensions;
 
 /// <summary>
 ///     源生成器,用于支持Aot.
