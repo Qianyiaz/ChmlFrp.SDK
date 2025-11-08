@@ -6,7 +6,7 @@
 
 通过 NuGet 包安装 `ChmlFrp.SDK.Extensions`.
 
-[![NuGet](https://img.shields.io/nuget/v/ChmlFrp.SDK.Services.svg)](https://www.nuget.org/packages/ChmlFrp.SDK.Services/)
+[![NuGet](https://img.shields.io/nuget/v/ChmlFrp.SDK.Extensions.svg)](https://www.nuget.org/packages/ChmlFrp.SDK.Services/)
 
 ```xml
 <PackageReference Include="ChmlFrp.SDK.Extensions" Version="*"/>

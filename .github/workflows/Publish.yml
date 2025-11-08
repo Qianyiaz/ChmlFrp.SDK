@@ -1,4 +1,4 @@
-name: Project Publishing
+name: Package Packing and Pushing
 permissions:
   contents: read
   packages: write
@@ -8,7 +8,7 @@ on:
     paths: [ 'src/**' , '**/Publish.yml' ]
 jobs:
   publish:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:
@@ -20,9 +20,9 @@ jobs:
         with:
           user: Qusay
       - run: |
-          dotnet pack src\ChmlFrp.SDK\ChmlFrp.SDK.csproj
-          dotnet pack src\ChmlFrp.SDK.Services\ChmlFrp.SDK.Services.csproj
-          dotnet nuget push **\ChmlFrp.SDK.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}} --skip-duplicate
-          dotnet nuget push **\ChmlFrp.SDK.Services.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}} --skip-duplicate
-          dotnet nuget push **\ChmlFrp.SDK.*.nupkg --source https://nuget.pkg.github.com/Qianyiaz/index.json --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
-          dotnet nuget push **\ChmlFrp.SDK.Services.*.nupkg --source https://nuget.pkg.github.com/Qianyiaz/index.json --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+          dotnet pack src/ChmlFrp.SDK/ChmlFrp.SDK.csproj
+          dotnet pack src/ChmlFrp.SDK.Extensions/ChmlFrp.SDK.Extensions.csproj
+          dotnet nuget push **/ChmlFrp.SDK.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}} --skip-duplicate
+          dotnet nuget push **/ChmlFrp.SDK.Extensions.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}} --skip-duplicate
+          dotnet nuget push **/ChmlFrp.SDK.*.nupkg --source https://nuget.pkg.github.com/Qianyiaz/index.json --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+          dotnet nuget push **/ChmlFrp.SDK.Extensions.*.nupkg --source https://nuget.pkg.github.com/Qianyiaz/index.json --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate

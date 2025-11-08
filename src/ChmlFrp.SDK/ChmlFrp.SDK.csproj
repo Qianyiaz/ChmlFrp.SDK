@@ -8,8 +8,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <Copyright>© Qusay Diaz 2025</Copyright>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</RepositoryUrl>
         <Description>一个为 .NET 开发者提供的第三方 ChmlFrp 客户端开发工具包.</Description>
-        <PackageProjectUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</PackageProjectUrl>
     </PropertyGroup>
 
     <ItemGroup>

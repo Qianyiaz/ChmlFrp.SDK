@@ -9,7 +9,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Description>一个为 ChmlFrp.SDK 提供相关扩展方法的扩展包.</Description>
-        <PackageProjectUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</PackageLicenseUrl>
     </PropertyGroup>
 
     <ItemGroup>
