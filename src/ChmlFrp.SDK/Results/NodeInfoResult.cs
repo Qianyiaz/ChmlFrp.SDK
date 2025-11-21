@@ -1,9 +1,4 @@
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using ChmlFrp.SDK.Results;
-
-namespace ChmlFrp.SDK.Extensions;
+namespace ChmlFrp.SDK.Results;
 
 public class NodeInfoResult : BaseResult
 {
@@ -11,19 +6,20 @@ public class NodeInfoResult : BaseResult
     ///     节点数据
     /// </summary>
     [JsonPropertyName("data")]
-    public NodeInfo Data { get; set; }
+    public NodeInfo? Data { get; set; }
 }
 
 /// <summary>
 ///     节点数据扩展
 /// </summary>
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class NodeInfo : NodeData
 {
     /// <summary>
     /// 在线状态(字符串)
     /// </summary>
     [JsonPropertyName("state")]
-    public string StateString { get; set; }
+    public string? StateString { get; set; }
 
     /// <summary>
     /// 在线状态
@@ -35,13 +31,13 @@ public class NodeInfo : NodeData
     /// 节点IP地址
     /// </summary>
     [JsonPropertyName("ip")]
-    public string Ip { get; set; }
+    public string? Ip { get; set; }
 
     /// <summary>
     /// 节点的真实IP
     /// </summary>
     [JsonPropertyName("realIp")]
-    public string RealIp { get; set; }
+    public string? RealIp { get; set; }
 
     /// <summary>
     /// 节点FRP端口
@@ -53,13 +49,13 @@ public class NodeInfo : NodeData
     /// 节点FRP端口限制
     /// </summary>
     [JsonPropertyName("rport")]
-    public string RemoteEndpoint { get; set; }
+    public string? RemoteEndpoint { get; set; }
 
     /// <summary>
     /// CPU信息
     /// </summary>
     [JsonPropertyName("cpu_info")]
-    public string CpuInfo { get; set; }
+    public string? CpuInfo { get; set; }
 
     /// <summary>
     /// CPU核心数
@@ -174,36 +170,4 @@ public class NodeInfo : NodeData
     /// </summary>
     [JsonIgnore]
     public double StorageAvailableGB => StorageTotalGB - StorageUsedGB;
-}
-
-public static class NodeServices
-{
-    public static async Task<NodeInfoResult> GetNodeInfoResultAsync
-    (
-        this UserResult user,
-        NodeData node
-    )
-    {
-        if (!user.State)
-            return new NodeInfoResult
-            {
-                StateString = "fail",
-                Message = "You don't login."
-            };
-        try
-        {
-            return await BaseResult.MainClient.GetFromJsonAsync(
-                $"/nodeinfo?token={user.Data.UserToken}&node={node.Name}",
-                SourceGeneration.Default.NodeInfoResult
-            );
-        }
-        catch (Exception ex) when (ex is HttpRequestException or JsonException)
-        {
-            return new NodeInfoResult
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
-    }
 }

@@ -6,13 +6,15 @@
 
 通过 NuGet 包安装 `ChmlFrp.SDK.Extensions`.
 
-[![NuGet](https://img.shields.io/nuget/v/ChmlFrp.SDK.Extensions.svg)](https://www.nuget.org/packages/ChmlFrp.SDK.Services/)
+[![NuGet](https://img.shields.io/nuget/v/ChmlFrp.SDK.Extensions.svg)](https://www.nuget.org/packages/ChmlFrp.SDK.Extensions/)
 
 ```xml
 <PackageReference Include="ChmlFrp.SDK.Extensions" Version="*"/>
 ```
 
 ### 使用
+
+> 注意: 你需要先下载FRPC 客户端至当前目录，才能使用隧道相关功能.
 
 隧道
 
@@ -29,7 +31,6 @@ if (tunnelResult.State)
         i++;
     }
 
-    // 你需要把FRPC文件放在当前执行目录才能启动
     forecast.StartTunnels(tunnelResult.Data,
         isStart => WriteLine(isStart == TunnelServices.TunnelStatus.Succeed ? "启动FRPC成功" : "启动FRPC失败"));
 }
@@ -43,31 +44,4 @@ ReadKey();
 forecast.StopTunnels(tunnelResult.Data);
 ```
 
-节点
-
-```csharp
-var forecast = await UserResult.AutoLogin();
-
-var nodeResult = await forecast.GetNodeResultAsync();
-if (nodeResult.State)
-{
-    var i = 1;
-    foreach (var node in nodeResult.Data)
-    {
-        if (i == 1)
-        {
-            var nodeInfo = await forecast.GetNodeInfoResultAsync(node);
-            WriteLine(nodeInfo.State ? nodeInfo.Data.Ip : nodeInfo.Message);
-        }
-
-        WriteLine($"{i}. {node.Name}");
-        i++;
-    }
-}
-else
-{
-    WriteLine(nodeResult.Message);
-}
-```
-
-模板项目:https://github.com/Qianyiaz/ChmlFrp.SDK.AOT/blob/main/ChmlFrp.SDK.Test/Program.cs
+模板项目:https://github.com/Qianyiaz/ChmlFrp.SDK/blob/main/ChmlFrp.SDK.Test/Program.cs

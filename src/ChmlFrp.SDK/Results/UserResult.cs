@@ -1,6 +1,3 @@
-using System.Net.Http.Json;
-using System.Text.Json;
-
 namespace ChmlFrp.SDK.Results;
 
 /// <summary>
@@ -12,18 +9,18 @@ public class UserResult : BaseResult
     ///     用户数据
     /// </summary>
     [JsonPropertyName("data")]
-    public UserData Data { get; set; }
+    public UserData? Data { get; set; }
 
     #region HttpServices
 
-    private static readonly string TokenFilePath =
+    [JsonIgnore] private static readonly string TokenFilePath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "ChmlFrp", "user.json");
 
     /// <summary>
     ///     使用用户名和密码登录获取用户信息
     /// </summary>
-    public static async Task<UserResult> LoginAsync(string username, string password)
+    public static async Task<UserResult?> LoginAsync(string? username, string? password)
     {
         try
         {
@@ -31,8 +28,8 @@ public class UserResult : BaseResult
                 $"/login?username={username}&password={password}",
                 SourceGeneration.Default.UserResult
             );
-            if (forecast.State)
-                await SaveTokenAsync(forecast.Data.UserToken);
+            if (forecast?.State == true)
+                await SaveTokenAsync(forecast.Data!.UserToken);
             return forecast;
         }
         catch (Exception ex) when (ex is HttpRequestException or JsonException)
@@ -48,7 +45,7 @@ public class UserResult : BaseResult
     /// <summary>
     ///     使用用户令牌获取用户信息
     /// </summary>
-    public static async Task<UserResult> LoginByTokenAsync(string userToken)
+    public static async Task<UserResult?> LoginByTokenAsync(string? userToken)
     {
         try
         {
@@ -56,8 +53,8 @@ public class UserResult : BaseResult
                 $"/userinfo?token={userToken}",
                 SourceGeneration.Default.UserResult
             );
-            if (forecast.State)
-                await SaveTokenAsync(forecast.Data.UserToken);
+            if (forecast?.State == true)
+                await SaveTokenAsync(forecast.Data!.UserToken);
             return forecast;
         }
         catch (Exception ex) when (ex is HttpRequestException or JsonException)
@@ -70,7 +67,7 @@ public class UserResult : BaseResult
         }
     }
 
-    public static async Task<UserResult> AutoLogin()
+    public static async Task<UserResult?> AutoLogin()
     {
         if (!File.Exists(TokenFilePath))
             return new UserResult
@@ -80,15 +77,15 @@ public class UserResult : BaseResult
             };
         var json = await File.ReadAllTextAsync(TokenFilePath);
         var tokenData = JsonSerializer.Deserialize(json, SourceGeneration.Default.JsonData);
-        return await LoginByTokenAsync(tokenData.UserToken);
+        return await LoginByTokenAsync(tokenData?.UserToken);
     }
 
-    private static async Task SaveTokenAsync(string userToken)
+    private static async Task SaveTokenAsync(string? userToken)
     {
         var directory = Path.GetDirectoryName(TokenFilePath);
         if (!Directory.Exists(directory))
             Directory.CreateDirectory(directory!);
-        await File.WriteAllTextAsync(TokenFilePath, JsonSerializer.Serialize(new JsonData
+        await File.WriteAllTextAsync(TokenFilePath, JsonSerializer.Serialize(new()
         {
             UserToken = userToken
         }, SourceGeneration.Default.JsonData));
@@ -97,7 +94,7 @@ public class UserResult : BaseResult
     /// <summary>
     ///     获取隧道请求
     /// </summary>
-    public async Task<TunnelResult> GetTunnelResultAsync()
+    public async Task<TunnelResult?> GetTunnelResultAsync()
     {
         if (!State)
             return new TunnelResult
@@ -105,10 +102,11 @@ public class UserResult : BaseResult
                 StateString = "fail",
                 Message = "You don't login."
             };
+
         try
         {
             return await MainClient.GetFromJsonAsync(
-                $"/tunnel?token={Data.UserToken}",
+                $"/tunnel?token={Data!.UserToken}",
                 SourceGeneration.Default.TunnelResult
             );
         }
@@ -125,7 +123,7 @@ public class UserResult : BaseResult
     /// <summary>
     ///     获取节点请求
     /// </summary>
-    public async Task<NodeResult> GetNodeResultAsync()
+    public async Task<NodeResult?> GetNodeResultAsync()
     {
         if (!State)
             return new NodeResult
@@ -133,10 +131,11 @@ public class UserResult : BaseResult
                 StateString = "fail",
                 Message = "You don't login."
             };
+
         try
         {
             return await MainClient.GetFromJsonAsync(
-                $"/node?token={Data.UserToken}",
+                $"/node?token={Data!.UserToken}",
                 SourceGeneration.Default.NodeResult
             );
         }
@@ -150,12 +149,42 @@ public class UserResult : BaseResult
         }
     }
 
+    public async Task<NodeInfoResult?> GetNodeInfoResultAsync
+    (
+        NodeData node
+    )
+    {
+        if (!State)
+            return new NodeInfoResult
+            {
+                StateString = "fail",
+                Message = "You don't login."
+            };
+
+        try
+        {
+            return await MainClient.GetFromJsonAsync(
+                $"/nodeinfo?token={Data!.UserToken}&node={node.Name}",
+                SourceGeneration.Default.NodeInfoResult
+            );
+        }
+        catch (Exception ex) when (ex is HttpRequestException or JsonException)
+        {
+            return new NodeInfoResult
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
+        }
+    }
+
     #endregion
 }
 
 /// <summary>
 ///     用户数据
 /// </summary>
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class UserData
 {
     /// <summary>
@@ -168,43 +197,43 @@ public class UserData
     ///     用户名
     /// </summary>
     [JsonPropertyName("username")]
-    public string Username { get; set; }
+    public string? Username { get; set; }
 
     /// <summary>
     ///     用户身份验证令牌
     /// </summary>
     [JsonPropertyName("usertoken")]
-    public string UserToken { get; set; }
+    public string? UserToken { get; set; }
 
     /// <summary>
     ///     用户邮箱地址
     /// </summary>
     [JsonPropertyName("email")]
-    public string Email { get; set; }
+    public string? Email { get; set; }
 
     /// <summary>
     ///     用户的QQ号码
     /// </summary>
     [JsonPropertyName("qq")]
-    public string QQNumber { get; set; }
+    public string? QQNumber { get; set; }
 
     /// <summary>
     ///     用户所属组别（等级/会员类型）
     /// </summary>
     [JsonPropertyName("usergroup")]
-    public string UserGroup { get; set; }
+    public string? UserGroup { get; set; }
 
     /// <summary>
     ///     用户组到期时间
     /// </summary>
     [JsonPropertyName("term")]
-    public string MembershipExpiry { get; set; }
+    public string? MembershipExpiry { get; set; }
 
     /// <summary>
     ///     实名认证状态
     /// </summary>
     [JsonPropertyName("realname")]
-    public string RealNameStatus { get; set; }
+    public string? RealNameStatus { get; set; }
 
     /// <summary>
     ///     用户隧道数
@@ -264,13 +293,13 @@ public class UserData
     ///     用户头像的URL地址
     /// </summary>
     [JsonPropertyName("userimg")]
-    public string AvatarUrl { get; set; }
+    public string? AvatarUrl { get; set; }
 
     /// <summary>
     ///     用户注册时间
     /// </summary>
     [JsonPropertyName("regtime")]
-    public string RegistrationDate { get; set; }
+    public string? RegistrationDate { get; set; }
 
     /// <summary>
     ///     累计上传数据量（MB）
@@ -299,5 +328,5 @@ public class UserData
 
 public class JsonData
 {
-    [JsonPropertyName("usertoken")] public string UserToken { get; set; }
+    [JsonPropertyName("usertoken")] public string? UserToken { get; set; }
 }

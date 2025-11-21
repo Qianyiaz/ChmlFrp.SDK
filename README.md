@@ -67,4 +67,4 @@ else
 }
 ```
 
-模板项目:https://github.com/Qianyiaz/ChmlFrp.SDK.AOT/blob/main/ChmlFrp.SDK.Test/Program.cs
+模板项目:https://github.com/Qianyiaz/ChmlFrp.SDK/blob/main/ChmlFrp.SDK.Test/Program.cs

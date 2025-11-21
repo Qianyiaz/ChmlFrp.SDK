@@ -9,7 +9,7 @@ public class NodeResult : BaseResult
     ///     节点数据
     /// </summary>
     [JsonPropertyName("data")]
-    public List<NodeData> Data { get; set; }
+    public List<NodeData>? Data { get; set; }
 }
 
 /// <summary>
@@ -27,25 +27,25 @@ public class NodeData
     ///     隧道名称
     /// </summary>
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     ///     节点地区
     /// </summary>
     [JsonPropertyName("area")]
-    public string Area { get; set; }
+    public string? Area { get; set; }
 
     /// <summary>
     ///     节点权限组
     /// </summary>
     [JsonPropertyName("nodegroup")]
-    public string NodeGroup { get; set; }
+    public string? NodeGroup { get; set; }
 
     /// <summary>
     ///     带宽限速是否为中国(字符串)
     /// </summary>
     [JsonPropertyName("china")]
-    public string ChinaString { get; set; }
+    public string? ChinaString { get; set; }
 
     /// <summary>
     ///     带宽限速是否为中国
@@ -57,7 +57,7 @@ public class NodeData
     ///     是否允许建站(字符串)
     /// </summary>
     [JsonPropertyName("web")]
-    public string WebString { get; set; }
+    public string? WebString { get; set; }
 
     /// <summary>
     ///     是否允许建站(字符串)
@@ -69,29 +69,29 @@ public class NodeData
     ///     是否允许UDP(字符串)
     /// </summary>
     [JsonPropertyName("udp")]
-    public string SupportsUdpString { get; set; }
+    public string? SupportsUdpString { get; set; }
 
     /// <summary>
     ///     是否允许UDP
     /// </summary>
     [JsonIgnore]
-    public bool SupportsUdp => bool.Parse(SupportsUdpString);
+    public bool SupportsUdp => SupportsUdpString != null && bool.Parse(SupportsUdpString);
 
     /// <summary>
     ///     是否有防御(字符串)
     /// </summary>
     [JsonPropertyName("fangyu")]
-    public string HasDefenseString { get; set; }
+    public string? HasDefenseString { get; set; }
 
     /// <summary>
     ///     是否有防御(字符串)
     /// </summary>
     [JsonIgnore]
-    public bool HasDefense => bool.Parse(HasDefenseString);
+    public bool HasDefense => HasDefenseString != null && bool.Parse(HasDefenseString);
 
     /// <summary>
     ///     介绍
     /// </summary>
     [JsonPropertyName("notes")]
-    public string Notes { get; set; }
+    public string? Notes { get; set; }
 }

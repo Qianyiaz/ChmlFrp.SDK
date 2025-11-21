@@ -3,26 +3,26 @@ using ChmlFrp.SDK.Extensions;
 using static System.Console;
 
 var forecast = await UserResult.AutoLogin();
-if (!forecast.State)
+if (!forecast?.State == true)
     while (true)
     {
         forecast = await UserResult.LoginAsync(ReadLine(), ReadLine());
-        WriteLine(forecast.Message);
-        if (forecast.State)
+        WriteLine(forecast?.Message);
+        if (forecast?.State == true)
             break;
     }
 
 
-var nodeResult = await forecast.GetNodeResultAsync();
-if (nodeResult.State)
+var nodeResult = await forecast!.GetNodeResultAsync();
+if (nodeResult?.State == true)
 {
     var i = 1;
-    foreach (var node in nodeResult.Data)
+    foreach (var node in nodeResult.Data!)
     {
         if (i == 1)
         {
             var nodeInfo = await forecast.GetNodeInfoResultAsync(node);
-            WriteLine(nodeInfo.State ? nodeInfo.Data.Ip : nodeInfo.Message);
+            WriteLine(nodeInfo!.State ? nodeInfo.Data!.Ip : nodeInfo.Message);
         }
 
         WriteLine($"{i}. {node.Name}");
@@ -31,14 +31,14 @@ if (nodeResult.State)
 }
 else
 {
-    WriteLine(nodeResult.Message);
+    WriteLine(nodeResult!.Message);
 }
 
 var tunnelResult = await forecast.GetTunnelResultAsync();
-if (tunnelResult.State)
+if (tunnelResult?.State == true)
 {
     var i = 1;
-    foreach (var tunnel in tunnelResult.Data)
+    foreach (var tunnel in tunnelResult.Data!)
     {
         WriteLine($"{i}. {tunnel.Name}");
         i++;
@@ -50,10 +50,10 @@ if (tunnelResult.State)
 }
 else
 {
-    WriteLine(tunnelResult.Message);
+    WriteLine(tunnelResult!.Message);
 }
 
 ReadKey();
 
-forecast.StopTunnels(tunnelResult.Data);
-tunnelResult.Data.ForEach(tunnel => WriteLine(tunnel.IsRunning()));
+forecast.StopTunnels(tunnelResult.Data!);
+tunnelResult.Data!.ForEach(tunnel => WriteLine(tunnel.IsRunning()));

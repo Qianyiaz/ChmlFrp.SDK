@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Version>2.0.5</Version>
-        <Authors>Qusay Diaz</Authors>
+        <Nullable>enable</Nullable>
+        <Version>2.0.6-preview2</Version>
         <LangVersion>preview</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Copyright>© Qusay Diaz 2025</Copyright>
         <TargetFramework>net8.0</TargetFramework>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Description>一个为 ChmlFrp.SDK 提供相关扩展方法的扩展包.</Description>
-        <PackageLicenseUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</PackageLicenseUrl>
+        <PackageProjectUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</PackageProjectUrl>
     </PropertyGroup>
 
     <ItemGroup>

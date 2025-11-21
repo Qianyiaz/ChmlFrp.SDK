@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using static ChmlFrp.SDK.Results.TunnelData.TunnelType;
 
 namespace ChmlFrp.SDK.Results;
 
@@ -11,12 +11,13 @@ public class TunnelResult : BaseResult
     ///     用户隧道数据
     /// </summary>
     [JsonPropertyName("data")]
-    public List<TunnelData> Data { get; set; }
+    public List<TunnelData>? Data { get; set; }
 }
 
 /// <summary>
 ///     隧道数据
 /// </summary>
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class TunnelData
 {
     /// <summary>
@@ -40,19 +41,19 @@ public class TunnelData
     ///     隧道名称
     /// </summary>
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     ///     本地IP地址
     /// </summary>
     [JsonPropertyName("localip")]
-    public string LocalIp { get; set; }
+    public string? LocalIp { get; set; }
 
     /// <summary>
     ///     隧道类型(字符串)
     /// </summary>
     [JsonPropertyName("type")]
-    public string TypeString { get; set; }
+    public string? TypeString { get; set; }
 
     /// <summary>
     ///     隧道类型枚举
@@ -60,11 +61,11 @@ public class TunnelData
     [JsonIgnore]
     public TunnelType Type => TypeString switch
     {
-        "tcp" => TunnelType.Tcp,
-        "udp" => TunnelType.Udp,
-        "http" => TunnelType.Http,
-        "https" => TunnelType.Https,
-        _ => TunnelType.Tcp
+        "tcp" => Tcp,
+        "udp" => Udp,
+        "http" => Http,
+        "https" => Https,
+        _ => throw new ArgumentOutOfRangeException()
     };
 
     /// <summary>
@@ -77,19 +78,19 @@ public class TunnelData
     ///     远程端口或域名
     /// </summary>
     [JsonPropertyName("dorp")]
-    public string RemoteEndpoint { get; set; }
+    public string? RemoteEndpoint { get; set; }
 
     /// <summary>
     ///     所属节点名称
     /// </summary>
     [JsonPropertyName("node")]
-    public string NodeName { get; set; }
+    public string? NodeName { get; set; }
 
     /// <summary>
     ///     节点状态字符串
     /// </summary>
     [JsonPropertyName("nodestate")]
-    public string NodeStateString { get; set; }
+    public string? NodeStateString { get; set; }
 
     /// <summary>
     ///     节点是否在线
@@ -101,43 +102,43 @@ public class TunnelData
     ///     隧道状态字符串
     /// </summary>
     [JsonPropertyName("state")]
-    public string StateString { get; set; }
+    public string? StateString { get; set; }
 
     /// <summary>
     ///     隧道是否在线
     /// </summary>
     [JsonIgnore]
-    public bool State => bool.Parse(StateString);
+    public bool State => StateString != null && bool.Parse(StateString);
 
     /// <summary>
     ///     加密状态字符串
     /// </summary>
     [JsonPropertyName("encryption")]
-    public string EncryptionString { get; set; }
+    public string? EncryptionString { get; set; }
 
     /// <summary>
     ///     是否启用加密
     /// </summary>
     [JsonIgnore]
-    public bool IsEncrypted => bool.Parse(EncryptionString);
+    public bool IsEncrypted => EncryptionString != null && bool.Parse(EncryptionString);
 
     /// <summary>
     ///     压缩状态字符串
     /// </summary>
     [JsonPropertyName("compression")]
-    public string CompressionString { get; set; }
+    public string? CompressionString { get; set; }
 
     /// <summary>
     ///     是否启用压缩
     /// </summary>
     [JsonIgnore]
-    public bool IsCompressed => bool.Parse(CompressionString);
+    public bool IsCompressed => CompressionString != null && bool.Parse(CompressionString);
 
     /// <summary>
     ///     附加参数
     /// </summary>
     [JsonPropertyName("ap")]
-    public string AdditionalParameters { get; set; }
+    public string? AdditionalParameters { get; set; }
 
     /// <summary>
     ///     今日上传流量(字节)
@@ -185,7 +186,7 @@ public class TunnelData
     ///     节点IP地址
     /// </summary>
     [JsonPropertyName("ip")]
-    public string NodeIp { get; set; }
+    public string? NodeIp { get; set; }
 
     /// <summary>
     ///     完整的远程地址
@@ -193,9 +194,9 @@ public class TunnelData
     [JsonIgnore]
     public string FullRemoteAddress => Type switch
     {
-        TunnelType.Http => $"http://{NodeIp}{(RemoteEndpoint != "80" ? $":{RemoteEndpoint}" : "")}",
-        TunnelType.Https => $"https://{NodeIp}{(RemoteEndpoint != "443" ? $":{RemoteEndpoint}" : "")}",
-        TunnelType.Tcp or TunnelType.Udp => $"{NodeIp}:{RemoteEndpoint}",
+        Http => $"http://{NodeIp}{(RemoteEndpoint != "80" ? $":{RemoteEndpoint}" : "")}",
+        Https => $"https://{NodeIp}{(RemoteEndpoint != "443" ? $":{RemoteEndpoint}" : "")}",
+        Tcp or Udp => $"{NodeIp}:{RemoteEndpoint}",
         _ => throw new ArgumentOutOfRangeException()
     };
 }

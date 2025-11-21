@@ -1,5 +1,3 @@
-using ChmlFrp.SDK.Results;
-
 namespace ChmlFrp.SDK;
 
 /// <summary>
@@ -10,4 +8,5 @@ namespace ChmlFrp.SDK;
 [JsonSerializable(typeof(NodeResult))]
 [JsonSerializable(typeof(UserResult))]
 [JsonSerializable(typeof(TunnelResult))]
+[JsonSerializable(typeof(NodeInfoResult))]
 public partial class SourceGeneration : JsonSerializerContext;
