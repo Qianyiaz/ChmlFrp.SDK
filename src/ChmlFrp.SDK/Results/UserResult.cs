@@ -80,7 +80,7 @@ public class UserResult : BaseResult
     /// 自动登录
     /// </summary>
     /// <returns>返回用户请求</returns>
-    public static async Task<UserResult?> AutoLogin()
+    public static async Task<UserResult?> AutoLoginAsync()
     {
         if (!File.Exists(TokenFilePath))
             return new UserResult
@@ -91,6 +91,14 @@ public class UserResult : BaseResult
         var json = await File.ReadAllTextAsync(TokenFilePath);
         var tokenData = JsonSerializer.Deserialize(json, SourceGeneration.Default.JsonData);
         return await LoginByTokenAsync(tokenData?.UserToken);
+    }
+    
+    /// <summary>
+    /// 登出
+    /// </summary>
+    public static async Task LoginoutAsync()
+    {
+        await SaveTokenAsync(string.Empty);
     }
 
     private static async Task SaveTokenAsync(string? userToken)
