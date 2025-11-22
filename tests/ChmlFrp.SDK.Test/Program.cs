@@ -46,7 +46,7 @@ if (tunnelResult?.State == true)
 
     // 你需要把FRPC文件放在当前执行目录才能启动
     forecast.StartTunnels(tunnelResult.Data,
-        isStart => WriteLine(isStart == TunnelServices.TunnelStatus.Succeed ? "启动FRPC成功" : "启动FRPC失败"));
+        isStart => WriteLine(isStart.IsSuccess ? "启动FRPC成功" : "启动FRPC失败"));
 }
 else
 {

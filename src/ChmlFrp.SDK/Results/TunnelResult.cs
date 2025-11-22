@@ -3,60 +3,75 @@ using static ChmlFrp.SDK.Results.TunnelData.TunnelType;
 namespace ChmlFrp.SDK.Results;
 
 /// <summary>
-///     隧道请求
+/// 隧道请求
 /// </summary>
 public class TunnelResult : BaseResult
 {
     /// <summary>
-    ///     用户隧道数据
+    /// 用户隧道数据
     /// </summary>
     [JsonPropertyName("data")]
     public List<TunnelData>? Data { get; set; }
 }
 
 /// <summary>
-///     隧道数据
+/// 隧道数据
 /// </summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public class TunnelData
 {
     /// <summary>
-    ///     隧道类型
+    /// 隧道类型
     /// </summary>
     public enum TunnelType
     {
+        /// <summary>
+        /// TCP隧道
+        /// </summary>
         Tcp,
+
+        /// <summary>
+        /// UDP隧道
+        /// </summary>
         Udp,
+
+        /// <summary>
+        /// HTTP隧道
+        /// </summary>
         Http,
+
+        /// <summary>
+        /// HTTPS隧道
+        /// </summary>
         Https
     }
 
     /// <summary>
-    ///     隧道的唯一标识ID
+    /// 隧道的唯一标识ID
     /// </summary>
     [JsonPropertyName("id")]
     public int Id { get; set; }
 
     /// <summary>
-    ///     隧道名称
+    /// 隧道名称
     /// </summary>
     [JsonPropertyName("name")]
     public string? Name { get; set; }
 
     /// <summary>
-    ///     本地IP地址
+    /// 本地IP地址
     /// </summary>
     [JsonPropertyName("localip")]
     public string? LocalIp { get; set; }
 
     /// <summary>
-    ///     隧道类型(字符串)
+    /// 隧道类型(字符串)
     /// </summary>
     [JsonPropertyName("type")]
     public string? TypeString { get; set; }
 
     /// <summary>
-    ///     隧道类型枚举
+    /// 隧道类型枚举
     /// </summary>
     [JsonIgnore]
     public TunnelType Type => TypeString switch
@@ -69,127 +84,127 @@ public class TunnelData
     };
 
     /// <summary>
-    ///     本地端口
+    /// 本地端口
     /// </summary>
     [JsonPropertyName("nport")]
     public int LocalPort { get; set; }
 
     /// <summary>
-    ///     远程端口或域名
+    /// 远程端口或域名
     /// </summary>
     [JsonPropertyName("dorp")]
     public string? RemoteEndpoint { get; set; }
 
     /// <summary>
-    ///     所属节点名称
+    /// 所属节点名称
     /// </summary>
     [JsonPropertyName("node")]
     public string? NodeName { get; set; }
 
     /// <summary>
-    ///     节点状态字符串
+    /// 节点状态字符串
     /// </summary>
     [JsonPropertyName("nodestate")]
     public string? NodeStateString { get; set; }
 
     /// <summary>
-    ///     节点是否在线
+    /// 节点是否在线
     /// </summary>
     [JsonIgnore]
     public bool NodeState => NodeStateString == "online";
 
     /// <summary>
-    ///     隧道状态字符串
+    /// 隧道状态(字符串)
     /// </summary>
     [JsonPropertyName("state")]
     public string? StateString { get; set; }
 
     /// <summary>
-    ///     隧道是否在线
+    /// 隧道是否在线
     /// </summary>
     [JsonIgnore]
     public bool State => StateString != null && bool.Parse(StateString);
 
     /// <summary>
-    ///     加密状态字符串
+    ///  加密状态(字符串)
     /// </summary>
     [JsonPropertyName("encryption")]
     public string? EncryptionString { get; set; }
 
     /// <summary>
-    ///     是否启用加密
+    /// 是否启用加密
     /// </summary>
     [JsonIgnore]
     public bool IsEncrypted => EncryptionString != null && bool.Parse(EncryptionString);
 
     /// <summary>
-    ///     压缩状态字符串
+    /// 压缩状态(字符串)
     /// </summary>
     [JsonPropertyName("compression")]
     public string? CompressionString { get; set; }
 
     /// <summary>
-    ///     是否启用压缩
+    /// 是否启用压缩
     /// </summary>
     [JsonIgnore]
     public bool IsCompressed => CompressionString != null && bool.Parse(CompressionString);
 
     /// <summary>
-    ///     附加参数
+    /// 附加参数
     /// </summary>
     [JsonPropertyName("ap")]
     public string? AdditionalParameters { get; set; }
 
     /// <summary>
-    ///     今日上传流量(字节)
+    /// 今日上传流量(字节)
     /// </summary>
     [JsonPropertyName("today_traffic_in")]
     public long TodayUploadBytes { get; set; }
 
     /// <summary>
-    ///     今日下载流量(字节)
+    /// 今日下载流量(字节)
     /// </summary>
     [JsonPropertyName("today_traffic_out")]
     public long TodayDownloadBytes { get; set; }
 
     /// <summary>
-    ///     今日上传流量(MB)
+    /// 今日上传流量(MB)
     /// </summary>
     [JsonIgnore]
     public double TodayUploadMB => TodayUploadBytes / 1024.0 / 1024.0;
 
     /// <summary>
-    ///     今日下载流量(MB)
+    /// 今日下载流量(MB)
     /// </summary>
     [JsonIgnore]
     public double TodayDownloadMB => TodayDownloadBytes / 1024.0 / 1024.0;
 
     /// <summary>
-    ///     今日上传数据量(GB)
+    /// 今日上传数据量(GB)
     /// </summary>
     [JsonIgnore]
     public double TodayUploadGB => TodayUploadMB / 1024.0;
 
     /// <summary>
-    ///     今日下载数据量(GB)
+    /// 今日下载数据量(GB)
     /// </summary>
     [JsonIgnore]
     public double TodayDownloadGB => TodayDownloadMB / 1024.0;
 
     /// <summary>
-    ///     当前连接数
+    /// 当前连接数
     /// </summary>
     [JsonPropertyName("cur_conns")]
     public int CurrentConnections { get; set; }
 
     /// <summary>
-    ///     节点IP地址
+    /// 节点IP地址
     /// </summary>
     [JsonPropertyName("ip")]
     public string? NodeIp { get; set; }
 
     /// <summary>
-    ///     完整的远程地址
+    /// 完整的远程地址
     /// </summary>
     [JsonIgnore]
     public string FullRemoteAddress => Type switch

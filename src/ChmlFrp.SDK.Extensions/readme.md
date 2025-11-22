@@ -32,7 +32,7 @@ if (tunnelResult.State)
     }
 
     forecast.StartTunnels(tunnelResult.Data,
-        isStart => WriteLine(isStart == TunnelServices.TunnelStatus.Succeed ? "启动FRPC成功" : "启动FRPC失败"));
+        isStart => WriteLine(isStart.IsSuccess ? "启动FRPC成功" : "启动FRPC失败"));
 }
 else
 {
@@ -43,5 +43,3 @@ ReadKey();
 
 forecast.StopTunnels(tunnelResult.Data);
 ```
-
-模板项目:https://github.com/Qianyiaz/ChmlFrp.SDK/blob/main/ChmlFrp.SDK.Test/Program.cs

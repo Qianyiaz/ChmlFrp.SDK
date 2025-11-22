@@ -6,7 +6,10 @@ using ChmlFrp.SDK.Results;
 
 namespace ChmlFrp.SDK.Extensions;
 
-public static class TunnelDataExtensions
+/// <summary>
+/// 隧道进程相关的操作
+/// </summary>
+public static class TunnelProcess
 {
     private static readonly ConditionalWeakTable<TunnelData, ProcessInfo> ProcessInfos = new();
 
@@ -15,18 +18,34 @@ public static class TunnelDataExtensions
         public Process? FrpProcess { get; init; }
     }
 
+    /// <summary>
+    /// 对隧道相关的操作
+    /// </summary>
+    /// <param name="tunnel">扩展隧道</param>
     extension(TunnelData tunnel)
     {
+        /// <summary>
+        /// 设置进程
+        /// </summary>
+        /// <param name="process">设置的进程</param>
         public void SetFrpProcess(Process process)
         {
             ProcessInfos.AddOrUpdate(tunnel, new() { FrpProcess = process });
         }
 
+        /// <summary>
+        /// 获取进程
+        /// </summary>
+        /// <returns>设置的进程</returns>
         public Process? GetFrpProcess()
         {
             return ProcessInfos.TryGetValue(tunnel, out var info) ? info.FrpProcess : null;
         }
 
+        /// <summary>
+        /// 获得隧道的进程是否在运行
+        /// </summary>
+        /// <returns>隧道的进程是否在运行</returns>
         public bool IsRunning()
         {
             var process = tunnel.GetFrpProcess();
@@ -36,22 +55,22 @@ public static class TunnelDataExtensions
 }
 
 /// <summary>
-///     对隧道相关的操作.
+///     对隧道相关的操作
 /// </summary>
 public static class TunnelServices
 {
-    public enum TunnelStatus
-    {
-        Failed,
-        Succeed,
-        AlreadyRunning
-    }
-
+    /// <summary>
+    /// 启动隧道
+    /// </summary>
+    /// <param name="user">用户类</param>
     extension(UserResult user)
     {
         /// <summary>
-        ///     你需要把FRPC文件放在当前执行目录才能启动
+        /// 启动隧道
         /// </summary>
+        /// <param name="tunnel">隧道类</param>
+        /// <param name="onStatus">隧道状态事件</param>
+        /// <param name="logFilePath">log文件目录</param>
         public void StartTunnel
         (
             TunnelData tunnel,
@@ -61,7 +80,11 @@ public static class TunnelServices
         {
             if (tunnel.IsRunning())
             {
-                onStatus?.Invoke(TunnelStatus.AlreadyRunning);
+                onStatus?.Invoke(new()
+                {
+                    IsSuccess = false,
+                    Message = "Tunnel is already running."
+                });
                 return;
             }
 
@@ -102,12 +125,20 @@ public static class TunnelServices
                 {
                     fail = true;
                     frpProcess.Kill(true);
-                    onStatus?.Invoke(TunnelStatus.Failed);
+                    onStatus?.Invoke(new()
+                    {
+                        IsSuccess = false,
+                        Message = "Tunnel failed to start."
+                    });
                 }
                 else if (!succeed && line.Contains("启动成功"))
                 {
                     succeed = true;
-                    onStatus?.Invoke(TunnelStatus.Succeed);
+                    onStatus?.Invoke(new()
+                    {
+                        IsSuccess = true,
+                        Message = "Tunnel started successfully."
+                    });
                 }
             };
 
@@ -117,8 +148,11 @@ public static class TunnelServices
         }
 
         /// <summary>
-        ///     你需要把FRPC文件放在当前执行目录才能启动
+        /// 启动隧道(多个)
         /// </summary>
+        /// <param name="tunnels">隧道类列表</param>
+        /// <param name="onStatus">隧道状态事件</param>
+        /// <param name="logFilePath">log文件目录</param>
         public void StartTunnels
         (
             List<TunnelData> tunnels,
@@ -128,7 +162,11 @@ public static class TunnelServices
         {
             if (tunnels.Any(tunnel => tunnel.IsRunning()))
             {
-                onStatus?.Invoke(TunnelStatus.AlreadyRunning);
+                onStatus?.Invoke(new()
+                {
+                    IsSuccess = false,
+                    Message = "One or more tunnels are already running."
+                });
                 return;
             }
 
@@ -171,12 +209,20 @@ public static class TunnelServices
                 {
                     fail = true;
                     frpProcess.Kill(true);
-                    onStatus?.Invoke(TunnelStatus.Failed);
+                    onStatus?.Invoke(new()
+                    {
+                        IsSuccess = false,
+                        Message = "One or more tunnels failed to start."
+                    });
                 }
                 else if (!succeed && line.Contains("启动成功"))
                 {
                     succeed = true;
-                    onStatus?.Invoke(TunnelStatus.Succeed);
+                    onStatus?.Invoke(new()
+                    {
+                        IsSuccess = true,
+                        Message = "All tunnels started successfully."
+                    });
                 }
             };
 
@@ -185,6 +231,11 @@ public static class TunnelServices
             tunnels.ForEach(tunnel => tunnel.SetFrpProcess(frpProcess));
         }
 
+        /// <summary>
+        /// 关闭隧道
+        /// </summary>
+        /// <param name="tunnel">隧道类</param>
+        /// <returns>是否关闭成功</returns>
         public bool StopTunnel
         (
             TunnelData tunnel
@@ -196,6 +247,11 @@ public static class TunnelServices
             return true;
         }
 
+        /// <summary>
+        /// 关闭隧道(多个)
+        /// </summary>
+        /// <param name="tunnels">隧道类列表</param>
+        /// <returns>是否关闭成功</returns>
         public bool StopTunnels
         (
             List<TunnelData> tunnels
@@ -204,5 +260,21 @@ public static class TunnelServices
             tunnels.ForEach(tunnel => StopTunnel(user, tunnel));
             return true;
         }
+    }
+
+    /// <summary>
+    /// 隧道状态
+    /// </summary>
+    public class TunnelStatus
+    {
+        /// <summary>
+        /// 运行成功
+        /// </summary>
+        public bool IsSuccess { get; init; }
+
+        /// <summary>
+        /// 状态消息
+        /// </summary>
+        public string Message { get; init; } = string.Empty;
     }
 }

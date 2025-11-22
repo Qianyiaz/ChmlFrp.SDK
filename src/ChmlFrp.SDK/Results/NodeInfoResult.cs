@@ -1,16 +1,19 @@
 namespace ChmlFrp.SDK.Results;
 
+/// <summary>
+/// 节点详情请求
+/// </summary>
 public class NodeInfoResult : BaseResult
 {
     /// <summary>
-    ///     节点数据
+    /// 节点详情
     /// </summary>
     [JsonPropertyName("data")]
     public NodeInfo? Data { get; set; }
 }
 
 /// <summary>
-///     节点数据扩展
+/// 节点详情
 /// </summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public class NodeInfo : NodeData

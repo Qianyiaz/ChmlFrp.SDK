@@ -45,16 +45,16 @@ else
 
 ```csharp
 var forecast = await UserResult.AutoLogin();
-var nodeResult = await forecast.GetNodeResultAsync();
-if (nodeResult.State)
+var nodeResult = await forecast!.GetNodeResultAsync();
+if (nodeResult?.State == true)
 {
     var i = 1;
-    foreach (var node in nodeResult.Data)
+    foreach (var node in nodeResult.Data!)
     {
         if (i == 1)
         {
             var nodeInfo = await forecast.GetNodeInfoResultAsync(node);
-            WriteLine(nodeInfo.State ? nodeInfo.Data.Ip : nodeInfo.Message);
+            WriteLine(nodeInfo!.State ? nodeInfo.Data!.Ip : nodeInfo.Message);
         }
 
         WriteLine($"{i}. {node.Name}");
@@ -63,8 +63,6 @@ if (nodeResult.State)
 }
 else
 {
-    WriteLine(nodeResult.Message);
+    WriteLine(nodeResult!.Message);
 }
 ```
-
-模板项目:https://github.com/Qianyiaz/ChmlFrp.SDK/blob/main/ChmlFrp.SDK.Test/Program.cs

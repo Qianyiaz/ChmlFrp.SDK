@@ -1,7 +1,7 @@
 namespace ChmlFrp.SDK;
 
 /// <summary>
-///     源生成器,用于支持Aot.
+/// 源生成器,用于支持Aot.
 /// </summary>
 [JsonSerializable(typeof(JsonData))]
 [JsonSerializable(typeof(BaseResult))]
