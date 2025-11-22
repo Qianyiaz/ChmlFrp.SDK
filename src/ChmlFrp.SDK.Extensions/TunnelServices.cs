@@ -70,12 +70,12 @@ public static class TunnelServices
         /// </summary>
         /// <param name="tunnel">隧道类</param>
         /// <param name="onStatus">隧道状态事件</param>
-        /// <param name="logFilePath">log文件目录</param>
+        /// <param name="options">启动配置</param>
         public void StartTunnel
         (
             TunnelData tunnel,
             Action<TunnelStatus>? onStatus = null,
-            string? logFilePath = null
+            TunnelStartOptions? options = null
         )
         {
             if (tunnel.IsRunning())
@@ -96,30 +96,56 @@ public static class TunnelServices
                     WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
                 })!.WaitForExit();
 
-            logFilePath ??= Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"log{tunnel.Id}.text");
-            var frpProcess = new Process
+            options ??= new TunnelStartOptions
             {
-                StartInfo =
-                {
-                    FileName = "frpc",
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    StandardOutputEncoding = Encoding.UTF8,
-                    Arguments = $"-u {user.Data!.UserToken} -p {tunnel.Id}",
-                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
-                }
+                LogFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"log{tunnel.Id}.text"),
             };
+
+            if (string.IsNullOrWhiteSpace(options.LogFilePath))
+                options.LogFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"log{tunnel.Id}.text");
+
+            Process frpProcess;
+            if (File.Exists(options.FrpcFilePath))
+            {
+                frpProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        CreateNoWindow = true,
+                        FileName = options.FrpcFilePath,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        StandardOutputEncoding = Encoding.UTF8,
+                        Arguments = $"-u {user.Data!.UserToken} -p {tunnel.Id}{options.Arguments}"
+                    }
+                };
+            }
+            else
+            {
+                frpProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = "frpc",
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        StandardOutputEncoding = Encoding.UTF8,
+                        Arguments = $"-u {user.Data!.UserToken} -p {tunnel.Id}{options.Arguments}",
+                        WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
+                    }
+                };
+            }
 
             var fail = false;
             var succeed = false;
-            File.WriteAllText(logFilePath, string.Empty);
+            File.WriteAllText(options.LogFilePath, string.Empty);
             frpProcess.OutputDataReceived += (_, args) =>
             {
                 var line = args.Data;
                 if (string.IsNullOrWhiteSpace(line))
                     return;
-                File.AppendAllText(logFilePath, line + Environment.NewLine);
+                File.AppendAllText(options.LogFilePath, line + Environment.NewLine);
 
                 if (!fail && !line.Contains("[I]"))
                 {
@@ -152,12 +178,12 @@ public static class TunnelServices
         /// </summary>
         /// <param name="tunnels">隧道类列表</param>
         /// <param name="onStatus">隧道状态事件</param>
-        /// <param name="logFilePath">log文件目录</param>
+        /// <param name="options">启动配置</param>
         public void StartTunnels
         (
             List<TunnelData> tunnels,
             Action<TunnelStatus>? onStatus = null,
-            string? logFilePath = null
+            TunnelStartOptions? options = null
         )
         {
             if (tunnels.Any(tunnel => tunnel.IsRunning()))
@@ -179,31 +205,56 @@ public static class TunnelServices
                 })!.WaitForExit();
 
             var ids = string.Join(",", tunnels.Select(t => t.Id.ToString()).ToArray());
-            logFilePath ??= Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"log{ids}.text");
-
-            var frpProcess = new Process
+            options ??= new TunnelStartOptions
             {
-                StartInfo =
-                {
-                    FileName = "frpc",
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    StandardOutputEncoding = Encoding.UTF8,
-                    Arguments = $"-u {user.Data!.UserToken} -p {ids}",
-                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
-                }
+                LogFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"log{ids}.text"),
             };
+
+            if (string.IsNullOrWhiteSpace(options.LogFilePath))
+                options.LogFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"log{ids}.text");
+
+            Process frpProcess;
+            if (File.Exists(options.FrpcFilePath))
+            {
+                frpProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        CreateNoWindow = true,
+                        FileName = options.FrpcFilePath,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        StandardOutputEncoding = Encoding.UTF8,
+                        Arguments = $"-u {user.Data!.UserToken} -p {ids}{options.Arguments}"
+                    }
+                };
+            }
+            else
+            {
+                frpProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = "frpc",
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        StandardOutputEncoding = Encoding.UTF8,
+                        Arguments = $"-u {user.Data!.UserToken} -p {ids}{options.Arguments}",
+                        WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
+                    }
+                };
+            }
 
             var fail = false;
             var succeed = false;
-            File.WriteAllText(logFilePath, string.Empty);
+            File.WriteAllText(options.LogFilePath, string.Empty);
             frpProcess.OutputDataReceived += (_, args) =>
             {
                 var line = args.Data;
                 if (string.IsNullOrWhiteSpace(line))
                     return;
-                File.AppendAllText(logFilePath, line + Environment.NewLine);
+                File.AppendAllText(options.LogFilePath, line + Environment.NewLine);
 
                 if (!fail && !line.Contains("[I]"))
                 {
@@ -212,7 +263,7 @@ public static class TunnelServices
                     onStatus?.Invoke(new()
                     {
                         IsSuccess = false,
-                        Message = "One or more tunnels failed to start."
+                        Message = "Tunnel failed to start."
                     });
                 }
                 else if (!succeed && line.Contains("启动成功"))
@@ -221,7 +272,7 @@ public static class TunnelServices
                     onStatus?.Invoke(new()
                     {
                         IsSuccess = true,
-                        Message = "All tunnels started successfully."
+                        Message = "Tunnel started successfully."
                     });
                 }
             };
@@ -260,6 +311,27 @@ public static class TunnelServices
             tunnels.ForEach(tunnel => StopTunnel(user, tunnel));
             return true;
         }
+    }
+
+    /// <summary>
+    /// 隧道启动配置
+    /// </summary>
+    public class TunnelStartOptions
+    {
+        /// <summary>
+        /// 日志文件
+        /// </summary>
+        public string LogFilePath { get; set; } = string.Empty;
+
+        /// <summary>
+        /// frpc文件
+        /// </summary>
+        public string FrpcFilePath { get; init; } = string.Empty;
+
+        /// <summary>
+        /// 命令后缀
+        /// </summary>
+        public string Arguments { get; init; } = string.Empty;
     }
 
     /// <summary>

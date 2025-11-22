@@ -1,8 +1,8 @@
 <Project>
 
     <PropertyGroup>
+        <Version>2.0.6</Version>
         <Nullable>enable</Nullable>
-        <Version>2.0.6-preview4</Version>
         <LangVersion>preview</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <TargetFramework>net8.0</TargetFramework>
@@ -11,7 +11,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</RepositoryUrl>
-        <PackageTags>c-sharp;cross-platform;dotnet;dotnetcore;json;http;chmlfrp</PackageTags>
+        <PackageTags>c-sharp;cross-platform;dotnet;dotnetcore;aot;json;http;chmlfrp</PackageTags>
     </PropertyGroup>
 
 </Project>

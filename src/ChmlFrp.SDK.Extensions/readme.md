@@ -32,7 +32,13 @@ if (tunnelResult.State)
     }
 
     forecast.StartTunnels(tunnelResult.Data,
-        isStart => WriteLine(isStart.IsSuccess ? "启动FRPC成功" : "启动FRPC失败"));
+        isStart => WriteLine(isStart.IsSuccess ? "启动FRPC成功" : "启动FRPC失败")
+        new ()
+        {
+            LogFilePath = "frpc.log", // 自定义日志文件名
+            FrpcFilePath = "frpc.exe", // 自定义FRPC文件名
+            Arguments = "" // 自定义参数(启动命令后缀)
+        });
 }
 else
 {
