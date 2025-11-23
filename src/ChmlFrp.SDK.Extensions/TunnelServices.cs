@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Text;
 using ChmlFrp.SDK.Results;
 
@@ -76,7 +75,8 @@ public static class TunnelServices
             var ids = string.Join(",", tunnels.Select(t => t.Id.ToString()).ToArray());
             options.LogFilePath ??= Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"log{ids}.text");
 
-            tunnels.ForEach(tunnel => tunnel.SetFrpProcess(StartProcess(user, ids, options, onStatus)));
+            var frpcProcess = StartProcess(user, ids, options, onStatus);
+            tunnels.ForEach(tunnel => tunnel.SetFrpProcess(frpcProcess));
         }
 
         /// <summary>
@@ -93,15 +93,10 @@ public static class TunnelServices
             Action<TunnelStatus>? onStatus = null
         )
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "chmod",
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    Arguments = $"+x \"{Path.GetFileName(options.FrpcFilePath)}\"",
-                    WorkingDirectory = Path.GetDirectoryName(options.FrpcFilePath)
-                })!.WaitForExit();
+            if (!OperatingSystem.IsWindows())
+                File.SetUnixFileMode(options.FrpcFilePath!,
+                    File.GetUnixFileMode(options.FrpcFilePath!) | UnixFileMode.UserExecute | UnixFileMode.GroupExecute |
+                    UnixFileMode.OtherExecute);
 
             var frpProcess = new Process
             {
@@ -110,9 +105,8 @@ public static class TunnelServices
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
+                    FileName = options.FrpcFilePath!,
                     StandardOutputEncoding = Encoding.UTF8,
-                    FileName = Path.GetFileName(options.FrpcFilePath),
-                    WorkingDirectory = Path.GetDirectoryName(options.FrpcFilePath),
                     Arguments = $"-u {user.Data!.UserToken} -p {id}{options.Arguments}"
                 }
             };

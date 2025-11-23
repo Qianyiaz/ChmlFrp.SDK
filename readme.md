@@ -24,7 +24,7 @@ WriteLine(forecast.Message);
 隧道
 
 ```csharp
-var forecast = await UserResult.AutoLogin();
+var forecast = await UserResult.AutoLoginAsync();
 var tunnelResult = await forecast.GetTunnelResultAsync();
 if (tunnelResult.State)
 {
@@ -44,7 +44,7 @@ else
 节点
 
 ```csharp
-var forecast = await UserResult.AutoLogin();
+var forecast = await UserResult.AutoLoginAsync();
 var nodeResult = await forecast!.GetNodeResultAsync();
 if (nodeResult?.State == true)
 {

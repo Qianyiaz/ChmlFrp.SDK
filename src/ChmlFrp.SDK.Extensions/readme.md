@@ -19,7 +19,7 @@
 隧道
 
 ```csharp
-var forecast = await UserResult.AutoLogin();
+var forecast = await UserResult.AutoLoginAsync();
 
 var tunnelResult = await forecast.GetTunnelResultAsync();
 if (tunnelResult.State)
@@ -45,7 +45,7 @@ else
     WriteLine(tunnelResult.Message);
 }
 
-ReadKey();
+ReadKey(true);
 
 forecast.StopTunnels(tunnelResult.Data);
 ```
