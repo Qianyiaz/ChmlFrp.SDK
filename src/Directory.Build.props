@@ -1,10 +1,10 @@
 <Project>
 
     <PropertyGroup>
-        <Version>2.0.6.2</Version>
+        <Version>2.0.6.3</Version>
         <Nullable>enable</Nullable>
-        <IsTrimmable>true</IsTrimmable>
         <LangVersion>preview</LangVersion>
+        <IsAotCompatible>true</IsAotCompatible>
         <ImplicitUsings>enable</ImplicitUsings>
         <TargetFramework>net8.0</TargetFramework>
         <PackageReadmeFile>readme.md</PackageReadmeFile>

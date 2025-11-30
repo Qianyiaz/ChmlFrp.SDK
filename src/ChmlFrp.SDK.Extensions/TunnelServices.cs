@@ -5,18 +5,18 @@ using ChmlFrp.SDK.Results;
 namespace ChmlFrp.SDK.Extensions;
 
 /// <summary>
-///     对隧道相关的操作
+/// 对隧道相关的操作
 /// </summary>
 public static class TunnelServices
 {
     /// <summary>
-    ///     启动隧道
+    /// 启动隧道
     /// </summary>
     /// <param name="user">用户类</param>
     extension(UserResult user)
     {
         /// <summary>
-        ///     启动隧道
+        /// 启动隧道
         /// </summary>
         /// <param name="tunnel">隧道类</param>
         /// <param name="onStatus">隧道状态事件</param>
@@ -47,7 +47,7 @@ public static class TunnelServices
         }
 
         /// <summary>
-        ///     启动隧道(多个)
+        /// 启动隧道(多个)
         /// </summary>
         /// <param name="tunnels">隧道类列表</param>
         /// <param name="onStatus">隧道状态事件</param>
@@ -80,7 +80,7 @@ public static class TunnelServices
         }
 
         /// <summary>
-        ///     启动隧道进程
+        /// 启动隧道进程
         /// </summary>
         /// <param name="id">隧道id</param>
         /// <param name="options">启动配置</param>
@@ -149,69 +149,65 @@ public static class TunnelServices
         }
 
         /// <summary>
-        ///     关闭隧道
+        /// 关闭隧道
         /// </summary>
         /// <param name="tunnel">隧道类</param>
         /// <returns>是否关闭成功</returns>
-        public bool StopTunnel
+        public void StopTunnel
         (
             TunnelData tunnel
         )
         {
             if (!tunnel.IsRunning())
-                return false;
+                return;
             tunnel.GetFrpProcess()?.Kill(true);
-            return true;
         }
 
         /// <summary>
-        ///     关闭隧道(多个)
+        /// 关闭隧道(多个)
         /// </summary>
         /// <param name="tunnels">隧道类列表</param>
         /// <returns>是否关闭成功</returns>
-        public bool StopTunnels
-        (
-            List<TunnelData> tunnels
-        )
+        public void StopTunnels(List<TunnelData> tunnels)
         {
-            tunnels.ForEach(tunnel => StopTunnel(user, tunnel));
-            return true;
+            foreach (var tunnel in tunnels.Where(tunnel => tunnel.IsRunning()))
+                StopTunnel(user, tunnel);
         }
     }
 
     /// <summary>
-    ///     隧道启动配置
+    /// 隧道启动配置
     /// </summary>
     public class TunnelStartOptions
     {
         /// <summary>
-        ///     日志文件
+        /// 日志文件
         /// </summary>
         public string? LogFilePath { get; set; }
 
         /// <summary>
-        ///     frpc文件
+        /// frpc文件
         /// </summary>
         public string? FrpcFilePath { get; set; }
 
         /// <summary>
-        ///     命令后缀
+        /// 命令后缀
         /// </summary>
         public string Arguments { get; init; } = string.Empty;
     }
 
     /// <summary>
-    ///     隧道状态
+    /// 隧道状态
     /// </summary>
     public class TunnelStatus
     {
         /// <summary>
-        ///     运行成功
+        /// 运行成功
         /// </summary>
         public bool IsSuccess { get; init; }
 
         /// <summary>
-        ///     状态消息
+        /// 状态消息
         /// </summary>
         public string Message { get; init; } = string.Empty;
     }
