@@ -14,25 +14,28 @@
 var tunnelResult = await userResult.GetTunnelResultAsync();
 if (tunnelResult.State)
 {
+    void Handler(string line)
+    {
+        WriteLine(line);
+    }
+
     // 启动单个隧道
-    userResult.StartTunnel(tunnelResult.Data[0], 
-        status => Console.WriteLine(status.IsSuccess ? "启动成功" : "启动失败"),
-        new TunnelServices.TunnelStartOptions
-        {
-            LogFilePath = "frpc.log", // 自定义日志文件路径
-            FrpcFilePath = "frpc.exe", // 自定义FRPC文件路径
-            Arguments = "" // 自定义参数(启动命令后缀)
-        });
+    forecast.StartTunnels(tunnelResult.Data,new ()
+    {
+        LogFilePath = "frpc.log", // 记录日志文件路径
+        FrpcFilePath = "frpc.exe", // frpc文件路径
+        CommandSuffix = "", // 命令后缀
+        Handler = Handler // 输出处理
+    });
 
     // 启动多个隧道
-    userResult.StartTunnels(tunnelResult.Data,
-        status => Console.WriteLine(status.Message),
-        new TunnelServices.TunnelStartOptions
-        {
-            LogFilePath = "frpc.log", // 自定义日志文件路径
-            FrpcFilePath = "frpc.exe", // 自定义FRPC文件路径
-            Arguments = "" // 自定义参数(启动命令后缀)
-        });
+    forecast.StartTunnel(tunnelResult.Data,new ()
+    {
+        LogFilePath = "frpc.log", // 记录日志文件路径
+        FrpcFilePath = "frpc.exe", // frpc文件路径
+        CommandSuffix = "", // 命令后缀
+        Handler = Handler // 输出处理
+    });
 }
 ```
 

@@ -6,6 +6,7 @@ var forecast = await UserResult.AutoLoginAsync(); // 尝试自动登录
 if (!forecast!.State) // 自动登录失败，进行手动登录
     while (true)
     {
+        Clear();
         Write("用户名: ");
         var userName = ReadLine();
         
@@ -49,11 +50,15 @@ if (tunnelResult!.State)
         WriteLine($"{i}. {tunnel.Name}");
         i++;
     }
+    
+    WriteLine("点击启动隧道");
+    ReadKey(true);
+    Clear();
 
-    forecast.StartTunnels(
-        tunnelResult.Data,
-        isStart =>
-            WriteLine(isStart.IsSuccess ? "启动FRPC成功" : "启动FRPC失败")); // 启动所有隧道，并显示启动结果
+    forecast.StartTunnels(tunnelResult.Data,new ()
+    {
+        Handler = WriteLine
+    }); // 启动所有隧道，并显示启动结果
     // 注意：启动FRPC需要本地已配置好FRPC环境
 }
 else

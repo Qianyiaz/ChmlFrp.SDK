@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using static ChmlFrp.SDK.Results.TunnelData.TunnelType;
 
 namespace ChmlFrp.SDK.Results;

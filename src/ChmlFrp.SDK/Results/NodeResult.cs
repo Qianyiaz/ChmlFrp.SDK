@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ChmlFrp.SDK.Results;
 
 /// <summary>

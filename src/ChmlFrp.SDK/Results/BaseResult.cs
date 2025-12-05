@@ -1,3 +1,5 @@
+using System.Net.Http;
+
 namespace ChmlFrp.SDK.Results;
 
 /// <summary>
