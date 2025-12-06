@@ -30,7 +30,7 @@ public static class TunnelServices
         {
             if (tunnel.IsRunning())
                 return;
-            
+
             tunnel.SetFrpProcess(StartFrpcProcess(user, tunnel.Id.ToString(), options));
         }
 
@@ -47,7 +47,7 @@ public static class TunnelServices
         {
             if (tunnels.Any(tunnel => tunnel.IsRunning()))
                 return;
-            
+
             var ids = string.Join(",", tunnels.Select(t => t.Id.ToString()));
             var frpcProcess = StartFrpcProcess(user, ids, options);
             tunnels.ForEach(tunnel => tunnel.SetFrpProcess(frpcProcess));
@@ -67,7 +67,7 @@ public static class TunnelServices
         {
             var frpcfile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
             var logfile = options?.LogFilePath ?? Path.GetTempFileName();
-            
+
             if (!OperatingSystem.IsWindows())
                 File.SetUnixFileMode(frpcfile,
                     File.GetUnixFileMode(frpcfile)
@@ -85,7 +85,7 @@ public static class TunnelServices
                     Arguments = $"-u {user.Data?.UserToken} -p {id}{options?.CommandSuffix}"
                 }
             };
-            
+
             File.WriteAllText(logfile, string.Empty);
             frpProcess.OutputDataReceived += (_, args) =>
             {
@@ -95,7 +95,7 @@ public static class TunnelServices
                 File.AppendAllText(logfile, line + Environment.NewLine);
                 options?.Handler?.Invoke(line);
             };
-            
+
             frpProcess.Start();
             frpProcess.BeginOutputReadLine();
             return frpProcess;
@@ -143,12 +143,12 @@ public static class TunnelServices
         /// frpc文件
         /// </summary>
         public string? FrpcFilePath { get; init; }
-        
+
         /// <summary>
         /// 命令后缀
         /// </summary>
         public string CommandSuffix { get; init; } = string.Empty;
-        
+
         /// <summary>
         /// 输出处理程序
         /// </summary>

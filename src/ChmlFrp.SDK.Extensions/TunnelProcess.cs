@@ -32,7 +32,7 @@ public static class TunnelProcess
         /// <returns>设置的进程</returns>
         public Process? GetFrpProcess()
         {
-            return ProcessInfos.TryGetValue(tunnel,out var process) ? process : null;
+            return ProcessInfos.TryGetValue(tunnel, out var process) ? process : null;
         }
 
         /// <summary>

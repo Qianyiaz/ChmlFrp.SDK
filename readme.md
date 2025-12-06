@@ -9,6 +9,8 @@
 #### 用户登录
 
 ```csharp
+using ChmlFrp.SDK.Results;
+
 // 使用用户名密码登录
 var userResult = await UserResult.LoginAsync("username", "password");
 if (userResult.State)
@@ -29,6 +31,8 @@ if (autoLoginResult.State)
 > 不包含启动和停止隧道功能，请安装 [ChmlFrp.SDK.Extensions](https://www.nuget.org/packages/ChmlFrp.SDK.Extensions) 包.
 
 ```csharp
+using ChmlFrp.SDK.Results;
+
 var tunnelResult = await userResult.GetTunnelResultAsync();
 if (tunnelResult.State)
 {
@@ -45,6 +49,8 @@ if (tunnelResult.State)
 #### 获取节点信息
 
 ```csharp
+using ChmlFrp.SDK.Results;
+
 var nodeResult = await userResult.GetNodeResultAsync();
 if (nodeResult.State)
 {
@@ -67,4 +73,4 @@ if (nodeInfoResult.State)
 }
 ```
 
-_更多功能请自行查看 [源代码仓库](https://github.com/Qianyiaz/ChmlFrp.SDK)._
+_更多用法与源码请查看仓库：[https://github.com/Qianyiaz/ChmlFrp.SDK/tree/main/src/ChmlFrp.SDK.Extensions](https://github.com/Qianyiaz/ChmlFrp.SDK/tree/main/src/ChmlFrp.SDK.Extensions)_

@@ -99,7 +99,7 @@ public class UserResult : BaseResult
         var tokenData = JsonSerializer.Deserialize(json, SourceGeneration.Default.JsonData);
         return await LoginByTokenAsync(tokenData?.UserToken);
     }
-    
+
     /// <summary>
     /// 登出
     /// </summary>

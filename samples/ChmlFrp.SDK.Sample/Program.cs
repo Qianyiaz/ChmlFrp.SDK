@@ -9,7 +9,7 @@ if (!forecast!.State) // 自动登录失败，进行手动登录
         Clear();
         Write("用户名: ");
         var userName = ReadLine();
-        
+
         Write("密码: ");
         var password = ReadLine();
         forecast = await UserResult.LoginAsync(userName, password); // 登录
@@ -50,12 +50,12 @@ if (tunnelResult!.State)
         WriteLine($"{i}. {tunnel.Name}");
         i++;
     }
-    
+
     WriteLine("点击启动隧道");
     ReadKey(true);
     Clear();
 
-    forecast.StartTunnels(tunnelResult.Data,new ()
+    forecast.StartTunnels(tunnelResult.Data, new()
     {
         Handler = WriteLine
     }); // 启动所有隧道，并显示启动结果
@@ -68,5 +68,5 @@ else
 
 ReadKey(true);
 
-if (tunnelResult.Data != null) 
+if (tunnelResult.Data != null)
     forecast.StopTunnels(tunnelResult.Data); // 停止所有隧道
