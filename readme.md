@@ -73,4 +73,4 @@ if (nodeInfoResult.State)
 }
 ```
 
-_更多用法与源码请查看仓库：[https://github.com/Qianyiaz/ChmlFrp.SDK/tree/main/src/ChmlFrp.SDK.Extensions](https://github.com/Qianyiaz/ChmlFrp.SDK/tree/main/src/ChmlFrp.SDK.Extensions)_
+_更多用法与源码请查看仓库：[https://github.com/Qianyiaz/ChmlFrp.SDK/tree/main/src/ChmlFrp.SDK](https://github.com/Qianyiaz/ChmlFrp.SDK/tree/main/src/ChmlFrp.SDK)_

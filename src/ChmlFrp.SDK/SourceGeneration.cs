@@ -8,6 +8,7 @@ namespace ChmlFrp.SDK;
 [JsonSerializable(typeof(JsonData))]
 [JsonSerializable(typeof(NodeResult))]
 [JsonSerializable(typeof(UserResult))]
+[JsonSerializable(typeof(BaseResult))]
 [JsonSerializable(typeof(TunnelResult))]
 [JsonSerializable(typeof(NodeInfoResult))]
 public partial class SourceGeneration : JsonSerializerContext;

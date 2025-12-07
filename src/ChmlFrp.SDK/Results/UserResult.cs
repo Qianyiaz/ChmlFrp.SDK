@@ -36,7 +36,7 @@ public class UserResult : BaseResult
         try
         {
             var forecast = await MainClient.GetFromJsonAsync(
-                $"/login?username={username}&password={password}",
+                $"login?username={username}&password={password}",
                 SourceGeneration.Default.UserResult
             );
             if (forecast?.State != true) return forecast;
@@ -65,7 +65,7 @@ public class UserResult : BaseResult
         try
         {
             var forecast = await MainClient.GetFromJsonAsync(
-                $"/userinfo?token={userToken}",
+                $"userinfo?token={userToken}",
                 SourceGeneration.Default.UserResult
             );
             if (forecast?.State != true) return forecast;
@@ -135,7 +135,7 @@ public class UserResult : BaseResult
         try
         {
             return await MainClient.GetFromJsonAsync(
-                $"/tunnel?token={Data!.UserToken}",
+                $"tunnel?token={Data!.UserToken}",
                 SourceGeneration.Default.TunnelResult
             );
         }
@@ -165,7 +165,7 @@ public class UserResult : BaseResult
         try
         {
             return await MainClient.GetFromJsonAsync(
-                $"/node?token={Data!.UserToken}",
+                $"node?token={Data!.UserToken}",
                 SourceGeneration.Default.NodeResult
             );
         }
@@ -196,7 +196,7 @@ public class UserResult : BaseResult
         try
         {
             return await MainClient.GetFromJsonAsync(
-                $"/nodeinfo?token={Data!.UserToken}&node={node.Name}",
+                $"nodeinfo?token={Data!.UserToken}&node={node.Name}",
                 SourceGeneration.Default.NodeInfoResult
             );
         }

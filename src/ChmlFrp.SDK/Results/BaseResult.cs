@@ -10,9 +10,10 @@ public class BaseResult
     /// <summary>
     /// 主HTTP客户端
     /// </summary>
-    [JsonIgnore] public static readonly HttpClient MainClient = new()
+    [JsonIgnore] 
+    public static readonly HttpClient MainClient = new()
     {
-        BaseAddress = new("https://cf-v2.uapis.cn")
+        BaseAddress = new("https://cf-v2.uapis.cn/")
     };
 
     /// <summary>

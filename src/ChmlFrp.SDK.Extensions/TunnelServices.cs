@@ -11,7 +11,7 @@ namespace ChmlFrp.SDK.Extensions;
 public static class TunnelServices
 {
     /// <summary>
-    /// 启动隧道
+    /// 隧道操作相关的扩展方法
     /// </summary>
     /// <param name="user">用户类</param>
     extension(UserResult user)
