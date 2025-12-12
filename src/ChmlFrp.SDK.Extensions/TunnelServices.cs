@@ -41,16 +41,18 @@ public static class TunnelServices
         /// <param name="options">启动配置</param>
         public void StartTunnels
         (
-            List<TunnelData> tunnels,
+            IEnumerable<TunnelData> tunnels,
             TunnelStartOptions? options = null
         )
         {
-            if (tunnels.Any(tunnel => tunnel.IsRunning()))
+            var tunnelDatas = tunnels.ToList();
+            if (tunnelDatas.Any(tunnel => tunnel.IsRunning()))
                 return;
 
-            var ids = string.Join(",", tunnels.Select(t => t.Id.ToString()));
+            var ids = string.Join(",", tunnelDatas.Select(t => t.Id.ToString()));
             var frpcProcess = StartFrpcProcess(user, ids, options);
-            tunnels.ForEach(tunnel => tunnel.SetFrpProcess(frpcProcess));
+            foreach (var tunnel in tunnelDatas) 
+                tunnel.SetFrpProcess(frpcProcess);
         }
 
         /// <summary>
@@ -121,7 +123,7 @@ public static class TunnelServices
         /// </summary>
         /// <param name="tunnels">隧道类列表</param>
         /// <returns>是否关闭成功</returns>
-        public void StopTunnels(List<TunnelData> tunnels)
+        public void StopTunnels(IEnumerable<TunnelData> tunnels)
         {
             foreach (var tunnel in tunnels.Where(tunnel => tunnel.IsRunning()))
                 StopTunnel(user, tunnel);

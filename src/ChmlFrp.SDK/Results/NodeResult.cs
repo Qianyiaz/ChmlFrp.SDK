@@ -11,7 +11,7 @@ public class NodeResult : BaseResult
     /// 节点数据列表
     /// </summary>
     [JsonPropertyName("data")]
-    public List<NodeData>? Data { get; set; }
+    public IReadOnlyList<NodeData>? Data { get; set; }
 }
 
 /// <summary>

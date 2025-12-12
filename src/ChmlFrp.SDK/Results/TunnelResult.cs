@@ -13,7 +13,7 @@ public class TunnelResult : BaseResult
     /// 用户隧道数据
     /// </summary>
     [JsonPropertyName("data")]
-    public List<TunnelData>? Data { get; set; }
+    public IReadOnlyList<TunnelData>? Data { get; set; }
 }
 
 /// <summary>
