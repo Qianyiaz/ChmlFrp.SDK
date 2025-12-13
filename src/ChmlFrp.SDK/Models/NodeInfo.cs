@@ -105,7 +105,7 @@ public class NodeInfo : NodeData
     /// 正常运行小时
     /// </summary>
     [JsonIgnore]
-    public double UptimeDays => UptimeHours / 60.0;
+    public double UptimeDays => UptimeHours / 24.0;
 
     /// <summary>
     /// 1分钟平均负载

@@ -9,19 +9,15 @@ namespace ChmlFrp.SDK.Extensions;
 /// </summary>
 public static class TunnelProcess
 {
-    private static readonly ConditionalWeakTable<TunnelData, Process> ProcessInfos = new();
+    internal static readonly ConditionalWeakTable<TunnelData, Process> ProcessInfos = new();
 
     /// <summary>
     /// 对隧道相关的操作
     /// </summary>
     /// <param name="tunnel">扩展隧道</param>
-    extension(TunnelData tunnel)
+     extension(TunnelData tunnel)
     {
-        /// <summary>
-        /// 设置进程
-        /// </summary>
-        /// <param name="process">设置的进程</param>
-        public void SetFrpProcess(Process process)
+        internal void SetFrpProcess(Process process)
         {
             ProcessInfos.AddOrUpdate(tunnel, process);
         }

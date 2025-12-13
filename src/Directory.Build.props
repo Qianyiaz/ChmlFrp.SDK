@@ -1,11 +1,11 @@
 <Project>
 
     <PropertyGroup>
-        <Version>2.0.7.2-preview3</Version>
+        <Version>2.0.7.2</Version>
         <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
+        <ImplicitUsings>true</ImplicitUsings>
         <IsAotCompatible>true</IsAotCompatible>
-        <ImplicitUsings>enable</ImplicitUsings>
         <TargetFramework>net8.0</TargetFramework>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>

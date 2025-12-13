@@ -25,7 +25,9 @@ public static class TunnelServices
         public void StartTunnel(TunnelData tunnel, TunnelStartOptions? options = null)
         {
             if (tunnel.IsRunning()) return;
-            tunnel.SetFrpProcess(StartFrpcProcess(user, tunnel.Id.ToString(), options));
+            var frpProcess = StartFrpcProcess(user, tunnel.Id.ToString(), options);
+            frpProcess.Exited += (_, _) => TunnelProcess.ProcessInfos.Remove(tunnel);
+            tunnel.SetFrpProcess(frpProcess);
         }
 
         /// <summary>
@@ -40,18 +42,19 @@ public static class TunnelServices
                 return;
 
             var ids = string.Join(",", tunnelDatas.Select(t => t.Id.ToString()));
-            var frpcProcess = StartFrpcProcess(user, ids, options);
+            var frpProcess = StartFrpcProcess(user, ids, options);
+            
+            frpProcess.Exited += (_, _) =>
+            {
+                foreach (var tunnel in tunnelDatas)
+                    TunnelProcess.ProcessInfos.Remove(tunnel);
+            };
+            
             foreach (var tunnel in tunnelDatas)
-                tunnel.SetFrpProcess(frpcProcess);
+                tunnel.SetFrpProcess(frpProcess);
         }
-
-        /// <summary>
-        /// 启动隧道进程
-        /// </summary>
-        /// <param name="id">隧道id</param>
-        /// <param name="options">启动配置</param>
-        /// <returns>启动隧道进程</returns>
-        public Process StartFrpcProcess(string id, TunnelStartOptions? options)
+        
+        private Process StartFrpcProcess(string id, TunnelStartOptions? options)
         {
             var frpcfile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
             var logfile = options?.LogFilePath ?? Path.GetTempFileName();
@@ -82,7 +85,7 @@ public static class TunnelServices
                 File.AppendAllText(logfile, line + Environment.NewLine);
                 options?.Handler?.Invoke(line);
             };
-
+            
             frpProcess.Start();
             frpProcess.BeginOutputReadLine();
             return frpProcess;
@@ -96,7 +99,7 @@ public static class TunnelServices
         public void StopTunnel(TunnelData tunnel)
         {
             if (!tunnel.IsRunning()) return;
-            tunnel.GetFrpProcess()?.Kill(true);
+            tunnel.GetFrpProcess()!.Kill(true);
         }
 
         /// <summary>
