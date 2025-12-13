@@ -85,5 +85,5 @@ StopTunnel 会尝试获取并 Kill 对应的 frpc 进程(若该隧道当前有�
 - LogFilePath 如果不指定将使用系统临时文件(可能每次运行不同),建议指定稳定路径以便查看历史日志
 - StartFrpcProcess 会把输出以 UTF-8 解码并回调给 Handler,若输出包含非 UTF-8 编码请自行处理
 
-_更多用法与源码请查看仓库: _
+更多用法与源码请查看仓库: 
 https://github.com/Qianyiaz/ChmlFrp.SDK/tree/main/src/ChmlFrp.SDK.Extensions

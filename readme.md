@@ -2,7 +2,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/ChmlFrp.SDK.svg)](https://www.nuget.org/packages/ChmlFrp.SDK/)
 
-为 .NET 开发者提供的第三方 ChmlFrp 客户端开发工具包 包含与服务端交互的请求与响应类型封装
+为 .NET 开发者提供的第三方 ChmlFrp 客户端开发工具包,包含与服务端交互的请求与响应类型封装
 
 > 注意: 示例中的异步方法都返回对应的 Response 类型(例如 `UserResponse`,`TunnelResponse` 等),并且大多数响应有一个布尔属性 `State` 用于判断请求是否成功 Data 字段包含具体的数据模型
 
