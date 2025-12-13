@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using ChmlFrp.SDK.Results;
+using ChmlFrp.SDK.Models;
 
 namespace ChmlFrp.SDK.Extensions;
 

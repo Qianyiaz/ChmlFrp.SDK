@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using ChmlFrp.SDK.Results;
+using ChmlFrp.SDK.Models;
+using ChmlFrp.SDK.Responses;
 
 namespace ChmlFrp.SDK.Extensions;
 
@@ -14,7 +14,7 @@ public static class TunnelServices
     /// 隧道操作相关的扩展方法
     /// </summary>
     /// <param name="user">用户类</param>
-    extension(UserResult user)
+    extension(UserResponse user)
     {
         /// <summary>
         /// 启动隧道
@@ -22,15 +22,9 @@ public static class TunnelServices
         /// <param name="tunnel">隧道类</param>
         /// <param name="options">启动配置</param>
         /// <exception cref="ArgumentNullException">设置frpc路径错误</exception>
-        public void StartTunnel
-        (
-            TunnelData tunnel,
-            TunnelStartOptions? options = null
-        )
+        public void StartTunnel(TunnelData tunnel, TunnelStartOptions? options = null)
         {
-            if (tunnel.IsRunning())
-                return;
-
+            if (tunnel.IsRunning()) return;
             tunnel.SetFrpProcess(StartFrpcProcess(user, tunnel.Id.ToString(), options));
         }
 
@@ -39,11 +33,7 @@ public static class TunnelServices
         /// </summary>
         /// <param name="tunnels">隧道类列表</param>
         /// <param name="options">启动配置</param>
-        public void StartTunnels
-        (
-            IEnumerable<TunnelData> tunnels,
-            TunnelStartOptions? options = null
-        )
+        public void StartTunnel(IEnumerable<TunnelData> tunnels, TunnelStartOptions? options = null)
         {
             var tunnelDatas = tunnels.ToList();
             if (tunnelDatas.Any(tunnel => tunnel.IsRunning()))
@@ -51,7 +41,7 @@ public static class TunnelServices
 
             var ids = string.Join(",", tunnelDatas.Select(t => t.Id.ToString()));
             var frpcProcess = StartFrpcProcess(user, ids, options);
-            foreach (var tunnel in tunnelDatas) 
+            foreach (var tunnel in tunnelDatas)
                 tunnel.SetFrpProcess(frpcProcess);
         }
 
@@ -61,19 +51,14 @@ public static class TunnelServices
         /// <param name="id">隧道id</param>
         /// <param name="options">启动配置</param>
         /// <returns>启动隧道进程</returns>
-        public Process StartFrpcProcess
-        (
-            string id,
-            TunnelStartOptions? options
-        )
+        public Process StartFrpcProcess(string id, TunnelStartOptions? options)
         {
             var frpcfile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
             var logfile = options?.LogFilePath ?? Path.GetTempFileName();
 
             if (!OperatingSystem.IsWindows())
                 File.SetUnixFileMode(frpcfile,
-                    File.GetUnixFileMode(frpcfile)
-                    | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
+                    UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
 
             var frpProcess = new Process
             {
@@ -84,7 +69,7 @@ public static class TunnelServices
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     StandardOutputEncoding = Encoding.UTF8,
-                    Arguments = $"-u {user.Data?.UserToken} -p {id}{options?.CommandSuffix}"
+                    Arguments = $"-u {user.Data!.UserToken} -p {id}{options?.CommandSuffix}"
                 }
             };
 
@@ -108,13 +93,9 @@ public static class TunnelServices
         /// </summary>
         /// <param name="tunnel">隧道类</param>
         /// <returns>是否关闭成功</returns>
-        public void StopTunnel
-        (
-            TunnelData tunnel
-        )
+        public void StopTunnel(TunnelData tunnel)
         {
-            if (!tunnel.IsRunning())
-                return;
+            if (!tunnel.IsRunning()) return;
             tunnel.GetFrpProcess()?.Kill(true);
         }
 
@@ -123,7 +104,7 @@ public static class TunnelServices
         /// </summary>
         /// <param name="tunnels">隧道类列表</param>
         /// <returns>是否关闭成功</returns>
-        public void StopTunnels(IEnumerable<TunnelData> tunnels)
+        public void StopTunnel(IEnumerable<TunnelData> tunnels)
         {
             foreach (var tunnel in tunnels.Where(tunnel => tunnel.IsRunning()))
                 StopTunnel(user, tunnel);
@@ -133,7 +114,6 @@ public static class TunnelServices
     /// <summary>
     /// 隧道启动配置
     /// </summary>
-    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public class TunnelStartOptions
     {
         /// <summary>

@@ -1,21 +1,10 @@
-using System.Net.Http;
-
-namespace ChmlFrp.SDK.Results;
+namespace ChmlFrp.SDK.Responses;
 
 /// <summary>
 /// 基本请求
 /// </summary>
-public class BaseResult
+public class BaseResponse
 {
-    /// <summary>
-    /// 主HTTP客户端
-    /// </summary>
-    [JsonIgnore] 
-    public static readonly HttpClient MainClient = new()
-    {
-        BaseAddress = new("https://cf-v2.uapis.cn/")
-    };
-
     /// <summary>
     /// 返回消息
     /// </summary>

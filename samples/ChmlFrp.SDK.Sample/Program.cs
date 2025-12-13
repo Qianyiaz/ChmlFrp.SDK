@@ -1,9 +1,9 @@
 ﻿using ChmlFrp.SDK.Extensions;
-using ChmlFrp.SDK.Results;
+using ChmlFrp.SDK.Services;
 using static System.Console;
 
-var forecast = await UserResult.AutoLoginAsync(); // 尝试自动登录
-if (!forecast!.State) // 自动登录失败，进行手动登录
+var forecast = await UserService.AutoLoginAsync(); // 尝试自动登录
+if (!forecast!.State) // 自动登录失败 进行手动登录
     while (true)
     {
         Clear();
@@ -12,15 +12,15 @@ if (!forecast!.State) // 自动登录失败，进行手动登录
 
         Write("密码: ");
         var password = ReadLine();
-        forecast = await UserResult.LoginAsync(userName, password); // 登录
+        forecast = await UserService.LoginAsync(userName, password); // 登录
 
         WriteLine(forecast?.Message); // 显示登录结果消息
         if (forecast!.State)
-            break; // 登录成功，跳出循环
+            break; // 登录成功 跳出循环
     }
 
 // 显示用户信息
-var nodeResult = await forecast.GetNodeResultAsync(); // 获取节点列表
+var nodeResult = await forecast.GetNodeResponseAsync(); // 获取节点列表
 if (nodeResult!.State)
 {
     var i = 1;
@@ -28,7 +28,7 @@ if (nodeResult!.State)
     {
         if (i == 1)
         {
-            var nodeInfo = await forecast.GetNodeInfoResultAsync(node);
+            var nodeInfo = await forecast.GetNodeInfoResponseAsync(node);
             WriteLine(nodeInfo!.State ? nodeInfo.Data!.Ip : nodeInfo.Message);
         } // 显示第一个节点的IP地址
 
@@ -41,7 +41,7 @@ else
     WriteLine(nodeResult.Message);
 }
 
-var tunnelResult = await forecast.GetTunnelResultAsync(); // 获取隧道列表
+var tunnelResult = await forecast.GetTunnelResponseAsync(); // 获取隧道列表
 if (tunnelResult!.State)
 {
     var i = 1;
@@ -55,11 +55,11 @@ if (tunnelResult!.State)
     ReadKey(true);
     Clear();
 
-    forecast.StartTunnels(tunnelResult.Data, new()
+    forecast.StartTunnel(tunnelResult.Data, new()
     {
         Handler = WriteLine
-    }); // 启动所有隧道，并显示启动结果
-    // 注意：启动FRPC需要本地已配置好FRPC环境
+    }); // 启动所有隧道 并显示启动结果
+    // 注意 启动FRPC需要本地已配置好FRPC环境
 }
 else
 {
@@ -69,4 +69,4 @@ else
 ReadKey(true);
 
 if (tunnelResult.Data != null)
-    forecast.StopTunnels(tunnelResult.Data); // 停止所有隧道
+    forecast.StopTunnel(tunnelResult.Data); // 停止所有隧道

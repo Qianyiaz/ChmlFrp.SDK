@@ -1,18 +1,4 @@
-using System.Collections.Generic;
-
-namespace ChmlFrp.SDK.Results;
-
-/// <summary>
-/// 节点请求
-/// </summary>
-public class NodeResult : BaseResult
-{
-    /// <summary>
-    /// 节点数据列表
-    /// </summary>
-    [JsonPropertyName("data")]
-    public IReadOnlyList<NodeData>? Data { get; set; }
-}
+﻿namespace ChmlFrp.SDK.Models;
 
 /// <summary>
 /// 节点数据

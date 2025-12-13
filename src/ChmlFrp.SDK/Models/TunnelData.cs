@@ -1,25 +1,10 @@
-using System;
-using System.Collections.Generic;
-using static ChmlFrp.SDK.Results.TunnelData.TunnelType;
+﻿using System;
 
-namespace ChmlFrp.SDK.Results;
-
-/// <summary>
-/// 隧道请求
-/// </summary>
-public class TunnelResult : BaseResult
-{
-    /// <summary>
-    /// 用户隧道数据
-    /// </summary>
-    [JsonPropertyName("data")]
-    public IReadOnlyList<TunnelData>? Data { get; set; }
-}
+namespace ChmlFrp.SDK.Models;
 
 /// <summary>
 /// 隧道数据
 /// </summary>
-[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class TunnelData
 {
     /// <summary>
@@ -78,10 +63,10 @@ public class TunnelData
     [JsonIgnore]
     public TunnelType Type => TypeString switch
     {
-        "tcp" => Tcp,
-        "udp" => Udp,
-        "http" => Http,
-        "https" => Https,
+        "tcp" => TunnelType.Tcp,
+        "udp" => TunnelType.Udp,
+        "http" => TunnelType.Http,
+        "https" => TunnelType.Https,
         _ => throw new ArgumentOutOfRangeException()
     };
 
@@ -211,9 +196,9 @@ public class TunnelData
     [JsonIgnore]
     public string FullRemoteAddress => Type switch
     {
-        Http => $"http://{NodeIp}{(RemoteEndpoint != "80" ? $":{RemoteEndpoint}" : "")}",
-        Https => $"https://{NodeIp}{(RemoteEndpoint != "443" ? $":{RemoteEndpoint}" : "")}",
-        Tcp or Udp => $"{NodeIp}:{RemoteEndpoint}",
+        TunnelType.Http => $"http://{NodeIp}{(RemoteEndpoint != "80" ? $":{RemoteEndpoint}" : "")}",
+        TunnelType.Https => $"https://{NodeIp}{(RemoteEndpoint != "443" ? $":{RemoteEndpoint}" : "")}",
+        TunnelType.Tcp or TunnelType.Udp => $"{NodeIp}:{RemoteEndpoint}",
         _ => throw new ArgumentOutOfRangeException()
     };
 }

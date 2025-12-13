@@ -1,2 +1,2 @@
-global using System.Diagnostics.CodeAnalysis;
 global using System.Text.Json.Serialization;
+global using ChmlFrp.SDK.Models;
