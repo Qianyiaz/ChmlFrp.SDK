@@ -43,20 +43,21 @@ public static class TunnelServices
 
             var ids = string.Join(",", tunnelDatas.Select(t => t.Id.ToString()));
             var frpProcess = StartFrpcProcess(user, ids, options);
-            
+
             frpProcess.Exited += (_, _) =>
             {
                 foreach (var tunnel in tunnelDatas)
                     TunnelProcess.ProcessInfos.Remove(tunnel);
             };
-            
+
             foreach (var tunnel in tunnelDatas)
                 tunnel.SetFrpProcess(frpProcess);
         }
-        
+
         private Process StartFrpcProcess(string id, TunnelStartOptions? options)
         {
             var frpcfile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
+            var command = options?.CommandSuffix ?? $"-u {user.Data!.UserToken} -p {id}";
             var logfile = options?.LogFilePath ?? Path.GetTempFileName();
 
             if (!OperatingSystem.IsWindows())
@@ -68,11 +69,9 @@ public static class TunnelServices
                 StartInfo =
                 {
                     FileName = frpcfile,
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
+                    Arguments = command,
                     RedirectStandardOutput = true,
-                    StandardOutputEncoding = Encoding.UTF8,
-                    Arguments = $"-u {user.Data!.UserToken} -p {id}{options?.CommandSuffix}"
+                    StandardOutputEncoding = Encoding.UTF8
                 }
             };
 
@@ -85,7 +84,7 @@ public static class TunnelServices
                 File.AppendAllText(logfile, line + Environment.NewLine);
                 options?.Handler?.Invoke(line);
             };
-            
+
             frpProcess.Start();
             frpProcess.BeginOutputReadLine();
             return frpProcess;
@@ -132,7 +131,7 @@ public static class TunnelServices
         /// <summary>
         /// 命令后缀
         /// </summary>
-        public string CommandSuffix { get; init; } = string.Empty;
+        public string? CommandSuffix { get; init; }
 
         /// <summary>
         /// 输出处理程序

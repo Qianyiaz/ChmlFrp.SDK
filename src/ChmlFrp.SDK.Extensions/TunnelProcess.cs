@@ -15,7 +15,7 @@ public static class TunnelProcess
     /// 对隧道相关的操作
     /// </summary>
     /// <param name="tunnel">扩展隧道</param>
-     extension(TunnelData tunnel)
+    extension(TunnelData tunnel)
     {
         internal void SetFrpProcess(Process process)
         {

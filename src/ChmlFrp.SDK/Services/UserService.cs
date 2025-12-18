@@ -16,12 +16,12 @@ public static class UserService
     private static readonly string TokenFilePath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "ChmlFrp", "user.json");
-    
+
     private static readonly HttpClient MainClient = new()
     {
         BaseAddress = new("https://cf-v2.uapis.cn/")
     };
-    
+
     /// <summary>
     /// 用户操作相关的扩展方法
     /// </summary>
@@ -33,20 +33,31 @@ public static class UserService
         /// <summary>
         /// 删除本地保存的用户令牌
         /// </summary>
-        public async Task LoginoutAsync()
+        public void LoginoutAsync()
         {
-            await SaveTokenAsync(string.Empty);
+            if (File.Exists(TokenFilePath))
+                File.Delete(TokenFilePath);
         }
 
-        private static async Task SaveTokenAsync(string? userToken)
+        private static void SaveTokenAsync(string? userToken)
         {
             var directory = Path.GetDirectoryName(TokenFilePath);
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory!);
-            await File.WriteAllTextAsync(TokenFilePath, JsonSerializer.Serialize(new()
+
+            try
             {
-                UserToken = userToken
-            }, SourceGeneration.Default.JsonData));
+                using var stream = File.Create(TokenFilePath);
+                using var writer = new Utf8JsonWriter(stream);
+                writer.WriteStartObject();
+                writer.WriteString("usertoken", userToken);
+                writer.WriteEndObject();
+                writer.Flush();
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         #endregion
@@ -68,12 +79,12 @@ public static class UserService
                     $"login?username={username}&password={password}",
                     SourceGeneration.Default.UserResponse
                 );
-                if (forecast?.State != true) return forecast;
-                if (saveToken)
-                    await SaveTokenAsync(forecast.Data!.UserToken);
+
+                if (forecast!.State && saveToken)
+                    SaveTokenAsync(forecast.Data!.UserToken);
                 return forecast;
             }
-            catch (Exception ex) when (ex is HttpRequestException or JsonException)
+            catch (Exception ex) when (ex is HttpRequestException)
             {
                 return new UserResponse
                 {
@@ -89,7 +100,7 @@ public static class UserService
         /// <param name="userToken">用户令牌用于登录</param>
         /// <param name="saveToken">是否保存令牌</param>
         /// <returns>返回用户请求</returns>
-        public static async Task<UserResponse?> LoginByTokenAsync(string? userToken, bool saveToken = true)
+        public static async Task<UserResponse?> LoginByTokenAsync(string userToken, bool saveToken = true)
         {
             try
             {
@@ -97,13 +108,12 @@ public static class UserService
                     $"userinfo?token={userToken}",
                     SourceGeneration.Default.UserResponse
                 );
-                if (!forecast!.State)
-                    return forecast;
-                if (saveToken)
-                    await SaveTokenAsync(forecast.Data!.UserToken);
+
+                if (forecast!.State && saveToken)
+                    SaveTokenAsync(forecast.Data!.UserToken);
                 return forecast;
             }
-            catch (Exception ex) when (ex is HttpRequestException or JsonException)
+            catch (Exception ex) when (ex is HttpRequestException)
             {
                 return new()
                 {
@@ -120,14 +130,40 @@ public static class UserService
         public static async Task<UserResponse?> AutoLoginAsync()
         {
             if (!File.Exists(TokenFilePath))
-                return new UserResponse
+                return new()
                 {
                     StateString = "fail",
                     Message = "File not found."
                 };
-            var json = await File.ReadAllTextAsync(TokenFilePath);
-            var tokenData = JsonSerializer.Deserialize(json, SourceGeneration.Default.JsonData);
-            return await LoginByTokenAsync(tokenData?.UserToken);
+
+            await using (var stream = File.OpenRead(TokenFilePath))
+            {
+                using (var doc = await JsonDocument.ParseAsync(stream))
+                {
+                    if (doc.RootElement.TryGetProperty("usertoken", out var tokenElement))
+                    {
+                        var userToken = tokenElement.GetString();
+
+                        if (!string.IsNullOrWhiteSpace(userToken))
+                            return await LoginByTokenAsync(userToken);
+                    }
+                }
+            }
+
+            try
+            {
+                File.Delete(TokenFilePath);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return new()
+            {
+                StateString = "fail",
+                Message = "Invalid or empty token."
+            };
         }
 
         #endregion
@@ -152,7 +188,7 @@ public static class UserService
                     SourceGeneration.Default.TunnelResponse
                 );
             }
-            catch (Exception ex) when (ex is HttpRequestException or JsonException)
+            catch (Exception ex) when (ex is HttpRequestException)
             {
                 return new()
                 {
@@ -182,7 +218,7 @@ public static class UserService
                     SourceGeneration.Default.NodeResponse
                 );
             }
-            catch (Exception ex) when (ex is HttpRequestException or JsonException)
+            catch (Exception ex) when (ex is HttpRequestException)
             {
                 return new()
                 {
@@ -213,7 +249,7 @@ public static class UserService
                     SourceGeneration.Default.NodeInfoResponse
                 );
             }
-            catch (Exception ex) when (ex is HttpRequestException or JsonException)
+            catch (Exception ex) when (ex is HttpRequestException)
             {
                 return new()
                 {
@@ -236,7 +272,7 @@ public static class UserService
                     SourceGeneration.Default.BaseResponse
                 );
             }
-            catch (Exception ex) when (ex is HttpRequestException or JsonException)
+            catch (Exception ex) when (ex is HttpRequestException)
             {
                 return new()
                 {
@@ -259,7 +295,7 @@ public static class UserService
                     SourceGeneration.Default.BaseResponse
                 );
             }
-            catch (Exception ex) when (ex is HttpRequestException or JsonException)
+            catch (Exception ex) when (ex is HttpRequestException)
             {
                 return new()
                 {
@@ -282,7 +318,7 @@ public static class UserService
                     SourceGeneration.Default.BaseResponse
                 );
             }
-            catch (Exception ex) when (ex is HttpRequestException or JsonException)
+            catch (Exception ex) when (ex is HttpRequestException)
             {
                 return new()
                 {
