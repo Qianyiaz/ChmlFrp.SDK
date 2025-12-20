@@ -13,171 +13,170 @@ public static class UserService
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "ChmlFrp", "user.json");
 
-    private static readonly HttpClient MainClient = new()
+    /// <summary>
+    /// 主 HttpClient
+    /// </summary>
+    public static readonly HttpClient MainClient = new()
     {
         BaseAddress = new("https://cf-v2.uapis.cn/")
     };
 
+    #region Json存储
+
     /// <summary>
-    /// 用户操作相关的扩展方法
+    /// 删除本地保存的用户令牌
     /// </summary>
-    /// <param name="user">用户类</param>
-    extension(UserResponse user)
+    public static void LoginoutAsync()
     {
-        #region Json存储
+        if (File.Exists(TokenFilePath))
+            File.Delete(TokenFilePath);
+    }
 
-        /// <summary>
-        /// 删除本地保存的用户令牌
-        /// </summary>
-        public void LoginoutAsync()
+    private static void SaveTokenAsync(string? userToken)
+    {
+        var directory = Path.GetDirectoryName(TokenFilePath);
+        if (!Directory.Exists(directory))
+            Directory.CreateDirectory(directory!);
+
+        try
         {
-            if (File.Exists(TokenFilePath))
-                File.Delete(TokenFilePath);
+            using var stream = File.Create(TokenFilePath);
+            using var writer = new Utf8JsonWriter(stream);
+            writer.WriteStartObject();
+            writer.WriteString("usertoken", userToken);
+            writer.WriteEndObject();
+            writer.Flush();
         }
-
-        private static void SaveTokenAsync(string? userToken)
+        catch
         {
-            var directory = Path.GetDirectoryName(TokenFilePath);
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory!);
+            // ignored
+        }
+    }
 
+    #endregion
+
+    #region 登录方法
+
+    /// <summary>
+    /// 使用用户名和密码登录获取用户信息
+    /// </summary>
+    /// <param name="username">用户名用于登录</param>
+    /// <param name="password">密码</param>
+    /// <param name="saveToken">是否保存令牌</param>
+    /// <returns>返回用户请求</returns>
+    public static async Task<UserResponse?> LoginAsync(string? username, string? password, bool saveToken = true)
+    {
+        try
+        {
+            var forecast = await MainClient.GetFromJsonAsync(
+                $"login?username={username}&password={password}",
+                SourceGeneration.Default.UserResponse
+            );
+
+            if (forecast!.State && saveToken)
+                SaveTokenAsync(forecast.Data!.UserToken);
+            return forecast;
+        }
+        catch (Exception ex) when (ex is HttpRequestException)
+        {
+            return new UserResponse
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
+        }
+    }
+
+    /// <summary>
+    ///  使用用户令牌获取用户信息
+    /// </summary>
+    /// <param name="userToken">用户令牌用于登录</param>
+    /// <param name="saveToken">是否保存令牌</param>
+    /// <returns>返回用户请求</returns>
+    public static async Task<UserResponse?> LoginByTokenAsync(string userToken, bool saveToken = true)
+    {
+        try
+        {
+            var forecast = await MainClient.GetFromJsonAsync(
+                $"userinfo?token={userToken}",
+                SourceGeneration.Default.UserResponse
+            );
+
+            if (forecast!.State && saveToken)
+                SaveTokenAsync(forecast.Data!.UserToken);
+            return forecast;
+        }
+        catch (Exception ex) when (ex is HttpRequestException)
+        {
+            return new()
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
+        }
+    }
+
+    /// <summary>
+    /// 自动登录
+    /// </summary>
+    /// <returns>返回用户请求</returns>
+    public static async Task<UserResponse?> AutoLoginAsync()
+    {
+        if (!File.Exists(TokenFilePath))
+            return new()
+            {
+                StateString = "fail",
+                Message = "File not found."
+            };
+
+        var stream = File.OpenRead(TokenFilePath);
+        try
+        {
+            var doc = await JsonDocument.ParseAsync(stream);
             try
             {
-                using var stream = File.Create(TokenFilePath);
-                using var writer = new Utf8JsonWriter(stream);
-                writer.WriteStartObject();
-                writer.WriteString("usertoken", userToken);
-                writer.WriteEndObject();
-                writer.Flush();
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-
-        #endregion
-
-        #region 登录方法
-
-        /// <summary>
-        /// 使用用户名和密码登录获取用户信息
-        /// </summary>
-        /// <param name="username">用户名用于登录</param>
-        /// <param name="password">密码</param>
-        /// <param name="saveToken">是否保存令牌</param>
-        /// <returns>返回用户请求</returns>
-        public static async Task<UserResponse?> LoginAsync(string? username, string? password, bool saveToken = true)
-        {
-            try
-            {
-                var forecast = await MainClient.GetFromJsonAsync(
-                    $"login?username={username}&password={password}",
-                    SourceGeneration.Default.UserResponse
-                );
-
-                if (forecast!.State && saveToken)
-                    UserResponse.SaveTokenAsync(forecast.Data!.UserToken);
-                return forecast;
-            }
-            catch (Exception ex) when (ex is HttpRequestException)
-            {
-                return new UserResponse
+                if (doc.RootElement.TryGetProperty("usertoken", out var tokenElement))
                 {
-                    StateString = "fail",
-                    Message = ex.Message
-                };
-            }
-        }
+                    var userToken = tokenElement.GetString();
 
-        /// <summary>
-        ///  使用用户令牌获取用户信息
-        /// </summary>
-        /// <param name="userToken">用户令牌用于登录</param>
-        /// <param name="saveToken">是否保存令牌</param>
-        /// <returns>返回用户请求</returns>
-        public static async Task<UserResponse?> LoginByTokenAsync(string userToken, bool saveToken = true)
-        {
-            try
-            {
-                var forecast = await MainClient.GetFromJsonAsync(
-                    $"userinfo?token={userToken}",
-                    SourceGeneration.Default.UserResponse
-                );
-
-                if (forecast!.State && saveToken)
-                    UserResponse.SaveTokenAsync(forecast.Data!.UserToken);
-                return forecast;
-            }
-            catch (Exception ex) when (ex is HttpRequestException)
-            {
-                return new()
-                {
-                    StateString = "fail",
-                    Message = ex.Message
-                };
-            }
-        }
-
-        /// <summary>
-        /// 自动登录
-        /// </summary>
-        /// <returns>返回用户请求</returns>
-        public static async Task<UserResponse?> AutoLoginAsync()
-        {
-            if (!File.Exists(TokenFilePath))
-                return new()
-                {
-                    StateString = "fail",
-                    Message = "File not found."
-                };
-
-            var stream = File.OpenRead(TokenFilePath);
-            try
-            {
-                var doc = await JsonDocument.ParseAsync(stream);
-                try
-                {
-                    if (doc.RootElement.TryGetProperty("usertoken", out var tokenElement))
-                    {
-                        var userToken = tokenElement.GetString();
-
-                        if (!string.IsNullOrWhiteSpace(userToken))
-                            return await UserResponse.LoginByTokenAsync(userToken);
-                    }
-                }
-                finally
-                {
-                    doc.Dispose();
+                    if (!string.IsNullOrWhiteSpace(userToken))
+                        return await LoginByTokenAsync(userToken);
                 }
             }
             finally
             {
+                doc.Dispose();
+            }
+        }
+        finally
+        {
 #if NETSTANDARD2_0
                 stream.Dispose();
 #else
-                await stream.DisposeAsync();
+            await stream.DisposeAsync();
 #endif
-            }
-
-            try
-            {
-                File.Delete(TokenFilePath);
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return new()
-            {
-                StateString = "fail",
-                Message = "Invalid or empty token."
-            };
         }
 
-        #endregion
+        try
+        {
+            File.Delete(TokenFilePath);
+        }
+        catch
+        {
+            // ignored
+        }
 
+        return new()
+        {
+            StateString = "fail",
+            Message = "Invalid or empty token."
+        };
+    }
+
+    #endregion
+
+    extension(UserResponse user)
+    {
         /// <summary>
         /// 获取隧道请求
         /// </summary>

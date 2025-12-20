@@ -75,7 +75,7 @@ public class UserData
     /// 用户所有隧道的当前连接总数
     /// </summary>
     [JsonPropertyName("totalCurConns")]
-    public int CurrentConnectionCount { get; set; }
+    public int? CurrentConnectionCount { get; set; }
 
     /// <summary>
     /// 累计上传数据量(字节)

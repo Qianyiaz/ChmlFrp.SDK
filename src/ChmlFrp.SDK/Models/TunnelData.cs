@@ -6,36 +6,10 @@
 public class TunnelData
 {
     /// <summary>
-    /// 隧道类型
-    /// </summary>
-    public enum TunnelType
-    {
-        /// <summary>
-        /// TCP隧道
-        /// </summary>
-        Tcp,
-
-        /// <summary>
-        /// UDP隧道
-        /// </summary>
-        Udp,
-
-        /// <summary>
-        /// HTTP隧道
-        /// </summary>
-        Http,
-
-        /// <summary>
-        /// HTTPS隧道
-        /// </summary>
-        Https
-    }
-
-    /// <summary>
     /// 隧道的唯一标识ID
     /// </summary>
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public int? Id { get; set; }
 
     /// <summary>
     /// 隧道名称
@@ -53,20 +27,7 @@ public class TunnelData
     /// 隧道类型(字符串)
     /// </summary>
     [JsonPropertyName("type")]
-    public string? TypeString { get; set; }
-
-    /// <summary>
-    /// 隧道类型枚举
-    /// </summary>
-    [JsonIgnore]
-    public TunnelType Type => TypeString switch
-    {
-        "tcp" => TunnelType.Tcp,
-        "udp" => TunnelType.Udp,
-        "http" => TunnelType.Http,
-        "https" => TunnelType.Https,
-        _ => throw new ArgumentOutOfRangeException()
-    };
+    public string? Type { get; set; }
 
     /// <summary>
     /// 本地端口
@@ -194,9 +155,9 @@ public class TunnelData
     [JsonIgnore]
     public string FullRemoteAddress => Type switch
     {
-        TunnelType.Http => $"http://{NodeIp}{(RemoteEndpoint != "80" ? $":{RemoteEndpoint}" : "")}",
-        TunnelType.Https => $"https://{NodeIp}{(RemoteEndpoint != "443" ? $":{RemoteEndpoint}" : "")}",
-        TunnelType.Tcp or TunnelType.Udp => $"{NodeIp}:{RemoteEndpoint}",
+        "http" => $"http://{NodeIp}{(RemoteEndpoint != "80" ? $":{RemoteEndpoint}" : "")}",
+        "https" => $"https://{NodeIp}{(RemoteEndpoint != "443" ? $":{RemoteEndpoint}" : "")}",
+        "tcp" or "udp" => $"{NodeIp}:{RemoteEndpoint}",
         _ => throw new ArgumentOutOfRangeException()
     };
 }

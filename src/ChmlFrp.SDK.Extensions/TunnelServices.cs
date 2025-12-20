@@ -25,7 +25,7 @@ public static class TunnelServices
         public void StartTunnel(TunnelData tunnel, TunnelStartOptions? options = null)
         {
             if (tunnel.IsRunning()) return;
-            var frpProcess = StartFrpcProcess(user, tunnel.Id.ToString(), options);
+            var frpProcess = user.StartFrpcProcess(tunnel.Id.ToString()!, options);
             frpProcess.Exited += (_, _) => TunnelProcess.ProcessInfos.Remove(tunnel);
             tunnel.SetFrpProcess(frpProcess);
         }
@@ -42,7 +42,7 @@ public static class TunnelServices
                 return;
 
             var ids = string.Join(",", tunnelDatas.Select(t => t.Id.ToString()));
-            var frpProcess = StartFrpcProcess(user, ids, options);
+            var frpProcess = user.StartFrpcProcess(ids, options);
 
             frpProcess.Exited += (_, _) =>
             {

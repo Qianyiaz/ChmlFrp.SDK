@@ -76,6 +76,28 @@ else
 }
 ```
 
+### 创建隧道
+
+获取当前用户的隧道列表:
+
+```csharp
+var createRequest = new CreateTunnelRequest
+{
+    TunnelName = "my-tcp-tunnel",
+    Node = "node-name",
+    PortType = "tcp", // 例如:tcp/udp/http/https (必须小写)
+    LocalIp = "127.0.0.1",
+    LocalPort = 3389,
+    RemotePort = 10000,
+    BandDomain = "your-domain-name",
+    Encryption = false
+    Compression = false,
+    ExtraParams = ""
+};
+
+var createResult = await TunnelService.CreateTunnelAsync(createRequest);
+```
+
 ### 获取节点信息
 
 获取节点列表:
@@ -145,6 +167,7 @@ SDK 会把令牌保存为 JSON 文件路径为:
 - TunnelResponse: 包含隧道数据列表(TunnelData)
 - NodeResponse: 包含节点列表(NodeData)
 - NodeInfoResponse: 包含单个节点详情(NodeInfo)
+- CreateTunnelResponse: 包含单个隧道数据(TunnelData)
 
 常用模型示例字段:
 
