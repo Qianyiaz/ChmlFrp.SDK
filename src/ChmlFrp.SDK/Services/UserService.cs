@@ -1,9 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading.Tasks;
 using ChmlFrp.SDK.Responses;
 
 namespace ChmlFrp.SDK.Services;
@@ -81,7 +77,7 @@ public static class UserService
                 );
 
                 if (forecast!.State && saveToken)
-                    SaveTokenAsync(forecast.Data!.UserToken);
+                    UserResponse.SaveTokenAsync(forecast.Data!.UserToken);
                 return forecast;
             }
             catch (Exception ex) when (ex is HttpRequestException)
@@ -110,7 +106,7 @@ public static class UserService
                 );
 
                 if (forecast!.State && saveToken)
-                    SaveTokenAsync(forecast.Data!.UserToken);
+                    UserResponse.SaveTokenAsync(forecast.Data!.UserToken);
                 return forecast;
             }
             catch (Exception ex) when (ex is HttpRequestException)
@@ -136,18 +132,32 @@ public static class UserService
                     Message = "File not found."
                 };
 
-            await using (var stream = File.OpenRead(TokenFilePath))
+            var stream = File.OpenRead(TokenFilePath);
+            try
             {
-                using (var doc = await JsonDocument.ParseAsync(stream))
+                var doc = await JsonDocument.ParseAsync(stream);
+                try
                 {
                     if (doc.RootElement.TryGetProperty("usertoken", out var tokenElement))
                     {
                         var userToken = tokenElement.GetString();
 
                         if (!string.IsNullOrWhiteSpace(userToken))
-                            return await LoginByTokenAsync(userToken);
+                            return await UserResponse.LoginByTokenAsync(userToken);
                     }
                 }
+                finally
+                {
+                    doc.Dispose();
+                }
+            }
+            finally
+            {
+#if NETSTANDARD2_0
+                stream.Dispose();
+#else
+                await stream.DisposeAsync();
+#endif
             }
 
             try

@@ -1,15 +1,18 @@
 <Project>
 
     <PropertyGroup>
-        <Version>2.1.0-bata1</Version>
+        <Version>2.1.0-bata2</Version>
+
         <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
         <ImplicitUsings>true</ImplicitUsings>
         <IsAotCompatible>true</IsAotCompatible>
-        <TargetFramework>net8.0</TargetFramework>
-        <PackageReadmeFile>readme.md</PackageReadmeFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
         <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+        <TargetFrameworks>net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+
         <PackageIconUrl>https://chmlfrp.cn/favicon.ico</PackageIconUrl>
         <RepositoryUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</RepositoryUrl>
         <PackageTags>chmlfrp;http;json;aot;trimmable;cross-platform;dotnet</PackageTags>

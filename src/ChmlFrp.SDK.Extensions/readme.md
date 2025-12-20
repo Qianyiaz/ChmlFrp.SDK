@@ -58,7 +58,9 @@ userResult.StartTunnel(tunnelResult.Data!, startOptions);
 ```
 
 内部调用构建的 frpc 启动参数类似:
-Arguments = options?.CommandSuffix ?? $"-u {user.Data!.UserToken} -p {id}";
+
+Arguments = options?.CommandSuffix ?? $"-u %token% -p %id%";
+会自动把%token%替换成真实token,%id%也是一样
 
 并且会把 frpc 标准输出追加到指定日志文件 同时把每一行传给 Handler 回调(如果提供的话)
 

@@ -57,21 +57,23 @@ public static class TunnelServices
         private Process StartFrpcProcess(string id, TunnelStartOptions? options)
         {
             var frpcfile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
-            var command = options?.CommandSuffix ?? $"-u {user.Data!.UserToken} -p {id}";
+            var command = options?.CommandSuffix ?? "-u %token% -p %id%";
             var logfile = options?.LogFilePath ?? Path.GetTempFileName();
 
+#if NET7_0_OR_GREATER
             if (!OperatingSystem.IsWindows())
                 File.SetUnixFileMode(frpcfile,
                     UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
+#endif
 
             var frpProcess = new Process
             {
                 StartInfo =
                 {
                     FileName = frpcfile,
-                    Arguments = command,
                     RedirectStandardOutput = true,
-                    StandardOutputEncoding = Encoding.UTF8
+                    StandardOutputEncoding = Encoding.UTF8,
+                    Arguments = command.Replace("%token%", user.Data!.UserToken).Replace("%id%", id)
                 }
             };
 
@@ -98,7 +100,12 @@ public static class TunnelServices
         public void StopTunnel(TunnelData tunnel)
         {
             if (!tunnel.IsRunning()) return;
+
+#if NETCOREAPP3_0_OR_GREATER
             tunnel.GetFrpProcess()!.Kill(true);
+#else
+            tunnel.GetFrpProcess()!.Kill();
+#endif
         }
 
         /// <summary>
@@ -109,7 +116,7 @@ public static class TunnelServices
         public void StopTunnel(IEnumerable<TunnelData> tunnels)
         {
             foreach (var tunnel in tunnels.Where(tunnel => tunnel.IsRunning()))
-                StopTunnel(user, tunnel);
+                user.StopTunnel(tunnel);
         }
     }
 
@@ -121,21 +128,21 @@ public static class TunnelServices
         /// <summary>
         /// 日志文件
         /// </summary>
-        public string? LogFilePath { get; init; }
+        public string? LogFilePath { get; set; }
 
         /// <summary>
         /// frpc文件
         /// </summary>
-        public string? FrpcFilePath { get; init; }
+        public string? FrpcFilePath { get; set; }
 
         /// <summary>
         /// 命令后缀
         /// </summary>
-        public string? CommandSuffix { get; init; }
+        public string? CommandSuffix { get; set; }
 
         /// <summary>
         /// 输出处理程序
         /// </summary>
-        public Action<string>? Handler { get; init; }
+        public Action<string>? Handler { get; set; }
     }
 }

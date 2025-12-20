@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ChmlFrp.SDK.Models;
+﻿namespace ChmlFrp.SDK.Models;
 
 /// <summary>
 /// 隧道数据

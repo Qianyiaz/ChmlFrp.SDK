@@ -19,7 +19,7 @@ public static class TunnelProcess
     {
         internal void SetFrpProcess(Process process)
         {
-            ProcessInfos.AddOrUpdate(tunnel, process);
+            ProcessInfos.Add(tunnel, process);
         }
 
         /// <summary>
