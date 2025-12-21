@@ -2,19 +2,18 @@
 
     <PropertyGroup>
         <Version>2.1.0</Version>
-
         <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
+
         <ImplicitUsings>true</ImplicitUsings>
         <IsAotCompatible>true</IsAotCompatible>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <PackageReadmeFile>readme.md</PackageReadmeFile>
-        <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
-        <TargetFrameworks>net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
-
         <PackageIconUrl>https://chmlfrp.cn/favicon.ico</PackageIconUrl>
+        <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</RepositoryUrl>
+        <TargetFrameworks>net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
         <PackageTags>chmlfrp;http;json;aot;trimmable;cross-platform;dotnet</PackageTags>
     </PropertyGroup>
 
