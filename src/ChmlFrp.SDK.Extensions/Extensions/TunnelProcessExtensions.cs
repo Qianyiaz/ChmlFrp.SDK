@@ -7,7 +7,7 @@ namespace ChmlFrp.SDK.Extensions;
 /// <summary>
 /// 隧道进程相关的操作
 /// </summary>
-public static class TunnelProcess
+public static class TunnelProcessExtensions
 {
     internal static readonly ConditionalWeakTable<TunnelData, Process> ProcessInfos = new();
 

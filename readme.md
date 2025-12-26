@@ -89,7 +89,7 @@ var createRequest = new CreateTunnelRequest
     LocalIp = "127.0.0.1",
     LocalPort = 3389,
     RemotePort = 10000,
-    BandDomain = "your-domain-name",
+    BandDomain = "your-domain-name", // 只有在为http/https填
     Encryption = false
     Compression = false,
     ExtraParams = ""
@@ -124,8 +124,6 @@ if (nodeInfoResult?.State == true)
 {
     var nodeInfo = nodeInfoResult.Data!;
     Console.WriteLine($"CPU 核心数: {nodeInfo.NumCores}");
-    Console.WriteLine($"内存总量: {nodeInfo.MemoryTotalGB:F2} GB");
-    Console.WriteLine($"今日下载: {nodeInfo.TotalTrafficInGB:F2} GB");
 }
 ```
 
@@ -168,11 +166,6 @@ SDK 会把令牌保存为 JSON 文件路径为:
 - NodeResponse: 包含节点列表(NodeData)
 - NodeInfoResponse: 包含单个节点详情(NodeInfo)
 - CreateTunnelResponse: 包含单个隧道数据(TunnelData)
-
-常用模型示例字段:
-
-- TunnelData.FullRemoteAddress: 根据隧道类型生成的完整远程地址(HTTP/HTTPS/TCP/UDP)
-- NodeInfo.MemoryTotalGB / StorageAvailableGB / UptimeHours 等便捷只读属性,已做单位换算
 
 ## 进一步阅读
 

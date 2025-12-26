@@ -8,7 +8,7 @@ namespace ChmlFrp.SDK.Extensions;
 /// <summary>
 /// 对隧道相关的操作
 /// </summary>
-public static class TunnelServices
+public static class TunnelServiceExtensions
 {
     /// <summary>
     /// 隧道操作相关的扩展方法
@@ -26,7 +26,7 @@ public static class TunnelServices
         {
             if (tunnel.IsRunning()) return;
             var frpProcess = user.StartFrpcProcess(tunnel.Id.ToString()!, options);
-            frpProcess.Exited += (_, _) => TunnelProcess.ProcessInfos.Remove(tunnel);
+            frpProcess.Exited += (_, _) => TunnelProcessExtensions.ProcessInfos.Remove(tunnel);
             tunnel.SetFrpProcess(frpProcess);
         }
 
@@ -47,7 +47,7 @@ public static class TunnelServices
             frpProcess.Exited += (_, _) =>
             {
                 foreach (var tunnel in tunnelDatas)
-                    TunnelProcess.ProcessInfos.Remove(tunnel);
+                    TunnelProcessExtensions.ProcessInfos.Remove(tunnel);
             };
 
             foreach (var tunnel in tunnelDatas)

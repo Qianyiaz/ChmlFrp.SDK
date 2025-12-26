@@ -51,19 +51,19 @@ public class NodeInfo : NodeData
     /// CPU核心数
     /// </summary>
     [JsonPropertyName("num_cores")]
-    public int NumCores { get; set; }
+    public int? NumCores { get; set; }
 
     /// <summary>
     /// 今日下载流量(bytes)
     /// </summary>
     [JsonPropertyName("total_traffic_in")]
-    public long TotalTrafficIn { get; set; }
+    public long? TotalTrafficIn { get; set; }
 
     /// <summary>
     /// 今日上传流量(bytes)
     /// </summary>
     [JsonPropertyName("total_traffic_out")]
-    public long TotalTrafficOut { get; set; }
+    public long? TotalTrafficOut { get; set; }
 
     /// <summary>
     /// 带宽占用百分比
@@ -75,37 +75,25 @@ public class NodeInfo : NodeData
     /// 总内存量(bytes)
     /// </summary>
     [JsonPropertyName("memory_total")]
-    public long MemoryTotal { get; set; }
+    public long? MemoryTotal { get; set; }
 
     /// <summary>
     /// 总存储量(bytes)
     /// </summary>
     [JsonPropertyName("storage_total")]
-    public long StorageTotal { get; set; }
+    public long? StorageTotal { get; set; }
 
     /// <summary>
     /// 存储使用量(bytes)
     /// </summary>
     [JsonPropertyName("storage_used")]
-    public long StorageUsed { get; set; }
+    public long? StorageUsed { get; set; }
 
     /// <summary>
     /// 正常运行秒数
     /// </summary>
     [JsonPropertyName("uptime_seconds")]
-    public long UptimeSeconds { get; set; }
-
-    /// <summary>
-    /// 正常运行小时
-    /// </summary>
-    [JsonIgnore]
-    public double UptimeHours => UptimeSeconds / 60.0 / 60.0;
-
-    /// <summary>
-    /// 正常运行小时
-    /// </summary>
-    [JsonIgnore]
-    public double UptimeDays => UptimeHours / 24.0;
+    public long? UptimeSeconds { get; set; }
 
     /// <summary>
     /// 1分钟平均负载
@@ -124,40 +112,4 @@ public class NodeInfo : NodeData
     /// </summary>
     [JsonPropertyName("load15")]
     public double Load15 { get; set; }
-
-    /// <summary>
-    /// 今日下载流量(GB)
-    /// </summary>
-    [JsonIgnore]
-    public double TotalTrafficInGB => TotalTrafficIn / 1024.0 / 1024.0 / 1024.0;
-
-    /// <summary>
-    /// 今日上传流量(GB)
-    /// </summary>
-    [JsonIgnore]
-    public double TotalTrafficOutGB => TotalTrafficOut / 1024.0 / 1024.0 / 1024.0;
-
-    /// <summary>
-    /// 总内存量(GB)
-    /// </summary>
-    [JsonIgnore]
-    public double MemoryTotalGB => MemoryTotal / 1024.0 / 1024.0 / 1024.0;
-
-    /// <summary>
-    /// 总存储量(GB)
-    /// </summary>
-    [JsonIgnore]
-    public double StorageTotalGB => StorageTotal / 1024.0 / 1024.0 / 1024.0;
-
-    /// <summary>
-    /// 存储使用量(GB)
-    /// </summary>
-    [JsonIgnore]
-    public double StorageUsedGB => StorageUsed / 1024.0 / 1024.0 / 1024.0;
-
-    /// <summary>
-    /// 存储可用量(GB)
-    /// </summary>
-    [JsonIgnore]
-    public double StorageAvailableGB => StorageTotalGB - StorageUsedGB;
 }

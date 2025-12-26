@@ -81,13 +81,13 @@ public class UserData
     /// 累计上传数据量(字节)
     /// </summary>
     [JsonPropertyName("total_upload")]
-    public long TotalUploadBytes { get; set; }
+    public long? TotalUploadBytes { get; set; }
 
     /// <summary>
     /// 累计下载数据量(字节)
     /// </summary>
     [JsonPropertyName("total_download")]
-    public long TotalDownloadBytes { get; set; }
+    public long? TotalDownloadBytes { get; set; }
 
     /// <summary>
     /// 国内带宽限制(Mbps)
@@ -118,28 +118,4 @@ public class UserData
     /// </summary>
     [JsonPropertyName("regtime")]
     public string? RegistrationDate { get; set; }
-
-    /// <summary>
-    /// 累计上传数据量(MB)
-    /// </summary>
-    [JsonIgnore]
-    public double TotalUploadMB => TotalUploadBytes / 1024.0 / 1024.0;
-
-    /// <summary>
-    /// 累计下载数据量(MB)
-    /// </summary>
-    [JsonIgnore]
-    public double TotalDownloadMB => TotalDownloadBytes / 1024.0 / 1024.0;
-
-    /// <summary>
-    /// 累计上传数据量(GB)
-    /// </summary>
-    [JsonIgnore]
-    public double TotalUploadGB => TotalUploadMB / 1024.0;
-
-    /// <summary>
-    /// 累计下载数据量(GB)
-    /// </summary>
-    [JsonIgnore]
-    public double TotalDownloadGB => TotalDownloadMB / 1024.0;
 }

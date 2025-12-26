@@ -42,6 +42,7 @@ else
 }
 
 var tunnelResult = await forecast.GetTunnelResponseAsync(); // 获取隧道列表
+
 if (tunnelResult!.State)
 {
     var i = 1;
@@ -64,6 +65,7 @@ if (tunnelResult!.State)
 else
 {
     WriteLine(tunnelResult.Message);
+    return;
 }
 
 ReadKey(true);
