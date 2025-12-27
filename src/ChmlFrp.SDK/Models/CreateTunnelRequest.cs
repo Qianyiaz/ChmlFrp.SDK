@@ -1,4 +1,4 @@
-﻿namespace ChmlFrp.SDK.Responses;
+﻿namespace ChmlFrp.SDK.Models;
 
 /// <summary>
 /// 创建隧道请求模型

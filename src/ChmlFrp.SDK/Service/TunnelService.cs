@@ -1,20 +1,20 @@
 ﻿using System.Net.Http.Json;
-using ChmlFrp.SDK.Responses;
+using ChmlFrp.SDK.Content;
 
-namespace ChmlFrp.SDK.Services;
+namespace ChmlFrp.SDK.Service;
 
 /// <summary>
 /// 隧道操作服务
 /// </summary>
 public static class TunnelService
 {
-    extension(UserResponse user)
+    extension(DataResponse<UserData> user)
     {
         /// <summary>
         /// 创建隧道
         /// </summary>
         /// <returns>返回隧道操作响应</returns>
-        public async Task<CreateTunnelResponse?> CreateTunnelResponse(CreateTunnelRequest request)
+        public async Task<DataResponse<TunnelData>?> CreateTunnelResponse(CreateTunnelRequest request)
         {
             try
             {
@@ -38,7 +38,7 @@ public static class TunnelService
                 var response = await UserService.MainClient.PostAsJsonAsync("create_tunnel", request,
                     SourceGeneration.Default.CreateTunnelRequest);
 
-                return await response.Content.ReadFromJsonAsync(SourceGeneration.Default.CreateTunnelResponse);
+                return await response.Content.ReadFromJsonAsync(SourceGeneration.Default.DataResponseTunnelData);
             }
             catch (Exception ex) when (ex is HttpRequestException)
             {

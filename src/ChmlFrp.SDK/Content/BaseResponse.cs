@@ -1,4 +1,4 @@
-namespace ChmlFrp.SDK.Responses;
+namespace ChmlFrp.SDK.Content;
 
 /// <summary>
 /// 基本请求

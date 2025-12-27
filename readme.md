@@ -12,8 +12,7 @@
 先引用命名空间:
 
 ```csharp
-using ChmlFrp.SDK.Services;
-using ChmlFrp.SDK.Responses;
+using ChmlFrp.SDK.Service;
 using ChmlFrp.SDK.Models;
 ```
 
@@ -139,7 +138,7 @@ Console.WriteLine(resetResult?.State == true ? "重置成功" : $"重置失败: 
 更新用户 QQ:
 
 ```csharp
-var updateQqResult = await userResult.UpdateQqAsync("123456789");
+var updateQqResult = await userResult.UpdateQQAsync("123456789");
 ```
 
 更新用户名:
@@ -155,17 +154,6 @@ SDK 会把令牌保存为 JSON 文件路径为:
 - Windows: %APPDATA%/ChmlFrp/user.json
 - MacOS: $HOME/Library/Application Support/ChmlFrp/user.json
 - Linux: 通常是 $HOME/.config/ChmlFrp/user.json
-
-## 响应与模型简介
-
-常见响应类型:
-
-- BaseResponse: 基础响应,包含 Message 与 State(字符串->布尔的封装)
-- UserResponse: 包含 UserData(用户详细信息)
-- TunnelResponse: 包含隧道数据列表(TunnelData)
-- NodeResponse: 包含节点列表(NodeData)
-- NodeInfoResponse: 包含单个节点详情(NodeInfo)
-- CreateTunnelResponse: 包含单个隧道数据(TunnelData)
 
 ## 进一步阅读
 

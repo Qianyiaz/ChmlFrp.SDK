@@ -1,5 +1,5 @@
 ﻿using ChmlFrp.SDK.Extensions;
-using ChmlFrp.SDK.Services;
+using ChmlFrp.SDK.Service;
 using static System.Console;
 
 var forecast = await UserService.AutoLoginAsync(); // 尝试自动登录
@@ -65,6 +65,7 @@ if (tunnelResult!.State)
 else
 {
     WriteLine(tunnelResult.Message);
+    ReadKey(true);
     return;
 }
 

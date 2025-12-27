@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using ChmlFrp.SDK.Models;
-using ChmlFrp.SDK.Responses;
+using ChmlFrp.SDK.Content;
 
 namespace ChmlFrp.SDK.Extensions;
 
@@ -14,7 +14,7 @@ public static class TunnelServiceExtensions
     /// 隧道操作相关的扩展方法
     /// </summary>
     /// <param name="user">用户类</param>
-    extension(UserResponse user)
+    extension(DataResponse<UserData> user)
     {
         /// <summary>
         /// 启动隧道

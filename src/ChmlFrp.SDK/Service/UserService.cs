@@ -1,8 +1,8 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
-using ChmlFrp.SDK.Responses;
+using ChmlFrp.SDK.Content;
 
-namespace ChmlFrp.SDK.Services;
+namespace ChmlFrp.SDK.Service;
 
 /// <summary>
 /// 用户操作
@@ -64,13 +64,13 @@ public static class UserService
     /// <param name="password">密码</param>
     /// <param name="saveToken">是否保存令牌</param>
     /// <returns>返回用户请求</returns>
-    public static async Task<UserResponse?> LoginAsync(string? username, string? password, bool saveToken = true)
+    public static async Task<DataResponse<UserData>?> LoginAsync(string? username, string? password, bool saveToken = true)
     {
         try
         {
             var forecast = await MainClient.GetFromJsonAsync(
                 $"login?username={username}&password={password}",
-                SourceGeneration.Default.UserResponse
+                SourceGeneration.Default.DataResponseUserData
             );
 
             if (forecast!.State && saveToken)
@@ -79,7 +79,7 @@ public static class UserService
         }
         catch (Exception ex) when (ex is HttpRequestException)
         {
-            return new UserResponse
+            return new()
             {
                 StateString = "fail",
                 Message = ex.Message
@@ -93,13 +93,13 @@ public static class UserService
     /// <param name="userToken">用户令牌用于登录</param>
     /// <param name="saveToken">是否保存令牌</param>
     /// <returns>返回用户请求</returns>
-    public static async Task<UserResponse?> LoginByTokenAsync(string userToken, bool saveToken = true)
+    public static async Task<DataResponse<UserData>?> LoginByTokenAsync(string userToken, bool saveToken = true)
     {
         try
         {
             var forecast = await MainClient.GetFromJsonAsync(
                 $"userinfo?token={userToken}",
-                SourceGeneration.Default.UserResponse
+                SourceGeneration.Default.DataResponseUserData
             );
 
             if (forecast!.State && saveToken)
@@ -120,7 +120,7 @@ public static class UserService
     /// 自动登录
     /// </summary>
     /// <returns>返回用户请求</returns>
-    public static async Task<UserResponse?> AutoLoginAsync()
+    public static async Task<DataResponse<UserData>?> AutoLoginAsync()
     {
         if (!File.Exists(TokenFilePath))
             return new()
@@ -175,26 +175,19 @@ public static class UserService
 
     #endregion
 
-    extension(UserResponse user)
+    extension(DataResponse<UserData> user)
     {
         /// <summary>
         /// 获取隧道请求
         /// </summary>
         /// <returns>返回隧道请求</returns>
-        public async Task<TunnelResponse?> GetTunnelResponseAsync()
+        public async Task<DataResponse<IReadOnlyList<TunnelData>>?> GetTunnelResponseAsync()
         {
-            if (!user.State)
-                return new()
-                {
-                    StateString = "fail",
-                    Message = "You don't login."
-                };
-
             try
             {
                 return await MainClient.GetFromJsonAsync(
                     $"tunnel?token={user.Data!.UserToken}",
-                    SourceGeneration.Default.TunnelResponse
+                    SourceGeneration.Default.DataResponseIReadOnlyListTunnelData
                 );
             }
             catch (Exception ex) when (ex is HttpRequestException)
@@ -211,20 +204,13 @@ public static class UserService
         /// 获取节点请求
         /// </summary>
         /// <returns>返回节点请求</returns>
-        public async Task<NodeResponse?> GetNodeResponseAsync()
+        public async Task<DataResponse<IReadOnlyList<NodeData>>?> GetNodeResponseAsync()
         {
-            if (!user.State)
-                return new()
-                {
-                    StateString = "fail",
-                    Message = "You don't login."
-                };
-
             try
             {
                 return await MainClient.GetFromJsonAsync(
                     $"node?token={user.Data!.UserToken}",
-                    SourceGeneration.Default.NodeResponse
+                    SourceGeneration.Default.DataResponseIReadOnlyListNodeData
                 );
             }
             catch (Exception ex) when (ex is HttpRequestException)
@@ -242,20 +228,13 @@ public static class UserService
         /// </summary>
         /// <param name="node">节点数据类</param>
         /// <returns>返回节点请求</returns>
-        public async Task<NodeInfoResponse?> GetNodeInfoResponseAsync(NodeData node)
+        public async Task<DataResponse<NodeInfo>?> GetNodeInfoResponseAsync(NodeData node)
         {
-            if (!user.State)
-                return new()
-                {
-                    StateString = "fail",
-                    Message = "You don't login."
-                };
-
             try
             {
                 return await MainClient.GetFromJsonAsync(
                     $"nodeinfo?token={user.Data!.UserToken}&node={node.Name}",
-                    SourceGeneration.Default.NodeInfoResponse
+                    SourceGeneration.Default.DataResponseNodeInfo
                 );
             }
             catch (Exception ex) when (ex is HttpRequestException)
@@ -295,12 +274,12 @@ public static class UserService
         /// 更新用户QQ号
         /// </summary>
         /// <returns>请求结果</returns>
-        public async Task<BaseResponse?> UpdateQqAsync(string newQq)
+        public async Task<BaseResponse?> UpdateQQAsync(string newQQ)
         {
             try
             {
                 return await MainClient.GetFromJsonAsync(
-                    $"update_qq?token={user.Data!.UserToken}&new_qq={newQq}",
+                    $"update_qq?token={user.Data!.UserToken}&new_qq={newQQ}",
                     SourceGeneration.Default.BaseResponse
                 );
             }

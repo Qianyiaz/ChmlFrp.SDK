@@ -11,9 +11,7 @@
 先引用命名空间:
 
 ```csharp
-using ChmlFrp.SDK.Services;
 using ChmlFrp.SDK.Extensions;
-using ChmlFrp.SDK.Models;
 ```
 
 #### 启动隧道
