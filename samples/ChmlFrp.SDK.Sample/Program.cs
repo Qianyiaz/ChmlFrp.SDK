@@ -2,7 +2,9 @@
 using ChmlFrp.SDK.Service;
 using static System.Console;
 
-var forecast = await UserService.AutoLoginAsync(); // 尝试自动登录
+var client = new ChmlFrpClient();
+
+var forecast = await client.AutoLoginAsync(); // 尝试自动登录
 if (!forecast!.State) // 自动登录失败 进行手动登录
     while (true)
     {
@@ -12,15 +14,17 @@ if (!forecast!.State) // 自动登录失败 进行手动登录
 
         Write("密码: ");
         var password = ReadLine();
-        forecast = await UserService.LoginAsync(userName, password); // 登录
+        forecast = await client.LoginAsync(userName, password); // 登录
 
         WriteLine(forecast?.Message); // 显示登录结果消息
+        ReadKey(true);
+        
         if (forecast!.State)
-            break; // 登录成功 跳出循环
+            break; // 登录成功 跳出循环 
     }
 
 // 显示用户信息
-var nodeResult = await forecast.GetNodeResponseAsync(); // 获取节点列表
+var nodeResult = await client.GetNodeResponseAsync(); // 获取节点列表
 if (nodeResult!.State)
 {
     var i = 1;
@@ -28,7 +32,7 @@ if (nodeResult!.State)
     {
         if (i == 1)
         {
-            var nodeInfo = await forecast.GetNodeInfoResponseAsync(node);
+            var nodeInfo = await client.GetNodeInfoResponseAsync(node);
             WriteLine(nodeInfo!.State ? nodeInfo.Data!.Ip : nodeInfo.Message);
         } // 显示第一个节点的IP地址
 
@@ -41,10 +45,17 @@ else
     WriteLine(nodeResult.Message);
 }
 
-var tunnelResult = await forecast.GetTunnelResponseAsync(); // 获取隧道列表
+var tunnelResult = await client.GetTunnelResponseAsync(); // 获取隧道列表
 
 if (tunnelResult!.State)
 {
+    if (tunnelResult.Data!.Count == 0)
+    {
+        WriteLine("暂无隧道");
+        ReadKey(true); 
+        return;
+    }
+    
     var i = 1;
     foreach (var tunnel in tunnelResult.Data!)
     {
@@ -56,20 +67,26 @@ if (tunnelResult!.State)
     ReadKey(true);
     Clear();
 
-    forecast.StartTunnel(tunnelResult.Data, new()
+    try
     {
-        Handler = WriteLine
-    }); // 启动所有隧道 并显示启动结果
-    // 注意 启动FRPC需要本地已配置好FRPC环境
+        client.StartTunnel(tunnelResult.Data, new()
+        {
+            Handler = WriteLine
+        }); // 启动所有隧道 并显示启动结果
+        // 注意 启动FRPC需要本地已配置好FRPC环境
+    }
+    catch (Exception e)
+    {
+        WriteLine(e.Message);
+    }
 }
-else
+else 
 {
     WriteLine(tunnelResult.Message);
-    ReadKey(true);
+    ReadKey(true); 
     return;
 }
 
 ReadKey(true);
 
-if (tunnelResult.Data != null)
-    forecast.StopTunnel(tunnelResult.Data); // 停止所有隧道
+client.StopTunnel(tunnelResult.Data); // 停止所有隧道

@@ -1,7 +1,7 @@
 <Project>
 
     <PropertyGroup>
-        <Version>2.1.2</Version>
+        <Version>2.2.1</Version>
         <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
 
@@ -13,7 +13,7 @@
         <PackageIconUrl>https://chmlfrp.cn/favicon.ico</PackageIconUrl>
         <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</RepositoryUrl>
-        <TargetFrameworks>net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net10.0;net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
         <PackageTags>chmlfrp;http;json;aot;trimmable;cross-platform;dotnet</PackageTags>
     </PropertyGroup>
 

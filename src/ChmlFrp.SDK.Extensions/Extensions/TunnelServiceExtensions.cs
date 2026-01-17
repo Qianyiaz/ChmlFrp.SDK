@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using ChmlFrp.SDK.Models;
-using ChmlFrp.SDK.Content;
+using ChmlFrp.SDK.Service;
 
 namespace ChmlFrp.SDK.Extensions;
 
@@ -13,8 +13,8 @@ public static class TunnelServiceExtensions
     /// <summary>
     /// 隧道操作相关的扩展方法
     /// </summary>
-    /// <param name="user">用户类</param>
-    extension(DataResponse<UserData> user)
+    /// <param name="client">客户端</param>
+    extension(ChmlFrpClient client)
     {
         /// <summary>
         /// 启动隧道
@@ -24,8 +24,10 @@ public static class TunnelServiceExtensions
         /// <exception cref="ArgumentNullException">设置frpc路径错误</exception>
         public void StartTunnel(TunnelData tunnel, TunnelStartOptions? options = null)
         {
-            if (tunnel.IsRunning()) return;
-            var frpProcess = user.StartFrpcProcess(tunnel.Id.ToString()!, options);
+            if (tunnel.IsRunning()) 
+                throw new ArgumentNullException(nameof(tunnel), "Tunnel is running.");
+            
+            var frpProcess = client.StartFrpcProcess(tunnel.Id.ToString()!, options);
             frpProcess.Exited += (_, _) => TunnelProcessExtensions.ProcessInfos.Remove(tunnel);
             tunnel.SetFrpProcess(frpProcess);
         }
@@ -38,11 +40,12 @@ public static class TunnelServiceExtensions
         public void StartTunnel(IEnumerable<TunnelData> tunnels, TunnelStartOptions? options = null)
         {
             var tunnelDatas = tunnels.ToList();
-            if (tunnelDatas.Any(tunnel => tunnel.IsRunning()))
-                return;
+
+            if (tunnelDatas.Count == 0 || tunnelDatas.Any(tunnel => tunnel.IsRunning()))
+                throw new ArgumentNullException(nameof(tunnels), "No tunnel or tunnel is running.");
 
             var ids = string.Join(",", tunnelDatas.Select(t => t.Id.ToString()));
-            var frpProcess = user.StartFrpcProcess(ids, options);
+            var frpProcess = client.StartFrpcProcess(ids, options);
 
             frpProcess.Exited += (_, _) =>
             {
@@ -56,6 +59,9 @@ public static class TunnelServiceExtensions
 
         private Process StartFrpcProcess(string id, TunnelStartOptions? options)
         {
+            if (!client.HasToken(out var token))
+                throw new NullReferenceException("Not logged in (token missing).");
+            
             var frpcfile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
             var command = options?.CommandSuffix ?? "-u %token% -p %id%";
             var logfile = options?.LogFilePath ?? Path.GetTempFileName();
@@ -73,7 +79,7 @@ public static class TunnelServiceExtensions
                     FileName = frpcfile,
                     RedirectStandardOutput = true,
                     StandardOutputEncoding = Encoding.UTF8,
-                    Arguments = command.Replace("%token%", user.Data!.UserToken).Replace("%id%", id)
+                    Arguments = command.Replace("%token%", token).Replace("%id%", id)
                 }
             };
 
@@ -116,7 +122,7 @@ public static class TunnelServiceExtensions
         public void StopTunnel(IEnumerable<TunnelData> tunnels)
         {
             foreach (var tunnel in tunnels.Where(tunnel => tunnel.IsRunning()))
-                user.StopTunnel(tunnel);
+                client.StopTunnel(tunnel);
         }
     }
 
