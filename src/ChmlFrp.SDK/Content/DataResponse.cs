@@ -4,7 +4,7 @@
 /// 数据响应结构
 /// </summary>
 /// <typeparam name="T">数据类型</typeparam>
-public sealed class DataResponse<T> : BaseResponse
+public class DataResponse<T> : BaseResponse
 {
     /// <summary>
     /// 数据

@@ -13,8 +13,8 @@
         <PackageIconUrl>https://chmlfrp.cn/favicon.ico</PackageIconUrl>
         <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</RepositoryUrl>
-        <TargetFrameworks>net10.0;net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
         <PackageTags>chmlfrp;http;json;aot;trimmable;cross-platform;dotnet</PackageTags>
+        <TargetFrameworks>net8.0;net10.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     </PropertyGroup>
 
 </Project>
