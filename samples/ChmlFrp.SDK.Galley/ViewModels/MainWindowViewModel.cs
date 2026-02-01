@@ -1,9 +1,8 @@
 ﻿using ChmlFrp.SDK.Models;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ChmlFrp.SDK.Galley.ViewModels;
 
-public partial class MainWindowViewModel(UserData user) : ObservableObject
+public class MainWindowViewModel(UserData user)
 {
-    [ObservableProperty] private string _username = user.Username!;
+    public string Username { get; set; } = user.Username!;
 }
