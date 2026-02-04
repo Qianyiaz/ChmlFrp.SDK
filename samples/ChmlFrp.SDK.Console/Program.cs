@@ -1,4 +1,5 @@
 ﻿using ChmlFrp.SDK.Extensions;
+using ChmlFrp.SDK.Models;
 using ChmlFrp.SDK.Service;
 using static System.Console;
 
@@ -22,6 +23,27 @@ if (!forecast!.State) // 自动登录失败 进行手动登录
         if (forecast!.State)
             break; // 登录成功 跳出循环 
     }
+
+var createReq = new UpdateTunnelRequest
+{
+    TunnelName = "mytesttunnel",
+    Node = "成都电信",
+    PortType = "tcp",
+    LocalIp = "127.0.0.1",
+    LocalPort = 8080,
+    RemotePort = 67422
+    // RemotePort, BandDomain, Encryption, Compression, ExtraParams 可按需设置
+};
+
+var createResult = await client.UpdateTunnelAsync(createReq);
+if (createResult!.State)
+{
+    WriteLine("创建隧道成功: " + createResult.Data?.Name);
+}
+else
+{
+    WriteLine("创建隧道失败: " + createResult.Message);
+}
 
 // 显示用户信息
 var nodeResult = await client.GetNodeResponseAsync(); // 获取节点列表

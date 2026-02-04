@@ -285,4 +285,41 @@ public class ChmlFrpClient
             };
         }
     }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    public async Task<DataResponse<TunnelData>?> CreateTunnelAsync(CreateTunnelRequest request)
+    {
+        if (!HasToken(out var token))
+            throw new NullReferenceException("Not logged in (token missing).");
+
+        try
+        {
+            using var content = JsonContent.Create(request, Default.CreateTunnelRequest);
+            var response = await _client.PostAsync($"create_tunnel?token={token}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new DataResponse<TunnelData>
+                {
+                    StateString = "fail",
+                    Message = await response.Content.ReadAsStringAsync()
+                };
+            }
+
+            var dataResponse = await response.Content.ReadFromJsonAsync<DataResponse<TunnelData>>(Default.DataResponseTunnelData);
+            return dataResponse;
+        }
+        catch (HttpRequestException ex)
+        {
+            return new DataResponse<TunnelData>
+            {
+                StateString = "fail",
+                Message = ex.Message
+            };
+        }
+    }
 }
