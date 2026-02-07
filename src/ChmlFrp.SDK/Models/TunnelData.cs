@@ -24,7 +24,7 @@ public class TunnelData
     public string? LocalIp { get; set; }
 
     /// <summary>
-    /// 隧道类型(字符串)
+    /// 隧道类型(字符串) tcp/udp/http/https
     /// </summary>
     [JsonPropertyName("type")]
     public string? Type { get; set; }
@@ -117,7 +117,7 @@ public class TunnelData
     /// 当前连接数
     /// </summary>
     [JsonPropertyName("cur_conns")]
-    public int CurrentConnections { get; set; }
+    public int? CurrentConnections { get; set; }
 
     /// <summary>
     /// 节点IP地址
