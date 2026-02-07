@@ -64,8 +64,12 @@ public static class TunnelServiceExtensions
             
             var frpcfile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
             var command = options?.CommandSuffix ?? "-u %token% -p %id%";
-            var logfile = options?.LogFilePath ?? Path.GetTempFileName();
-
+            
+            string? logfile = null;
+            var isUseLogFile = options?.IsUseLogFile ?? true;
+            if (isUseLogFile)
+                logfile = options?.LogFilePath ?? Path.GetTempFileName();
+            
 #if NET7_0_OR_GREATER
             if (!OperatingSystem.IsWindows())
                 File.SetUnixFileMode(frpcfile,
@@ -83,13 +87,17 @@ public static class TunnelServiceExtensions
                 }
             };
 
-            File.WriteAllText(logfile, string.Empty);
+            if (isUseLogFile)
+                File.WriteAllText(logfile!, string.Empty);
+            
             frpProcess.OutputDataReceived += (_, args) =>
             {
                 var line = args.Data;
                 if (string.IsNullOrWhiteSpace(line))
                     return;
-                File.AppendAllText(logfile, line + Environment.NewLine);
+                
+                if (isUseLogFile) 
+                    File.AppendAllText(logfile!, line + Environment.NewLine);
                 options?.Handler?.Invoke(line);
             };
 
@@ -131,6 +139,11 @@ public static class TunnelServiceExtensions
     /// </summary>
     public class TunnelStartOptions
     {
+        /// <summary>
+        /// 是否使用日志文件记录frpc输出
+        /// </summary>
+        public bool IsUseLogFile { get; set; } = true;
+        
         /// <summary>
         /// 日志文件
         /// </summary>

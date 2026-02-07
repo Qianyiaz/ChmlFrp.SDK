@@ -40,6 +40,7 @@ void Handler(string line) => Console.WriteLine(line);
 // 启动选项
 var startOptions = new TunnelServiceExtensions.TunnelStartOptions
 {
+    IsUseLogFile = true,           // 启用日志文件 （默认 true）
     LogFilePath = "frpc.log",      // 指定日志路径
     FrpcFilePath = "frpc.exe",     // Windows 上常用, Linux/macOS 使用 "frpc" 或完整路径
     CommandSuffix = null,          // 若为 null 则使用默认 "-u %token% -p %id%"
@@ -98,6 +99,7 @@ StopTunnel 会尝试获取并 Kill 对应的 frpc 进程（若该隧道当前有
 - `File.SetUnixFileMode` 需要运行进程具有相应权限；如果权限不足，建议手动为 frpc 添加执行权限（`chmod +x frpc`）。
 - `LogFilePath` 如果不指定将使用系统临时文件（不同运行可能不同）。建议指定稳定路径以便查看历史日志。
 - 当一次启动多个隧道时，SDK 会把多个 id 以逗号连接传递给同一个 frpc 进程，日志与回调也会集中到同一进程上。
+- 其他系统暂时没有测试（除Windows外）可能会影响行为，建议在使用前测试相关功能。
 
 更多用法与源码请查看仓库：
 https://github.com/Qianyiaz/ChmlFrp.SDK/tree/main/src/ChmlFrp.SDK.Extensions
