@@ -16,7 +16,7 @@
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="11.3.11"/>
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.11"/>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <ProjectReference Include="..\..\src\ChmlFrp.SDK.Extensions\ChmlFrp.SDK.Extensions.csproj" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
+        <ProjectReference Include="..\..\src\ChmlFrp.SDK.Extensions\ChmlFrp.SDK.Extensions.csproj"/>
     </ItemGroup>
 </Project>

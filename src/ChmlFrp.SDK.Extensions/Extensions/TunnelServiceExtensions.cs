@@ -24,9 +24,9 @@ public static class TunnelServiceExtensions
         /// <exception cref="ArgumentNullException">设置frpc路径错误</exception>
         public void StartTunnel(TunnelData tunnel, TunnelStartOptions? options = null)
         {
-            if (tunnel.IsRunning()) 
+            if (tunnel.IsRunning())
                 throw new ArgumentNullException(nameof(tunnel), "Tunnel is running.");
-            
+
             var frpProcess = client.StartFrpcProcess(tunnel.Id.ToString()!, options);
             frpProcess.Exited += (_, _) => TunnelProcessExtensions.ProcessInfos.Remove(tunnel);
             tunnel.SetFrpProcess(frpProcess);
@@ -61,15 +61,15 @@ public static class TunnelServiceExtensions
         {
             if (!client.HasToken(out var token))
                 throw new NullReferenceException("Not logged in (token missing).");
-            
+
             var frpcfile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
             var command = options?.CommandSuffix ?? "-u %token% -p %id%";
-            
+
             string? logfile = null;
             var isUseLogFile = options?.IsUseLogFile ?? true;
             if (isUseLogFile)
                 logfile = options?.LogFilePath ?? Path.GetTempFileName();
-            
+
 #if NET7_0_OR_GREATER
             if (!OperatingSystem.IsWindows())
                 File.SetUnixFileMode(frpcfile,
@@ -89,14 +89,14 @@ public static class TunnelServiceExtensions
 
             if (isUseLogFile)
                 File.WriteAllText(logfile!, string.Empty);
-            
+
             frpProcess.OutputDataReceived += (_, args) =>
             {
                 var line = args.Data;
                 if (string.IsNullOrWhiteSpace(line))
                     return;
-                
-                if (isUseLogFile) 
+
+                if (isUseLogFile)
                     File.AppendAllText(logfile!, line + Environment.NewLine);
                 options?.Handler?.Invoke(line);
             };
@@ -143,7 +143,7 @@ public static class TunnelServiceExtensions
         /// 是否使用日志文件记录frpc输出
         /// </summary>
         public bool IsUseLogFile { get; set; } = true;
-        
+
         /// <summary>
         /// 日志文件
         /// </summary>

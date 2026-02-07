@@ -17,7 +17,8 @@ using ChmlFrp.SDK.Service; // 若需直接使用 ChmlFrpClient
 
 ### 启动隧道（单个或多个）
 
-- 默认 frpc 路径：`AppDomain.CurrentDomain.BaseDirectory + "frpc"`（Windows 上可放 `frpc.exe`，也可通过 TunnelStartOptions.FrpcFilePath 指定完整路径）
+- 默认 frpc 路径：`AppDomain.CurrentDomain.BaseDirectory + "frpc"`（Windows 上可放 `frpc.exe`，也可通过
+  TunnelStartOptions.FrpcFilePath 指定完整路径）
 - 在非 Windows 系统上 SDK 会尝试设置可执行权限（使用 `File.SetUnixFileMode`）
 - 日志默认写入临时文件（`Path.GetTempFileName()`），可通过 `TunnelStartOptions.LogFilePath` 指定
 
@@ -81,7 +82,8 @@ client.StopTunnel(tunnelResult.Data![0]);
 client.StopTunnel(tunnelResult.Data!);
 ```
 
-StopTunnel 会尝试获取并 Kill 对应的 frpc 进程（若该隧道当前有运行的进程）。在支持的平台上会尝试以递归方式结束子进程（视 .NET 版本决定行为）。
+StopTunnel 会尝试获取并 Kill 对应的 frpc 进程（若该隧道当前有运行的进程）。在支持的平台上会尝试以递归方式结束子进程（视 .NET
+版本决定行为）。
 
 ### 隧道进程管理（API 说明）
 

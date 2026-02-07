@@ -19,23 +19,23 @@ if (!forecast!.State) // 自动登录失败 进行手动登录
 
         WriteLine(forecast?.Message); // 显示登录结果消息
         ReadKey(true);
-        
+
         if (forecast!.State)
             break; // 登录成功 跳出循环 
     }
 
-var createReq = new UpdateTunnelRequest
+var createReq = new CreateTunnelRequest
 {
-    TunnelName = "mytesttunnel",
+    TunnelName = "mytesnnel",
     Node = "成都电信",
     PortType = "tcp",
     LocalIp = "127.0.0.1",
     LocalPort = 8080,
-    RemotePort = 67422
+    RemotePort = 56566
     // RemotePort, BandDomain, Encryption, Compression, ExtraParams 可按需设置
 };
 
-var createResult = await client.UpdateTunnelAsync(createReq);
+var createResult = await client.CreateTunnelAsync(createReq);
 if (createResult!.State)
 {
     WriteLine("创建隧道成功: " + createResult.Data?.Name);
@@ -74,10 +74,10 @@ if (tunnelResult!.State)
     if (tunnelResult.Data!.Count == 0)
     {
         WriteLine("暂无隧道");
-        ReadKey(true); 
+        ReadKey(true);
         return;
     }
-    
+
     var i = 1;
     foreach (var tunnel in tunnelResult.Data!)
     {
@@ -93,6 +93,7 @@ if (tunnelResult!.State)
     {
         client.StartTunnel(tunnelResult.Data, new()
         {
+            IsUseLogFile = false,
             Handler = WriteLine
         }); // 启动所有隧道 并显示启动结果
         // 注意 启动FRPC需要本地已配置好FRPC环境
@@ -102,10 +103,10 @@ if (tunnelResult!.State)
         WriteLine(e.Message);
     }
 }
-else 
+else
 {
     WriteLine(tunnelResult.Message);
-    ReadKey(true); 
+    ReadKey(true);
     return;
 }
 
