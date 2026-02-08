@@ -5,10 +5,15 @@
         x:DataType="vm:LoginWindowViewModel"
         Title="Login ChmlFrp"
         Height="325" Width="500">
-        
-    <StackPanel MinWidth="250" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBox Watermark="用户名" Text="{Binding Username}"/>
-        <TextBox Watermark="密码" PasswordChar="*" Text="{Binding Password}"/>
-        <Button HorizontalAlignment="Right" Content="登录" Command="{Binding LoginCommand}" HotKey="Enter"/>
+
+    <StackPanel VerticalAlignment="Center" MaxWidth="325" Spacing="5">
+        <TextBox IsVisible="{Binding !IsUseToken}" Watermark="用户名" Text="{Binding Username}" />
+        <TextBox IsVisible="{Binding !IsUseToken}" Watermark="密码" PasswordChar="*" Text="{Binding Password}" />
+        <TextBox IsVisible="{Binding IsUseToken}" Watermark="用户令牌" PasswordChar="*" Text="{Binding Usertoken}" />
+        <WrapPanel ItemSpacing="5">
+            <CheckBox IsChecked="{Binding IsRememberMe}" Content="保持登录" />
+            <CheckBox IsChecked="{Binding IsUseToken}" Content="使用令牌(token)登录" />
+        </WrapPanel>
+        <Button Content="登录" HorizontalAlignment="Right" Command="{Binding LoginCommand}" />
     </StackPanel>
 </Window>
