@@ -1,14 +1,19 @@
 ﻿using Avalonia.Controls.Notifications;
+using ChmlFrp.SDK.Content;
 using ChmlFrp.SDK.Galley.Views;
+using ChmlFrp.SDK.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace ChmlFrp.SDK.Galley.ViewModels;
 
-public partial class LoginWindowViewModel(WindowNotificationManager manager,LoginWindow window) : ObservableObject
+public partial class LoginWindowViewModel(WindowNotificationManager manager, LoginWindow window) : ObservableObject
 {
-    [ObservableProperty] private string? _username;
+    [ObservableProperty] private bool _isRememberMe = true;
+    [ObservableProperty] private bool _isUseToken;
     [ObservableProperty] private string? _password;
+    [ObservableProperty] private string? _username;
+    [ObservableProperty] private string? _usertoken;
 
     [RelayCommand]
     private async Task Login()
@@ -19,7 +24,11 @@ public partial class LoginWindowViewModel(WindowNotificationManager manager,Logi
             return;
         }
 
-        var dataResponse = await App.ChmlFrpClient.LoginAsync(Username,Password);
+        DataResponse<UserData>? dataResponse;
+        if (IsUseToken)
+            dataResponse = await App.ChmlFrpClient.LoginByTokenAsync(Usertoken!, IsRememberMe);
+        else
+            dataResponse = await App.ChmlFrpClient.LoginAsync(Username, Password, IsRememberMe);
 
         if (!dataResponse!.State)
         {
