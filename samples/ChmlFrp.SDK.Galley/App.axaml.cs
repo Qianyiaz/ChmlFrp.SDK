@@ -26,12 +26,11 @@ public class App : Application
             var autoLoginAsync = await ChmlFrpClient.AutoLoginAsync();
             if (!autoLoginAsync!.State) return;
             new MainWindow { DataContext = new MainWindowViewModel(autoLoginAsync.Data!) }.Show();
+            loginWindow.Close();
         }
         catch
         {
             // ignored
         }
-        
-        loginWindow.Close();
     }
 }
