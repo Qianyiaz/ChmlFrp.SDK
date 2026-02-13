@@ -33,13 +33,13 @@ public class CreateTunnelRequest
     /// 本地端口
     /// </summary>
     [JsonPropertyName("localport")]
-    public int? LocalPort { get; set; }
+    public int LocalPort { get; set; }
 
     /// <summary>
     /// 远程端口或域名(根据隧道类型不同而不同)
     /// </summary>
     [JsonPropertyName("remoteport")]
-    public int? RemotePort { get; set; }
+    public int RemotePort { get; set; }
 
     /// <summary>
     /// 远程端口或域名(根据隧道类型不同而不同)
@@ -51,13 +51,13 @@ public class CreateTunnelRequest
     /// 是否启用加密
     /// </summary>
     [JsonPropertyName("encryption")]
-    public bool? Encryption { get; set; }
+    public bool Encryption { get; set; }
 
     /// <summary>
     /// 是否启用压缩
     /// </summary>
     [JsonPropertyName("compression")]
-    public bool? Compression { get; set; }
+    public bool Compression { get; set; }
 
     /// <summary>
     /// frp 的额外参数字符串(extraparams)

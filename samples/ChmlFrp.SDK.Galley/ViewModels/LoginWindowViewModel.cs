@@ -26,11 +26,19 @@ public partial class LoginWindowViewModel(WindowNotificationManager manager, Win
         }
 
         DataResponse<UserData>? dataResponse;
-        if (IsUseToken)
-            dataResponse = await App.ChmlFrpClient.LoginByTokenAsync(Usertoken!, IsRememberMe);
-        else
-            dataResponse = await App.ChmlFrpClient.LoginAsync(Username, Password, IsRememberMe);
-
+        try
+        {
+            if (IsUseToken)
+                dataResponse = await App.ChmlFrpClient.LoginByTokenAsync(Usertoken!, IsRememberMe);
+            else
+                dataResponse = await App.ChmlFrpClient.LoginAsync(Username, Password, IsRememberMe);
+        }
+        catch (Exception e)
+        {
+            manager.Show(new Notification("登录失败。", e.Message, NotificationType.Error));
+            return;
+        }
+        
         if (!dataResponse!.State)
         {
             manager.Show(new Notification("登录失败。", dataResponse.Message, NotificationType.Error));

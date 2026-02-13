@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
 using ChmlFrp.SDK.Content;
 using ChmlFrp.SDK.Models;
@@ -23,10 +24,7 @@ public class ChmlFrpClient
     /// 初始化
     /// </summary>
     /// <param name="client">http客户端</param>
-    public ChmlFrpClient(HttpClient? client = null)
-    {
-        _client = client ?? new HttpClient { BaseAddress = new Uri("https://cf-v2.uapis.cn") };
-    }
+    public ChmlFrpClient(HttpClient? client = null) => _client = client ?? new HttpClient { BaseAddress = new Uri("https://cf-v2.uapis.cn") };
 
     /// <summary>
     /// 判断是否登录
@@ -35,7 +33,7 @@ public class ChmlFrpClient
     /// <returns>是否登录</returns>
     public bool HasToken(out string tokenEscaped)
     {
-        tokenEscaped = Uri.EscapeDataString(_token ?? string.Empty);
+        tokenEscaped = _token ?? string.Empty;
         return !string.IsNullOrWhiteSpace(_token);
     }
 
@@ -69,25 +67,16 @@ public class ChmlFrpClient
     /// <returns>返回用户请求</returns>
     public async Task<DataResponse<UserData>?> LoginAsync(string? username, string? password, bool saveToken = true)
     {
-        try
+        var forecast = await _client.GetFromJsonAsync($"login?username={username}&password={password}", Default.DataResponseUserData);
+        if (forecast!.State)
         {
-            var forecast = await _client.GetFromJsonAsync($"login?username={username}&password={password}",
-                Default.DataResponseUserData);
-            if (!forecast!.State) return forecast;
-
             _token = forecast.Data?.UserToken;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_token);
             if (saveToken)
                 SaveToken(_token);
-            return forecast;
         }
-        catch (Exception ex) when (ex is HttpRequestException)
-        {
-            return new()
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
+        
+        return forecast;
     }
 
     /// <summary>
@@ -98,24 +87,16 @@ public class ChmlFrpClient
     /// <returns>返回用户请求</returns>
     public async Task<DataResponse<UserData>?> LoginByTokenAsync(string userToken, bool saveToken = true)
     {
-        try
+        var forecast = await _client.GetFromJsonAsync("userinfo?token=" + userToken, Default.DataResponseUserData);
+        if (forecast!.State)
         {
-            var forecast = await _client.GetFromJsonAsync("userinfo?token=" + userToken, Default.DataResponseUserData);
-            if (!forecast!.State) return forecast;
-
             _token = forecast.Data?.UserToken;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_token);
             if (saveToken)
                 SaveToken(_token);
-            return forecast;
         }
-        catch (Exception ex) when (ex is HttpRequestException)
-        {
-            return new()
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
+
+        return forecast;
     }
 
     /// <summary>
@@ -124,29 +105,23 @@ public class ChmlFrpClient
     /// <returns>返回用户请求</returns>
     public async Task<DataResponse<UserData>?> AutoLoginAsync()
     {
-        if (!File.Exists(TokenFilePath))
-            return new()
+        if (File.Exists(TokenFilePath))
+        {
+            await using var stream = File.OpenRead(TokenFilePath);
+            using var doc = await JsonDocument.ParseAsync(stream);
+
+            if (doc.RootElement.TryGetProperty("usertoken", out var tokenElement))
             {
-                StateString = "fail",
-                Message = "File not found."
-            };
+                var userToken = tokenElement.GetString()!;
 
-        using var stream = File.OpenRead(TokenFilePath);
-        using var doc = await JsonDocument.ParseAsync(stream);
-
-        if (doc.RootElement.TryGetProperty("usertoken", out var tokenElement))
-        {
-            var userToken = tokenElement.GetString()!;
-
-            if (!string.IsNullOrWhiteSpace(userToken))
-                return await LoginByTokenAsync(userToken, false);
+                if (!string.IsNullOrWhiteSpace(userToken))
+                    return await LoginByTokenAsync(userToken, false);
+            }
+            
+            throw new NullReferenceException("Token doesn't exists.");
         }
-
-        return new()
-        {
-            StateString = "fail",
-            Message = "Invalid or empty token."
-        };
+        
+        throw new NullReferenceException("File not found.");
     }
 
     /// <summary>
@@ -156,21 +131,10 @@ public class ChmlFrpClient
     /// <exception cref="NullReferenceException">未登录</exception>
     public async Task<DataResponse<IReadOnlyList<TunnelData>>?> GetTunnelResponseAsync()
     {
-        if (!HasToken(out var token))
+        if (!HasToken(out _))
             throw new NullReferenceException("Not logged in (token missing).");
 
-        try
-        {
-            return await _client.GetFromJsonAsync("tunnel?token=" + token, Default.DataResponseIReadOnlyListTunnelData);
-        }
-        catch (Exception ex) when (ex is HttpRequestException)
-        {
-            return new()
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
+        return await _client.GetFromJsonAsync("tunnel", Default.DataResponseIReadOnlyListTunnelData);
     }
 
     /// <summary>
@@ -180,21 +144,10 @@ public class ChmlFrpClient
     /// <exception cref="NullReferenceException">未登录</exception>
     public async Task<DataResponse<IReadOnlyList<NodeData>>?> GetNodeResponseAsync()
     {
-        if (!HasToken(out var token))
+        if (!HasToken(out _))
             throw new NullReferenceException("Not logged in (token missing).");
-
-        try
-        {
-            return await _client.GetFromJsonAsync("node?token=" + token, Default.DataResponseIReadOnlyListNodeData);
-        }
-        catch (Exception ex) when (ex is HttpRequestException)
-        {
-            return new()
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
+        
+        return await _client.GetFromJsonAsync("node", Default.DataResponseIReadOnlyListNodeData);
     }
 
     /// <summary>
@@ -205,22 +158,10 @@ public class ChmlFrpClient
     /// <exception cref="NullReferenceException">未登录</exception>
     public async Task<DataResponse<NodeInfo>?> GetNodeInfoResponseAsync(NodeData node)
     {
-        if (!HasToken(out var token))
+        if (!HasToken(out _))
             throw new NullReferenceException("Not logged in (token missing).");
 
-        try
-        {
-            return await _client.GetFromJsonAsync($"nodeinfo?token={token}&node={node.Name}",
-                Default.DataResponseNodeInfo);
-        }
-        catch (Exception ex) when (ex is HttpRequestException)
-        {
-            return new()
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
+        return await _client.GetFromJsonAsync($"nodeinfo?node={node.Name}", Default.DataResponseNodeInfo);
     }
 
     /// <summary>
@@ -230,21 +171,10 @@ public class ChmlFrpClient
     /// <exception cref="NullReferenceException">未登录</exception>
     public async Task<BaseResponse?> ResetTokenAsync()
     {
-        if (!HasToken(out var token))
+        if (!HasToken(out _))
             throw new NullReferenceException("Not logged in (token missing).");
-
-        try
-        {
-            return await _client.GetFromJsonAsync("retoken?token=" + token, Default.BaseResponse);
-        }
-        catch (Exception ex) when (ex is HttpRequestException)
-        {
-            return new()
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
+        
+        return await _client.GetFromJsonAsync("retoken", Default.BaseResponse);
     }
 
     /// <summary>
@@ -255,21 +185,10 @@ public class ChmlFrpClient
     /// <exception cref="NullReferenceException">未登录</exception>
     public async Task<BaseResponse?> UpdateQQAsync(string newQQ)
     {
-        if (!HasToken(out var token))
+        if (!HasToken(out _))
             throw new NullReferenceException("Not logged in (token missing).");
 
-        try
-        {
-            return await _client.GetFromJsonAsync($"update_qq?token={token}&new_qq={newQQ}", Default.BaseResponse);
-        }
-        catch (Exception ex) when (ex is HttpRequestException)
-        {
-            return new()
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
+        return await _client.GetFromJsonAsync($"update_qq?new_qq={newQQ}", Default.BaseResponse);
     }
 
     /// <summary>
@@ -280,22 +199,10 @@ public class ChmlFrpClient
     /// <exception cref="NullReferenceException">未登录</exception>
     public async Task<BaseResponse?> UpdateNameAsync(string newName)
     {
-        if (!HasToken(out var token))
+        if (!HasToken(out _))
             throw new NullReferenceException("Not logged in (token missing).");
-
-        try
-        {
-            return await _client.GetFromJsonAsync($"update_username?token={token}&new_username={newName}",
-                Default.BaseResponse);
-        }
-        catch (Exception ex) when (ex is HttpRequestException)
-        {
-            return new()
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
+        
+        return await _client.GetFromJsonAsync($"update_username?new_username={newName}", Default.BaseResponse);
     }
 
 
@@ -307,31 +214,27 @@ public class ChmlFrpClient
     /// <exception cref="NullReferenceException">未登录</exception>
     public async Task<DataResponse<TunnelData>?> CreateTunnelAsync(CreateTunnelRequest request)
     {
-        if (!HasToken(out var token))
+        if (!HasToken(out _))
             throw new NullReferenceException("Not logged in (token missing).");
-
-        try
-        {
-            using var response =
-                await _client.PostAsync($"create_tunnel?token={token}",
-                    JsonContent.Create(request, Default.CreateTunnelRequest));
-
-            if (!response.IsSuccessStatusCode)
-                return new()
-                {
-                    StateString = "fail",
-                    Message = await response.Content.ReadAsStringAsync()
-                };
-
-            return await response.Content.ReadFromJsonAsync<DataResponse<TunnelData>>(Default.DataResponseTunnelData);
-        }
-        catch (Exception ex) when (ex is HttpRequestException)
-        {
-            return new()
-            {
-                StateString = "fail",
-                Message = ex.Message
-            };
-        }
+        
+        using var response = await _client.PostAsync("create_tunnel", JsonContent.Create(request, Default.CreateTunnelRequest));
+        
+        return await response.Content.ReadFromJsonAsync<DataResponse<TunnelData>>(Default.DataResponseTunnelData);
+    }
+    
+    /// <summary>
+    /// 更新隧道请求
+    /// </summary>
+    /// <param name="request">请求数据</param>
+    /// <returns>请求结果</returns>
+    /// <exception cref="NullReferenceException">未登录</exception>
+    public async Task<DataResponse<TunnelData>?> UpdateTunnelAsync(UpdateTunnelRequest request)
+    {
+        if (!HasToken(out _))
+            throw new NullReferenceException("Not logged in (token missing).");
+        
+        using var response = await _client.PostAsync("update_tunnel", JsonContent.Create(request, Default.CreateTunnelRequest));
+        
+        return await response.Content.ReadFromJsonAsync<DataResponse<TunnelData>>(Default.DataResponseTunnelData);
     }
 }
