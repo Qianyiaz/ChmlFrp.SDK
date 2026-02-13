@@ -130,7 +130,13 @@ public static class TunnelServiceExtensions
         public void StopTunnel(IEnumerable<TunnelData> tunnels)
         {
             foreach (var tunnel in tunnels.Where(tunnel => tunnel.IsRunning()))
-                client.StopTunnel(tunnel);
+            {
+#if NETCOREAPP3_0_OR_GREATER
+                tunnel.GetFrpProcess()!.Kill(true);
+#else
+                tunnel.GetFrpProcess()!.Kill();
+#endif
+            }
         }
     }
 

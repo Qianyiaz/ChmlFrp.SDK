@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
 using ChmlFrp.SDK.Content;
+using ChmlFrp.SDK.Models;
 using static ChmlFrp.SDK.SourceGeneration;
 
 namespace ChmlFrp.SDK.Service;

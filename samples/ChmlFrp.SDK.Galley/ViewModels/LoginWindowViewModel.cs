@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls.Notifications;
+﻿using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using ChmlFrp.SDK.Content;
 using ChmlFrp.SDK.Galley.Views;
 using ChmlFrp.SDK.Models;
@@ -7,7 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace ChmlFrp.SDK.Galley.ViewModels;
 
-public partial class LoginWindowViewModel(WindowNotificationManager manager, LoginWindow window) : ObservableObject
+public partial class LoginWindowViewModel(WindowNotificationManager manager, Window window) : ObservableObject
 {
     [ObservableProperty] private bool _isRememberMe = true;
     [ObservableProperty] private bool _isUseToken;

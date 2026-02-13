@@ -1,10 +1,9 @@
 using ChmlFrp.SDK.Content;
+using ChmlFrp.SDK.Models;
 
 namespace ChmlFrp.SDK;
 
-/// <summary>
-/// 源生成器,用于支持Aot.
-/// </summary>
+/// <inheritdoc cref="JsonSerializerContext" />
 [JsonSerializable(typeof(BaseResponse))]
 [JsonSerializable(typeof(CreateTunnelRequest))]
 [JsonSerializable(typeof(DataResponse<UserData>))]
