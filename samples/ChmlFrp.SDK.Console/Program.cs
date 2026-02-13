@@ -40,7 +40,7 @@ catch
     // ignored
 }
 
-try
+/*try
 {
     var createReq = new CreateTunnelRequest
     {
@@ -53,7 +53,7 @@ try
         // RemotePort, BandDomain, Encryption, Compression, ExtraParams 可按需设置
     };
     var createResult = await client.CreateTunnelAsync(createReq);
-
+ 
     if (createResult!.State)
     {
         WriteLine("创建隧道成功: " + createResult.Data?.Name);
@@ -68,9 +68,31 @@ catch (Exception e)
     WriteLine(e.Message);
 }
 
-try
+var updateReq = new UpdateTunnelRequest
 {
-// 显示用户信息
+    TunnelId = 248569, // 隧道ID
+    TunnelName = "testtunnel",
+    Node = "node1", // 需要替换为实际的节点名称
+    PortType = "tcp", // tcp/udp/http/https
+    LocalIp = "127.0.0.1",
+    LocalPort = 8080,
+    RemotePort = 12345
+    // RemotePort, BandDomain, Encryption, Compression, ExtraParams 可按需设置
+};
+
+var updateResult = await client.UpdateTunnelAsync(updateReq);
+if (updateResult?.State == true)
+{
+    WriteLine("更新隧道成功: " + updateResult.Data?.Name);
+}
+else
+{
+    WriteLine("更新隧道失败: " + updateResult?.Message);
+}*/
+
+try
+{ 
+    // 显示用户信息
     var nodeResult = await client.GetNodeResponseAsync(); // 获取节点列表
     if (nodeResult!.State)
     {

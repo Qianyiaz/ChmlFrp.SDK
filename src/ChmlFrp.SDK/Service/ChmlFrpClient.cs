@@ -233,7 +233,7 @@ public class ChmlFrpClient
         if (!HasToken(out _))
             throw new NullReferenceException("Not logged in (token missing).");
         
-        using var response = await _client.PostAsync("update_tunnel", JsonContent.Create(request, Default.CreateTunnelRequest));
+        using var response = await _client.PostAsync("update_tunnel", JsonContent.Create(request, Default.UpdateTunnelRequest));
         
         return await response.Content.ReadFromJsonAsync<DataResponse<TunnelData>>(Default.DataResponseTunnelData);
     }

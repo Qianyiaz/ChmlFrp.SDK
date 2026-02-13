@@ -6,7 +6,8 @@
 API。
 
 > 注意：示例中的异步方法都返回对应的 Response 类型（例如 `DataResponse<T>` 等），大多数响应包含一个布尔属性 `State`
-> 用于判断请求是否成功，`Data` 字段包含具体的数据模型。
+> 用于判断请求是否成功，`Data` 字段包含具体的数据模型.
+> 而且大多数异步方法可能会会throw,建议加上try,catch调用.
 
 ## 快速开始
 
@@ -113,6 +114,32 @@ if (createResult?.State == true)
 else
 {
     WriteLine("创建隧道失败: " + createResult.Message);
+}
+```
+
+### 更新隧道：
+
+```csharp
+var updateReq = new UpdateTunnelRequest()
+{
+    TunnelId = 12345, // 隧道ID
+    TunnelName = "test-tunnel",
+    Node = "node1", // 需要替换为实际的节点名称
+    PortType = "tcp", // tcp/udp/http/https
+    LocalIp = "127.0.0.1",
+    LocalPort = 8080,
+    RemotePort = 12345
+    // RemotePort, BandDomain, Encryption, Compression, ExtraParams 可按需设置
+};
+
+var updateResult = await client.UpdateTunnelAsync(updateReq);
+if (updateResult?.State == true)
+{
+    WriteLine("更新隧道成功: " + updateResult.Data?.Name);
+}
+else
+{
+    WriteLine("更新隧道失败: " + updateResult.Message);
 }
 ```
 

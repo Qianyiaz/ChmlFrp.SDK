@@ -6,6 +6,7 @@ namespace ChmlFrp.SDK;
 /// <inheritdoc cref="JsonSerializerContext" />
 [JsonSerializable(typeof(BaseResponse))]
 [JsonSerializable(typeof(CreateTunnelRequest))]
+[JsonSerializable(typeof(UpdateTunnelRequest))]
 [JsonSerializable(typeof(DataResponse<UserData>))]
 [JsonSerializable(typeof(DataResponse<NodeInfo>))]
 [JsonSerializable(typeof(DataResponse<TunnelData>))]
