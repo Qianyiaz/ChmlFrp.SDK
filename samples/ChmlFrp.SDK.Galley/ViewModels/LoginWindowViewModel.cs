@@ -19,10 +19,21 @@ public partial class LoginWindowViewModel(WindowNotificationManager manager, Win
     [RelayCommand]
     private async Task Login()
     {
-        if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
+        if (IsUseToken)
         {
-            manager.Show(new Notification("登录失败。", "用户名密码不能为空。", NotificationType.Error));
-            return;
+            if (string.IsNullOrWhiteSpace(Usertoken))
+            {
+                manager.Show(new Notification("登录失败。", "用户密钥不能为空。", NotificationType.Error));
+                return;
+            }
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
+            {
+                manager.Show(new Notification("登录失败。", "用户名密码不能为空。", NotificationType.Error));
+                return;
+            }
         }
 
         DataResponse<UserData>? dataResponse;

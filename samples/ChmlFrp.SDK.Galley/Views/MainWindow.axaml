@@ -8,6 +8,9 @@
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
         <labs:AsyncImage CornerRadius="100" Height="180" Width="{Binding $self.Height}" Source="{Binding ImageUrl}"
                          PlaceholderSource="../Assets/ChmlFrp.png" />
-        <TextBlock FontSize="25" HorizontalAlignment="Center" Text="{Binding Username,StringFormat='Hi,{0}👋'}" />
+        <TextBlock HorizontalAlignment="Center">
+            <Run FontSize="20" Text="{Binding Username}" />
+            <Run FontSize="45" Text="👋"/>
+        </TextBlock>
     </StackPanel>
 </Window>
