@@ -14,6 +14,6 @@
             <CheckBox IsChecked="{Binding IsRememberMe}" Content="保持登录" />
             <CheckBox IsChecked="{Binding IsUseToken}" Content="使用令牌(token)登录" />
         </WrapPanel>
-        <Button Content="登录" HorizontalAlignment="Right" Command="{Binding LoginCommand}" />
+        <Button HotKey="Enter" Content="登录" HorizontalAlignment="Right" Command="{Binding LoginCommand}" />
     </StackPanel>
 </Window>

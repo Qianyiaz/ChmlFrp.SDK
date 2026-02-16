@@ -4,6 +4,6 @@ namespace ChmlFrp.SDK.Galley.ViewModels;
 
 public class MainWindowViewModel(UserData user)
 {
-    public string Username { get; set; } = "Hi," + user.Username!;
-    public string ImageUrl { get; set; } = user.AvatarUrl!;
+    public string Username => user.Username!;
+    public string ImageUrl =>  user.AvatarUrl!;
 }

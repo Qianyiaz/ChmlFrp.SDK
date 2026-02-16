@@ -23,7 +23,7 @@ public partial class LoginWindowViewModel(WindowNotificationManager manager, Win
         {
             if (string.IsNullOrWhiteSpace(Usertoken))
             {
-                manager.Show(new Notification("登录失败。", "用户密钥不能为空。", NotificationType.Error));
+                manager.Show(new Notification("登录失败。", "用户令牌不能为空。", NotificationType.Error));
                 return;
             }
         }
