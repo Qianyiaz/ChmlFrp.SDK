@@ -71,7 +71,7 @@ public class ChmlFrpClient
         if (forecast!.State)
         {
             _token = forecast.Data?.UserToken;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_token!);
             if (saveToken)
                 SaveToken(_token);
         }
@@ -91,7 +91,7 @@ public class ChmlFrpClient
         if (forecast!.State)
         {
             _token = forecast.Data?.UserToken;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_token!);
             if (saveToken)
                 SaveToken(_token);
         }
