@@ -7,7 +7,13 @@
         Title="MainWindow">
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
         <labs:AsyncImage CornerRadius="100" Height="180" Width="{Binding $self.Height}" Source="{Binding ImageUrl}"
-                         PlaceholderSource="../Assets/ChmlFrp.png" />
+                         PlaceholderSource="../Assets/ChmlFrp.png">
+            <labs:AsyncImage.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Refresh" HotKey="Ctrl+R" />
+                </ContextMenu>
+            </labs:AsyncImage.ContextMenu>
+        </labs:AsyncImage>
         <TextBlock HorizontalAlignment="Center">
             <Run FontSize="20" Text="{Binding Username}" />
             <Run FontSize="45" Text="👋"/>
