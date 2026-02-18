@@ -100,10 +100,12 @@ public class ChmlFrpClient
         return forecast;
     }
 
+
     /// <summary>
     /// 自动登录
     /// </summary>
     /// <returns>返回用户请求</returns>
+    /// <exception cref="NullReferenceException">读取文件失败</exception>
     public async Task<DataResponse<UserData>?> AutoLoginAsync()
     {
         if (File.Exists(TokenFilePath))
@@ -124,19 +126,23 @@ public class ChmlFrpClient
         
         throw new NullReferenceException("File not found.");
     }
+    
+    /// <summary>
+    /// 刷新用户信息
+    /// </summary>
+    /// <returns>返回用户请求</returns>
+    public async Task<DataResponse<UserData>?> RefreshAsync() => await Get<DataResponse<UserData>>("userinfo", Default.DataResponseUserData);
 
     /// <summary>
     /// 获取隧道请求
     /// </summary>
     /// <returns>返回隧道请求</returns>
-    /// <exception cref="NullReferenceException">未登录</exception>
     public async Task<DataResponse<IReadOnlyList<TunnelData>>?> GetTunnelResponseAsync() => await Get<DataResponse<IReadOnlyList<TunnelData>>>("tunnel", Default.DataResponseIReadOnlyListTunnelData);
 
     /// <summary>
     /// 获取节点请求
     /// </summary>
     /// <returns>返回节点请求</returns>
-    /// <exception cref="NullReferenceException">未登录</exception>
     public async Task<DataResponse<IReadOnlyList<NodeData>>?> GetNodeResponseAsync() => await Get<DataResponse<IReadOnlyList<NodeData>>>("node", Default.DataResponseIReadOnlyListNodeData);
 
     /// <summary>

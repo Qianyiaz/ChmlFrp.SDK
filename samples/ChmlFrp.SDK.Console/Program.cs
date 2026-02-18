@@ -1,175 +1,76 @@
 ﻿using ChmlFrp.SDK.Content;
-using ChmlFrp.SDK.Extensions;
 using ChmlFrp.SDK.Models;
 using ChmlFrp.SDK.Service;
 using static System.Console;
 
 var client = new ChmlFrpClient();
 
+DataResponse<UserData>? autoLoginAsync = null;
 try
-{
-    var forecast = await client.AutoLoginAsync(); // 尝试自动登录
-    if (!forecast!.State) // 自动登录失败 进行手动登录
-        while (true)
-        {
-            Clear();
-            Write("用户名: ");
-            var userName = ReadLine();
-
-            Write("密码: ");
-            var password = ReadLine();
-
-            try
-            {
-                forecast = await client.LoginAsync(userName, password); // 登录
-            }
-            catch (Exception e)
-            {
-                WriteLine(e.Message);
-            }
-
-            WriteLine(forecast?.Message); // 显示登录结果消息
-            ReadKey(true);
-
-            if (forecast!.State)
-                break; // 登录成功 跳出循环 
-        }
+{ 
+    autoLoginAsync = await client.AutoLoginAsync();
 }
 catch
 {
     // ignored
 }
 
-/*try
-{
-    var createReq = new CreateTunnelRequest
+if (autoLoginAsync?.State != true)
+    while (true)
     {
-        TunnelName = "mytesnnel",
-        Node = "成都电信",
-        PortType = "tcp",
-        LocalIp = "127.0.0.1",
-        LocalPort = 8080,
-        RemotePort = 56566
-        // RemotePort, BandDomain, Encryption, Compression, ExtraParams 可按需设置
-    };
-    var createResult = await client.CreateTunnelAsync(createReq);
- 
-    if (createResult!.State)
-    {
-        WriteLine("创建隧道成功: " + createResult.Data?.Name);
-    }
-    else
-    {
-        WriteLine("创建隧道失败: " + createResult.Message);
-    }
-}
-catch (Exception e)
-{
-    WriteLine(e.Message);
-}
-
-var updateReq = new UpdateTunnelRequest
-{
-    TunnelId = 248569, // 隧道ID
-    TunnelName = "testtunnel",
-    Node = "node1", // 需要替换为实际的节点名称
-    PortType = "tcp", // tcp/udp/http/https
-    LocalIp = "127.0.0.1",
-    LocalPort = 8080,
-    RemotePort = 12345
-    // RemotePort, BandDomain, Encryption, Compression, ExtraParams 可按需设置
-};
-
-var updateResult = await client.UpdateTunnelAsync(updateReq);
-if (updateResult?.State == true)
-{
-    WriteLine("更新隧道成功: " + updateResult.Data?.Name);
-}
-else
-{
-    WriteLine("更新隧道失败: " + updateResult?.Message);
-}*/
-
-try
-{ 
-    // 显示用户信息
-    var nodeResult = await client.GetNodeResponseAsync(); // 获取节点列表
-    if (nodeResult!.State)
-    {
-        var i = 1;
-        foreach (var node in nodeResult.Data!)
+        Clear();
+        
+        WriteLine("CHMLFRP 登录");
+        WriteLine("[1] 用户名密码登录");
+        WriteLine("[2] 用户Token登录");
+        var readnum = ReadKey(true);
+        DataResponse<UserData>? dataResponse = null;
+        switch (readnum.Key)
         {
-            if (i == 1)
+            case ConsoleKey.D1:
             {
-                var nodeInfo = await client.GetNodeInfoResponseAsync(node);
-                WriteLine(nodeInfo!.State ? nodeInfo.Data!.Ip : nodeInfo.Message);
-            } // 显示第一个节点的IP地址
+                Write("用户名: ");
+                var userName = ReadLine();
 
-            WriteLine($"{i}. {node.Name}");
-            i++;
+                Write("密码: ");
+                var password = ReadLine();
+                try
+                {
+                    dataResponse = await client.LoginAsync(userName, password);
+                }
+                catch (Exception e)
+                {
+                    WriteLine(e.Message);
+                }
+
+                break;
+            }
+            case ConsoleKey.D2:
+            {
+                Write("用户Token: ");
+                var usertoken = ReadLine();
+            
+                try
+                {
+                    dataResponse = await client.LoginByTokenAsync(usertoken!);
+                }
+                catch (Exception e)
+                {
+                    WriteLine(e.Message);
+                }
+
+                break;
+            }
+            default:
+                continue;
         }
-    }
-    else
-    {
-        WriteLine(nodeResult.Message);
-    }
-}
-catch (Exception e)
-{
-    WriteLine(e.Message);
-}
-
-DataResponse<IReadOnlyList<TunnelData>>? tunnelResult = null;
-try
-{
-    tunnelResult = await client.GetTunnelResponseAsync(); // 获取隧道列表
-}
-catch (Exception e)
-{
-    WriteLine(e.Message);
-}
-
-if (tunnelResult?.State == true)
-{
-    if (tunnelResult.Data!.Count == 0)
-    {
-        WriteLine("暂无隧道");
-        ReadKey(true);
-        return;
+        
+        WriteLine(dataResponse?.Message);
+        
+        if (dataResponse?.State == true)
+            break;
+        
+        await Task.Delay(TimeSpan.FromSeconds(2));
     }
 
-    var i = 1;
-    foreach (var tunnel in tunnelResult.Data!)
-    {
-        WriteLine($"{i}. {tunnel.Name}");
-        i++;
-    }
-
-    WriteLine("点击启动隧道");
-    ReadKey(true);
-    Clear();
-
-    try
-    {
-        client.StartTunnel(tunnelResult.Data, new()
-        {
-            IsUseLogFile = false,
-            Handler = WriteLine
-        }); // 启动所有隧道 并显示启动结果
-        // 注意 启动FRPC需要本地已配置好FRPC环境
-    }
-    catch (Exception e)
-    {
-        WriteLine(e.Message);
-    }
-}
-else
-{
-    WriteLine(tunnelResult?.Message);
-    ReadKey(true);
-    return;
-}
-
-ReadKey(true);
-
-client.StopTunnel(tunnelResult.Data); // 停止所有隧道
+WriteLine("Hello World!");
