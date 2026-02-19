@@ -1,13 +1,13 @@
 # ChmlFrp.SDK
 
-[![NuGet](https://img.shields.io/nuget/v/ChmlFrp.SDK.svg)](https://www.nuget.org/packages/ChmlFrp.SDK/)
+[![NuGet](https://img.shields.io/nuget/v/ChmlFrp.SDK.svg)](https://www.nuget.org/packages/ChmlFrp.SDK/) [![Build](https://github.com/Qianyiaz/ChmlFrp.SDK/actions/workflows/Publish.yml/badge.svg)](https://github.com/Qianyiaz/ChmlFrp.SDK/actions/workflows/Publish.yml)
 
 为 .NET 开发者提供的第三方 ChmlFrp 客户端开发工具包，包含与服务端交互的请求与响应类型封装以及常用的用户/隧道/节点相关
 API。
 
 > 注意：示例中的异步方法都返回对应的 Response 类型（例如 `DataResponse<T>` 等），大多数响应包含一个布尔属性 `State`
 > 用于判断请求是否成功，`Data` 字段包含具体的数据模型.
-> 而且大多数异步方法可能会throw,建议加上try,catch调用.
+> 而且大多数异步方法可能会抛出异常（如未登录时调用需认证的接口），建议加上 `try-catch` 调用。
 
 ## 快速开始
 
@@ -16,12 +16,20 @@ API。
 ```csharp
 using ChmlFrp.SDK.Service;
 using ChmlFrp.SDK.Models;
+using ChmlFrp.SDK.Content;   // 包含请求模型如 CreateTunnelRequest
 ```
 
 示例通常以 `ChmlFrpClient` 为入口：
 
 ```csharp
 var client = new ChmlFrpClient();
+```
+
+如果需要自定义 HttpClient（如代理、超时等），可传入实例：
+
+```csharp
+var httpClient = new HttpClient { BaseAddress = new Uri("https://cf-v2.uapis.cn"), Timeout = TimeSpan.FromSeconds(30) };
+var client = new ChmlFrpClient(httpClient);
 ```
 
 ### 登录
@@ -66,6 +74,18 @@ var tokenLoginResult = await client.LoginByTokenAsync("your-token-here");
 ```csharp
 // 删除本地保存的 token 文件（路径参见下方“保存的令牌位置”）
 File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ChmlFrp", "user.json"));
+```
+
+### 刷新用户信息
+
+登录后可以刷新当前用户信息（如积分、邮箱等已更新时）：
+
+```csharp
+var refreshResult = await client.RefreshAsync();
+if (refreshResult?.State == true)
+{
+    Console.WriteLine($"当前积分: {refreshResult.Data?.Points}");
+}
 ```
 
 ### 获取隧道信息
@@ -195,6 +215,21 @@ var updateQqResult = await client.UpdateQQAsync("123456789");
 
 ```csharp
 var updateNameResult = await client.UpdateNameAsync("newname");
+```
+
+### 检查登录状态
+
+可以使用 HasToken 方法快速判断当前客户端实例是否持有有效的 token（仅本地判断，不发起网络请求）：
+
+```csharp
+if (client.HasToken(out var token))
+{
+    Console.WriteLine($"已持有 token: {token}");
+}
+else
+{
+    Console.WriteLine("未登录");
+}
 ```
 
 ## 保存的令牌位置
