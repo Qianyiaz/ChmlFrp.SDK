@@ -1,4 +1,5 @@
 ﻿using ChmlFrp.SDK.Content;
+using ChmlFrp.SDK.Extensions;
 using ChmlFrp.SDK.Models;
 using ChmlFrp.SDK.Service;
 using static System.Console;
@@ -72,5 +73,13 @@ if (autoLoginAsync?.State != true)
 
         await Task.Delay(TimeSpan.FromSeconds(2));
     }
+
+var tunnelResponseAsync = await client.GetTunnelResponseAsync();
+
+client.StartTunnel(tunnelResponseAsync?.Data!);
+
+ReadKey(true);
+
+client.StopTunnel(tunnelResponseAsync?.Data!);
 
 WriteLine("Hello World!");
