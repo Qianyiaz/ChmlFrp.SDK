@@ -17,27 +17,18 @@ public static class TunnelProcessExtensions
     /// <param name="tunnel">扩展隧道</param>
     extension(TunnelData tunnel)
     {
-        internal void SetFrpProcess(Process process)
-        {
-            ProcessInfos.Add(tunnel, process);
-        }
+        internal void SetFrpProcess(Process process) => ProcessInfos.Add(tunnel, process);
 
         /// <summary>
         /// 获取进程
         /// </summary>
         /// <returns>设置的进程</returns>
-        public Process? GetFrpProcess()
-        {
-            return ProcessInfos.TryGetValue(tunnel, out var process) ? process : null;
-        }
+        public Process? GetFrpProcess() => ProcessInfos.TryGetValue(tunnel, out var process) ? process : null;
 
         /// <summary>
         /// 获得隧道的进程是否在运行
         /// </summary>
         /// <returns>隧道的进程是否在运行</returns>
-        public bool IsRunning()
-        {
-            return tunnel.GetFrpProcess() is { HasExited: false };
-        }
+        public bool IsRunning() => tunnel.GetFrpProcess() is { HasExited: false };
     }
 }

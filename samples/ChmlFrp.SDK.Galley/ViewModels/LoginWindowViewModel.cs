@@ -49,7 +49,7 @@ public partial class LoginWindowViewModel(WindowNotificationManager manager, Win
             manager.Show(new Notification("登录失败。", e.Message, NotificationType.Error));
             return;
         }
-        
+
         if (!dataResponse!.State)
         {
             manager.Show(new Notification("登录失败。", dataResponse.Message, NotificationType.Error));

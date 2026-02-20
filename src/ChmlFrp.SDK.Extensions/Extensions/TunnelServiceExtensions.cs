@@ -25,7 +25,7 @@ public static class TunnelServiceExtensions
         public void StartTunnel(TunnelData tunnel, TunnelStartOptions? options = null)
         {
             if (tunnel.IsRunning())
-                throw new ArgumentNullException(nameof(tunnel), "Tunnel is running.");
+                throw new InvalidOperationException("隧道已在运行。");
 
             var frpProcess = client.StartFrpcProcess(tunnel.Id.ToString()!, options);
             frpProcess.Exited += (_, _) => TunnelProcessExtensions.ProcessInfos.Remove(tunnel);
@@ -39,71 +39,96 @@ public static class TunnelServiceExtensions
         /// <param name="options">启动配置</param>
         public void StartTunnel(IEnumerable<TunnelData> tunnels, TunnelStartOptions? options = null)
         {
-            var tunnelDatas = tunnels.ToList();
+            var tunnelList = tunnels.ToList();
 
-            if (tunnelDatas.Count == 0 || tunnelDatas.Any(tunnel => tunnel.IsRunning()))
-                throw new ArgumentNullException(nameof(tunnels), "No tunnel or tunnel is running.");
+            if (tunnelList.Count == 0)
+                throw new ArgumentException("隧道集合不能为空。", nameof(tunnels));
 
-            var ids = string.Join(",", tunnelDatas.Select(t => t.Id.ToString()));
+            if (tunnelList.Any(t => t.IsRunning()))
+                throw new ArgumentException("集合中包含已在运行的隧道。", nameof(tunnels));
+
+            var ids = string.Join(",", tunnelList.Select(t => t.Id.ToString()));
             var frpProcess = client.StartFrpcProcess(ids, options);
 
             frpProcess.Exited += (_, _) =>
             {
-                foreach (var tunnel in tunnelDatas)
+                foreach (var tunnel in tunnelList)
                     TunnelProcessExtensions.ProcessInfos.Remove(tunnel);
             };
 
-            foreach (var tunnel in tunnelDatas)
+            foreach (var tunnel in tunnelList)
                 tunnel.SetFrpProcess(frpProcess);
         }
 
         private Process StartFrpcProcess(string id, TunnelStartOptions? options)
         {
             if (!client.HasToken(out var token))
-                throw new NullReferenceException("Not logged in (token missing).");
+                throw new InvalidOperationException("未登录，无法启动隧道。");
 
-            var frpcfile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
+            var frpcFile = options?.FrpcFilePath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "frpc");
             var command = options?.CommandSuffix ?? "-u %token% -p %id%";
+            var arguments = command.Replace("%token%", token).Replace("%id%", id);
 
-            string? logfile = null;
-            var isUseLogFile = options?.IsUseLogFile ?? true;
-            if (isUseLogFile)
-                logfile = options?.LogFilePath ?? Path.GetTempFileName();
+            var useLogFile = options?.IsUseLogFile ?? true;
+            StreamWriter? logWriter = null;
+
+            if (useLogFile)
+            {
+                var logFile = options?.LogFilePath ??
+                              Path.Combine(Path.GetTempPath(), $"frpc_{DateTime.Now:yyyyMMddHHmmss}.log");
+
+                var fileStream = new FileStream(logFile, FileMode.Append, FileAccess.Write, FileShare.Read);
+                logWriter = new StreamWriter(fileStream, Encoding.UTF8) { AutoFlush = true };
+            }
 
 #if NET7_0_OR_GREATER
             if (!OperatingSystem.IsWindows())
-                File.SetUnixFileMode(frpcfile,
-                    UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
+            {
+                try
+                {
+                    File.SetUnixFileMode(frpcFile,
+                        UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
 #endif
 
-            var frpProcess = new Process
+            var process = new Process
             {
                 StartInfo =
                 {
-                    FileName = frpcfile,
+                    FileName = frpcFile,
+                    Arguments = arguments,
                     RedirectStandardOutput = true,
                     StandardOutputEncoding = Encoding.UTF8,
-                    Arguments = command.Replace("%token%", token).Replace("%id%", id)
                 }
             };
 
-            if (isUseLogFile)
-                File.WriteAllText(logfile!, string.Empty);
-
-            frpProcess.OutputDataReceived += (_, args) =>
+            void OnOutputDataReceived(object sender, DataReceivedEventArgs args)
             {
-                var line = args.Data;
-                if (string.IsNullOrWhiteSpace(line))
-                    return;
+                if (string.IsNullOrWhiteSpace(args.Data)) return;
 
-                if (isUseLogFile)
-                    File.AppendAllText(logfile!, line + Environment.NewLine);
+                var line = args.Data;
+                // ReSharper disable once AccessToDisposedClosure
+                logWriter?.WriteLine(line);
                 options?.Handler?.Invoke(line);
+            }
+
+            process.OutputDataReceived += OnOutputDataReceived;
+
+            process.Exited += (_, _) =>
+            {
+                process.OutputDataReceived -= OnOutputDataReceived;
+                logWriter?.Dispose();
             };
 
-            frpProcess.Start();
-            frpProcess.BeginOutputReadLine();
-            return frpProcess;
+            process.Start();
+            process.BeginOutputReadLine();
+
+            return process;
         }
 
         /// <summary>

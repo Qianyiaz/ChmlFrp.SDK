@@ -22,14 +22,18 @@ using ChmlFrp.SDK.Content;   // 包含请求模型如 CreateTunnelRequest
 示例通常以 `ChmlFrpClient` 为入口：
 
 ```csharp
-var client = new ChmlFrpClient();
+using var client = new ChmlFrpClient();
 ```
 
 如果需要自定义 HttpClient（如代理、超时等），可传入实例：
 
 ```csharp
-var httpClient = new HttpClient { BaseAddress = new Uri("https://cf-v2.uapis.cn"), Timeout = TimeSpan.FromSeconds(30) };
-var client = new ChmlFrpClient(httpClient);
+var client = new ChmlFrpClient(
+    new HttpClient 
+    {
+        BaseAddress = new Uri("https://cf-v2.uapis.cn"), 
+        Timeout = TimeSpan.FromSeconds(30)
+    });
 ```
 
 ### 登录
