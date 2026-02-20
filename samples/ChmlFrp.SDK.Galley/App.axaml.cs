@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using ChmlFrp.SDK.Galley.ViewModels;
@@ -18,8 +19,12 @@ public class App : Application
         foreach (var plugin in BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray())
             BindingPlugins.DataValidators.Remove(plugin);
 
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktopLifetime) return;
+
         var loginWindow = new LoginWindow();
-        loginWindow.Show();
+
+        desktopLifetime.MainWindow = loginWindow;
+        desktopLifetime.Exit += (_, _) => ChmlFrpClient.Dispose();
 
         try
         {
