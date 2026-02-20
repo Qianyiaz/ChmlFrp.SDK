@@ -13,19 +13,16 @@ namespace ChmlFrp.SDK.Service;
 /// </summary>
 public class ChmlFrpClient
 {
-    private static readonly string TokenFilePath =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "ChmlFrp", "user.json");
-
     private readonly HttpClient _client;
-
-    private string? _token;
 
     /// <summary>
     /// 初始化
     /// </summary>
     /// <param name="client">http客户端</param>
-    public ChmlFrpClient(HttpClient? client = null) => _client = client ?? new HttpClient { BaseAddress = new Uri("https://cf-v2.uapis.cn") };
+    public ChmlFrpClient(HttpClient? client = null) => _client = client ?? new()
+    {
+        BaseAddress = new("https://cf-v2.uapis.cn")
+    };
 
     /// <summary>
     /// 判断是否登录
@@ -34,11 +31,15 @@ public class ChmlFrpClient
     /// <returns>是否登录</returns>
     public bool HasToken(out string tokenEscaped)
     {
-        tokenEscaped = _token ?? string.Empty;
-        return !string.IsNullOrWhiteSpace(_token);
+        tokenEscaped = _client.DefaultRequestHeaders.Authorization!.ToString();
+        return !string.IsNullOrWhiteSpace(tokenEscaped);
     }
 
-    private void SaveToken(string? userToken)
+    private static readonly string TokenFilePath =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "ChmlFrp", "user.json");
+
+    private void SaveToken(string userToken)
     {
         var directory = Path.GetDirectoryName(TokenFilePath);
         if (!Directory.Exists(directory))
@@ -68,15 +69,16 @@ public class ChmlFrpClient
     /// <returns>返回用户请求</returns>
     public async Task<DataResponse<UserData>?> LoginAsync(string? username, string? password, bool saveToken = true)
     {
-        var forecast = await _client.GetFromJsonAsync($"login?username={username}&password={password}", Default.DataResponseUserData);
+        var forecast = await _client.GetFromJsonAsync($"login?username={username}&password={password}",
+            Default.DataResponseUserData);
         if (forecast!.State)
         {
-            _token = forecast.Data?.UserToken;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_token!);
+            var token = forecast.Data?.UserToken;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
             if (saveToken)
-                SaveToken(_token);
+                SaveToken(token!);
         }
-        
+
         return forecast;
     }
 
@@ -91,10 +93,10 @@ public class ChmlFrpClient
         var forecast = await _client.GetFromJsonAsync("userinfo?token=" + userToken, Default.DataResponseUserData);
         if (forecast!.State)
         {
-            _token = forecast.Data?.UserToken;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_token!);
+            var token = forecast.Data?.UserToken;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
             if (saveToken)
-                SaveToken(_token);
+                SaveToken(token!);
         }
 
         return forecast;
@@ -120,65 +122,65 @@ public class ChmlFrpClient
                 if (!string.IsNullOrWhiteSpace(userToken))
                     return await LoginByTokenAsync(userToken, false);
             }
-            
+
             throw new NullReferenceException("Token doesn't exists.");
         }
-        
+
         throw new NullReferenceException("File not found.");
     }
-    
+
     /// <summary>
     /// 刷新用户信息
     /// </summary>
     /// <returns>返回用户请求</returns>
-    public async Task<DataResponse<UserData>?> RefreshAsync() => await Get<DataResponse<UserData>>("userinfo", Default.DataResponseUserData);
+    public async Task<DataResponse<UserData>?> RefreshAsync() =>
+        await Get<DataResponse<UserData>>("userinfo", Default.DataResponseUserData);
 
     /// <summary>
     /// 获取隧道请求
     /// </summary>
     /// <returns>返回隧道请求</returns>
-    public async Task<DataResponse<IReadOnlyList<TunnelData>>?> GetTunnelResponseAsync() => await Get<DataResponse<IReadOnlyList<TunnelData>>>("tunnel", Default.DataResponseIReadOnlyListTunnelData);
+    public async Task<DataResponse<IReadOnlyList<TunnelData>>?> GetTunnelResponseAsync() =>
+        await Get<DataResponse<IReadOnlyList<TunnelData>>>("tunnel", Default.DataResponseIReadOnlyListTunnelData);
 
     /// <summary>
     /// 获取节点请求
     /// </summary>
     /// <returns>返回节点请求</returns>
-    public async Task<DataResponse<IReadOnlyList<NodeData>>?> GetNodeResponseAsync() => await Get<DataResponse<IReadOnlyList<NodeData>>>("node", Default.DataResponseIReadOnlyListNodeData);
+    public async Task<DataResponse<IReadOnlyList<NodeData>>?> GetNodeResponseAsync() =>
+        await Get<DataResponse<IReadOnlyList<NodeData>>>("node", Default.DataResponseIReadOnlyListNodeData);
 
     /// <summary>
     /// 获取节点详情请求
     /// </summary>
     /// <param name="node">节点数据类</param>
     /// <returns>返回节点请求</returns>
-    public async Task<DataResponse<NodeInfo>?> GetNodeInfoResponseAsync(NodeData node) => await Get<DataResponse<NodeInfo>>($"nodeinfo?node={node.Name}", Default.DataResponseNodeInfo);
+    public async Task<DataResponse<NodeInfo>?> GetNodeInfoResponseAsync(NodeData node) =>
+        await Get<DataResponse<NodeInfo>>($"nodeinfo?node={node.Name}", Default.DataResponseNodeInfo);
 
     /// <summary>
     /// 重置用户Token
     /// </summary>
     /// <returns>请求结果</returns>
-    public async Task<BaseResponse?> ResetTokenAsync() => await Get<BaseResponse>("retoken", Default.BaseResponse);
+    public async Task<BaseResponse?> ResetTokenAsync() =>
+        await Get<BaseResponse>("retoken", Default.BaseResponse);
 
     /// <summary>
     /// 更新用户QQ号
     /// </summary>
     /// <returns>请求结果</returns>
     /// <param name="newQQ">新QQ号</param>
-    public async Task<BaseResponse?> UpdateQQAsync(string newQQ) => await Get<BaseResponse>($"update_qq?new_qq={newQQ}", Default.BaseResponse);
+    public async Task<BaseResponse?> UpdateQQAsync(string newQQ) =>
+        await Get<BaseResponse>($"update_qq?new_qq={newQQ}", Default.BaseResponse);
 
     /// <summary>
     /// 更新用户名
     /// </summary>
     /// <param name="newName">新名字</param>
     /// <returns>请求结果</returns>
-    public async Task<BaseResponse?> UpdateNameAsync(string newName) => await Get<BaseResponse>($"update_username?new_username={newName}", Default.BaseResponse);
+    public async Task<BaseResponse?> UpdateNameAsync(string newName) =>
+        await Get<BaseResponse>($"update_username?new_username={newName}", Default.BaseResponse);
 
-    private async Task<T?> Get<T>(string url, JsonTypeInfo<T> jsonTypeInfo)
-    {
-        if (!HasToken(out _))
-            throw new NullReferenceException("Not logged in (token missing).");
-    
-        return await _client.GetFromJsonAsync(url, jsonTypeInfo);
-    }
 
     /// <summary>
     /// 创建隧道请求
@@ -186,29 +188,41 @@ public class ChmlFrpClient
     /// <param name="request">请求数据</param>
     /// <returns>请求结果</returns>
     /// <exception cref="NullReferenceException">未登录</exception>
-    public async Task<DataResponse<TunnelData>?> CreateTunnelAsync(CreateTunnelRequest request)
-    {
-        if (!HasToken(out _))
-            throw new NullReferenceException("Not logged in (token missing).");
-        
-        using var response = await _client.PostAsync("create_tunnel", JsonContent.Create(request, Default.CreateTunnelRequest));
-        
-        return await response.Content.ReadFromJsonAsync(Default.DataResponseTunnelData);
-    }
-    
+    public async Task<DataResponse<TunnelData>?> CreateTunnelAsync(CreateTunnelRequest request) =>
+        await Post<CreateTunnelRequest, DataResponse<TunnelData>>
+            ("create_tunnel", request, Default.CreateTunnelRequest, Default.DataResponseTunnelData);
+
     /// <summary>
     /// 更新隧道请求
     /// </summary>
     /// <param name="request">请求数据</param>
     /// <returns>请求结果</returns>
     /// <exception cref="NullReferenceException">未登录</exception>
-    public async Task<DataResponse<TunnelData>?> UpdateTunnelAsync(UpdateTunnelRequest request)
+    public async Task<DataResponse<TunnelData>?> UpdateTunnelAsync(UpdateTunnelRequest request) =>
+        await Post<UpdateTunnelRequest, DataResponse<TunnelData>>
+            ("update_tunnel", request, Default.UpdateTunnelRequest, Default.DataResponseTunnelData);
+
+    private async Task<T?> Get<T>(string url, JsonTypeInfo<T> jsonTypeInfo)
     {
         if (!HasToken(out _))
             throw new NullReferenceException("Not logged in (token missing).");
-        
-        using var response = await _client.PostAsync("update_tunnel", JsonContent.Create(request, Default.UpdateTunnelRequest));
-        
-        return await response.Content.ReadFromJsonAsync(Default.DataResponseTunnelData);
+
+        return await _client.GetFromJsonAsync(url, jsonTypeInfo);
+    }
+
+    private async Task<TResponse?> Post<TRequest, TResponse>
+    (
+        string url,
+        TRequest request,
+        JsonTypeInfo<TRequest> requestJsonTypeInfo,
+        JsonTypeInfo<TResponse> responseJsonTypeInfo
+    )
+    {
+        if (!HasToken(out _))
+            throw new NullReferenceException("Not logged in (token missing).");
+
+        using var response = await _client.PostAsync(url, JsonContent.Create(request, requestJsonTypeInfo));
+
+        return await response.Content.ReadFromJsonAsync(responseJsonTypeInfo);
     }
 }

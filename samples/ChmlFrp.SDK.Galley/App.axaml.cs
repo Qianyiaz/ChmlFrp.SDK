@@ -10,7 +10,7 @@ namespace ChmlFrp.SDK.Galley;
 public class App : Application
 {
     public static readonly ChmlFrpClient ChmlFrpClient = new();
-    
+
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override async void OnFrameworkInitializationCompleted()

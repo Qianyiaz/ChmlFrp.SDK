@@ -17,7 +17,7 @@
         <TextBlock FontSize="25" HorizontalAlignment="Center">
             <Run Text="Hi," />
             <Run Text="{Binding Username}" />
-            <Run FontSize="45" Text="👋"/>
+            <Run FontSize="45" Text="👋" />
         </TextBlock>
     </StackPanel>
 </Window>
