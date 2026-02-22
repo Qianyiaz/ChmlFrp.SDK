@@ -14,13 +14,13 @@ namespace ChmlFrp.SDK.Service;
 public class ChmlFrpClient : IDisposable
 {
     private readonly HttpClient _client;
-    
+
     /// <summary>
     /// 使用默认的基础地址(https://cf-v2.uapis.cn)初始化 <see cref="ChmlFrpClient"/> 类的新实例。
     /// 此构造函数会创建一个新的 <see cref="HttpClient"/> 实例，并设置其 BaseAddress。
     /// </summary>
-    public ChmlFrpClient() : this(new (){ BaseAddress = new Uri("https://cf-v2.uapis.cn") }) { }
-    
+    public ChmlFrpClient() : this(new() { BaseAddress = new("https://cf-v2.uapis.cn") }) { }
+
     /// <summary>
     /// 使用自定义的 <see cref="HttpClient"/> 初始化 <see cref="ChmlFrpClient"/> 类的新实例.
     /// </summary>
@@ -30,19 +30,19 @@ public class ChmlFrpClient : IDisposable
     /// <summary>
     /// 判断是否登录
     /// </summary>
-    /// <param name="tokenEscaped">用户token</param>
+    /// <param name="token">用户token</param>
     /// <returns>是否登录</returns>
-    public bool HasToken(out string? tokenEscaped)
+    public bool HasToken(out string? token)
     {
-        tokenEscaped = _client.DefaultRequestHeaders.Authorization?.ToString();
-        return !string.IsNullOrWhiteSpace(tokenEscaped);
+        token = _client.DefaultRequestHeaders.Authorization?.Scheme;
+        return !string.IsNullOrEmpty(token);
     }
 
     private static readonly string TokenFilePath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "ChmlFrp", "user.json");
 
-    private void SaveToken(string userToken)
+    private async Task SaveTokenAsync(string userToken)
     {
         var directory = Path.GetDirectoryName(TokenFilePath);
         if (!Directory.Exists(directory))
@@ -50,12 +50,12 @@ public class ChmlFrpClient : IDisposable
 
         try
         {
-            using var stream = File.Create(TokenFilePath);
-            using var writer = new Utf8JsonWriter(stream);
+            await using var stream = File.Create(TokenFilePath);
+            await using var writer = new Utf8JsonWriter(stream);
             writer.WriteStartObject();
             writer.WriteString("usertoken", userToken);
             writer.WriteEndObject();
-            writer.Flush();
+            await writer.FlushAsync();
         }
         catch
         {
@@ -70,7 +70,7 @@ public class ChmlFrpClient : IDisposable
     /// <param name="password">密码</param>
     /// <param name="saveToken">是否保存令牌</param>
     /// <returns>返回用户请求</returns>
-    public async Task<DataResponse<UserData>?> LoginAsync(string? username, string? password, bool saveToken = true)
+    public async Task<DataResponse<UserData>?> LoginAsync(string username, string password, bool saveToken = true)
     {
         var forecast = await _client.GetFromJsonAsync($"login?username={username}&password={password}",
             Default.DataResponseUserData);
@@ -79,14 +79,14 @@ public class ChmlFrpClient : IDisposable
             var token = forecast.Data?.UserToken;
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
             if (saveToken)
-                SaveToken(token!);
+                await SaveTokenAsync(token!);
         }
 
         return forecast;
     }
 
     /// <summary>
-    ///  使用用户令牌获取用户信息
+    /// 使用用户令牌获取用户信息
     /// </summary>
     /// <param name="userToken">用户令牌用于登录</param>
     /// <param name="saveToken">是否保存令牌</param>
@@ -99,7 +99,7 @@ public class ChmlFrpClient : IDisposable
             var token = forecast.Data?.UserToken;
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
             if (saveToken)
-                SaveToken(token!);
+                await SaveTokenAsync(token!);
         }
 
         return forecast;
@@ -136,22 +136,21 @@ public class ChmlFrpClient : IDisposable
     /// 刷新用户信息
     /// </summary>
     /// <returns>返回用户请求</returns>
-    public async Task<DataResponse<UserData>?> RefreshAsync() =>
-        await Get<DataResponse<UserData>>("userinfo", Default.DataResponseUserData);
+    public async Task<DataResponse<UserData>?> RefreshAsync() => await Get("userinfo", Default.DataResponseUserData);
 
     /// <summary>
     /// 获取隧道请求
     /// </summary>
     /// <returns>返回隧道请求</returns>
     public async Task<DataResponse<IReadOnlyList<TunnelData>>?> GetTunnelResponseAsync() =>
-        await Get<DataResponse<IReadOnlyList<TunnelData>>>("tunnel", Default.DataResponseIReadOnlyListTunnelData);
+        await Get("tunnel", Default.DataResponseIReadOnlyListTunnelData);
 
     /// <summary>
     /// 获取节点请求
     /// </summary>
     /// <returns>返回节点请求</returns>
     public async Task<DataResponse<IReadOnlyList<NodeData>>?> GetNodeResponseAsync() =>
-        await Get<DataResponse<IReadOnlyList<NodeData>>>("node", Default.DataResponseIReadOnlyListNodeData);
+        await Get("node", Default.DataResponseIReadOnlyListNodeData);
 
     /// <summary>
     /// 获取节点详情请求
@@ -159,14 +158,13 @@ public class ChmlFrpClient : IDisposable
     /// <param name="node">节点数据类</param>
     /// <returns>返回节点请求</returns>
     public async Task<DataResponse<NodeInfo>?> GetNodeInfoResponseAsync(NodeData node) =>
-        await Get<DataResponse<NodeInfo>>($"nodeinfo?node={node.Name}", Default.DataResponseNodeInfo);
+        await Get($"nodeinfo?node={node.Name}", Default.DataResponseNodeInfo);
 
     /// <summary>
     /// 重置用户Token
     /// </summary>
     /// <returns>请求结果</returns>
-    public async Task<BaseResponse?> ResetTokenAsync() =>
-        await Get<BaseResponse>("retoken", Default.BaseResponse);
+    public async Task<BaseResponse?> ResetTokenAsync() => await Get("retoken", Default.BaseResponse);
 
     /// <summary>
     /// 更新用户QQ号
@@ -174,7 +172,7 @@ public class ChmlFrpClient : IDisposable
     /// <returns>请求结果</returns>
     /// <param name="newQQ">新QQ号</param>
     public async Task<BaseResponse?> UpdateQQAsync(string newQQ) =>
-        await Get<BaseResponse>($"update_qq?new_qq={newQQ}", Default.BaseResponse);
+        await Get($"update_qq?new_qq={newQQ}", Default.BaseResponse);
 
     /// <summary>
     /// 更新用户名
@@ -182,8 +180,7 @@ public class ChmlFrpClient : IDisposable
     /// <param name="newName">新名字</param>
     /// <returns>请求结果</returns>
     public async Task<BaseResponse?> UpdateNameAsync(string newName) =>
-        await Get<BaseResponse>($"update_username?new_username={newName}", Default.BaseResponse);
-
+        await Get($"update_username?new_username={newName}", Default.BaseResponse);
 
     /// <summary>
     /// 创建隧道请求
@@ -191,8 +188,7 @@ public class ChmlFrpClient : IDisposable
     /// <param name="request">请求数据</param>
     /// <returns>请求结果</returns>
     public async Task<DataResponse<TunnelData>?> CreateTunnelAsync(CreateTunnelRequest request) =>
-        await Post<CreateTunnelRequest, DataResponse<TunnelData>>
-            ("create_tunnel", request, Default.CreateTunnelRequest, Default.DataResponseTunnelData);
+        await Post("create_tunnel", request, Default.CreateTunnelRequest, Default.DataResponseTunnelData);
 
     /// <summary>
     /// 更新隧道请求
@@ -206,7 +202,7 @@ public class ChmlFrpClient : IDisposable
     private async Task<T?> Get<T>(string url, JsonTypeInfo<T> jsonTypeInfo)
     {
         if (!HasToken(out _))
-            throw new InvalidOperationException ("Not logged in (token missing).");
+            throw new InvalidOperationException("Not logged in (token missing).");
 
         return await _client.GetFromJsonAsync(url, jsonTypeInfo);
     }
@@ -220,7 +216,7 @@ public class ChmlFrpClient : IDisposable
     )
     {
         if (!HasToken(out _))
-            throw new InvalidOperationException ("Not logged in (token missing).");
+            throw new InvalidOperationException("Not logged in (token missing).");
 
         using var response = await _client.PostAsync(url, JsonContent.Create(request, requestJsonTypeInfo));
 

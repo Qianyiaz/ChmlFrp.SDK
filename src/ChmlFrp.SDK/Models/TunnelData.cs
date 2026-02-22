@@ -125,15 +125,26 @@ public class TunnelData
     [JsonPropertyName("ip")]
     public string? NodeIp { get; set; }
 
+    private Lazy<string>? _fullRemoteAddress;
+
     /// <summary>
     /// 完整的远程地址
     /// </summary>
     [JsonIgnore]
-    public string FullRemoteAddress => Type switch
+    public string FullRemoteAddress
+    {
+        get
+        {
+            _fullRemoteAddress ??= new Lazy<string>(ComputeFullRemoteAddress);
+            return _fullRemoteAddress.Value;
+        }
+    }
+
+    private string ComputeFullRemoteAddress() => Type switch
     {
         "http" => $"http://{NodeIp}{(RemoteEndpoint != "80" ? $":{RemoteEndpoint}" : "")}",
         "https" => $"https://{NodeIp}{(RemoteEndpoint != "443" ? $":{RemoteEndpoint}" : "")}",
         "tcp" or "udp" => $"{NodeIp}:{RemoteEndpoint}",
-        _ => throw new ArgumentOutOfRangeException()
+        _ => throw new NotSupportedException($"Unsupported tunnel type: {Type}")
     };
 }

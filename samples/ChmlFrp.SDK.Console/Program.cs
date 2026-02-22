@@ -37,7 +37,7 @@ if (autoLoginAsync?.State != true)
                 var password = ReadLine();
                 try
                 {
-                    dataResponse = await client.LoginAsync(userName, password);
+                    dataResponse = await client.LoginAsync(userName!, password!);
                 }
                 catch (Exception e)
                 {

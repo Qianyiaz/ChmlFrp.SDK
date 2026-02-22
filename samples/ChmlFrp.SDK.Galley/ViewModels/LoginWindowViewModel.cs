@@ -42,7 +42,7 @@ public partial class LoginWindowViewModel(WindowNotificationManager manager, Win
             if (IsUseToken)
                 dataResponse = await App.ChmlFrpClient.LoginByTokenAsync(Usertoken!, IsRememberMe);
             else
-                dataResponse = await App.ChmlFrpClient.LoginAsync(Username, Password, IsRememberMe);
+                dataResponse = await App.ChmlFrpClient.LoginAsync(Username!, Password!, IsRememberMe);
         }
         catch (Exception e)
         {
