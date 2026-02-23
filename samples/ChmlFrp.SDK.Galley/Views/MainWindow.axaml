@@ -4,20 +4,74 @@
         xmlns:labs="using:Avalonia.Labs.Controls"
         x:Class="ChmlFrp.SDK.Galley.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="MainWindow">
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <labs:AsyncImage CornerRadius="100" Height="180" Width="{Binding $self.Height}" Source="{Binding ImageUrl}"
-                         PlaceholderSource="../Assets/ChmlFrp.png">
-            <labs:AsyncImage.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Refresh" HotKey="Ctrl+R" />
-                </ContextMenu>
-            </labs:AsyncImage.ContextMenu>
-        </labs:AsyncImage>
-        <TextBlock FontSize="25" HorizontalAlignment="Center">
-            <Run Text="Hi," />
-            <Run Text="{Binding Username}" />
-            <Run FontSize="45" Text="👋" />
-        </TextBlock>
-    </StackPanel>
+        Title="用户信息">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20" Spacing="10">
+            <labs:AsyncImage CornerRadius="100" Height="120" Width="120"
+                             Source="{Binding User.AvatarUrl}"
+                             PlaceholderSource="../Assets/ChmlFrp.png"
+                             HorizontalAlignment="Center">
+                <labs:AsyncImage.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="刷新" Command="{Binding RefreshCommand}" InputGesture="Ctrl+R" />
+                    </ContextMenu>
+                </labs:AsyncImage.ContextMenu>
+            </labs:AsyncImage>
+
+            <TextBlock FontSize="28" HorizontalAlignment="Center">
+                <Run Text="Hi, " />
+                <Run Text="{Binding User.Username}" />
+                <Run FontSize="45" Text="👋" />
+            </TextBlock>
+
+            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="8">
+                    <TextBlock FontWeight="Bold" Text="基本信息" FontSize="18" />
+
+                    <TextBlock Text="{Binding User.Email, StringFormat='📧 邮箱: {0}'}" />
+                    <TextBlock Text="{Binding User.QQNumber, StringFormat='💬 QQ: {0}'}" />
+                    <TextBlock Text="{Binding User.UserGroup, StringFormat='👥 用户组: {0}'}" />
+                    <TextBlock Text="{Binding User.MembershipExpiry, StringFormat='⏳ 到期: {0}'}" />
+                    <TextBlock Text="{Binding User.RealNameStatus, StringFormat='🆔 实名: {0}'}" />
+                    <TextBlock Text="{Binding User.RegistrationDate, StringFormat='📅 注册: {0}'}" />
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="8">
+                    <TextBlock FontWeight="Bold" Text="隧道信息" FontSize="18" />
+
+                    <TextBlock Text="{Binding User.CreativeTunnelCount, StringFormat='🔗 已建隧道: {0}'}" />
+                    <TextBlock Text="{Binding User.MaxTunnelLimit, StringFormat='📊 隧道上限: {0}'}" />
+                    <TextBlock Text="{Binding User.AvailableTunnelSlots, StringFormat='🆓 剩余槽位: {0}'}" />
+                    <TextBlock
+                        Text="{Binding User.CurrentConnectionCount, StringFormat='🌐 当前连接: {0}', TargetNullValue='🌐 无连接数'}" />
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="8">
+                    <TextBlock FontWeight="Bold" Text="流量统计" FontSize="18" />
+
+                    <TextBlock
+                        Text="{Binding User.TotalUploadBytes,StringFormat='⬆️ 上传: {0} Bytes', TargetNullValue='⬆️ 未上传数据'}" />
+                    <TextBlock
+                        Text="{Binding User.TotalDownloadBytes,StringFormat='⬇️ 下载: {0} Bytes', TargetNullValue='⬆️ 未下载数据'}" />
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="8">
+                    <TextBlock FontWeight="Bold" Text="带宽限制" FontSize="18" />
+
+                    <TextBlock Text="{Binding User.DomesticBandwidth, StringFormat='🇨🇳 国内: {0} Mbps'}" />
+                    <TextBlock Text="{Binding User.InternationalBandwidth, StringFormat='🌍 国际: {0} Mbps'}" />
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
+                <TextBlock FontSize="20" Text="{Binding User.CreditPoints, StringFormat='⭐积分：{0}'}" />
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 </Window>
