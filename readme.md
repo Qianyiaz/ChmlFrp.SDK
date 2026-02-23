@@ -167,6 +167,17 @@ else
 }
 ```
 
+### 删除隧道
+
+```csharp
+// 假设有一个 tunnel 对象来自 tunnelResult.Data
+var deleteResult = await client.DeleteTunnelAsync(tunnel);
+if (updateResult?.State == true)
+{
+    WriteLine("删除隧道成功: " + tunnel.Name);
+}
+```
+
 ### 获取节点信息
 
 获取节点列表：

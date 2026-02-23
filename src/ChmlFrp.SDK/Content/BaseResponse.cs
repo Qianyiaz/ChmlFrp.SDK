@@ -12,14 +12,14 @@ public class BaseResponse
     public string? Message { get; set; }
 
     /// <summary>
-    /// 请求是否成功(字符串)
+    /// 请求返回 Code
     /// </summary>
-    [JsonPropertyName("state")]
-    public string? StateString { get; set; }
+    [JsonPropertyName("code")]
+    public int Code { get; set; }
 
     /// <summary>
     /// 请求是否成功
     /// </summary>
     [JsonIgnore]
-    public bool State => StateString == "success";
+    public bool State => Code == 200;
 }
