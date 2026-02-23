@@ -198,6 +198,14 @@ public class ChmlFrpClient : IDisposable
     public async Task<DataResponse<TunnelData>?> UpdateTunnelAsync(UpdateTunnelRequest request) =>
         await Post<UpdateTunnelRequest, DataResponse<TunnelData>>
             ("update_tunnel", request, Default.UpdateTunnelRequest, Default.DataResponseTunnelData);
+    
+    /// <summary>
+    /// 删除隧道请求
+    /// </summary>
+    /// <param name="tunnelData">要删除的隧道</param>
+    /// <returns>请求结果</returns>
+    public async Task<BaseResponse?> DeleteTunnelAsync(TunnelData tunnelData) =>
+        await Get($"delete_tunnel?tunnelid={tunnelData.Id}", Default.BaseResponse);
 
     private async Task<T?> Get<T>(string url, JsonTypeInfo<T> jsonTypeInfo)
     {
