@@ -1,77 +1,273 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ChmlFrp.SDK.Galley.ViewModels"
+        xmlns:cvt="using:ChmlFrp.SDK.Galley.Converters"
         xmlns:labs="using:Avalonia.Labs.Controls"
+        xmlns:dha="using:DialogHostAvalonia"
+        xmlns:models="using:ChmlFrp.SDK.Models"
         x:Class="ChmlFrp.SDK.Galley.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="用户信息">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="20" Spacing="10">
-            <labs:AsyncImage CornerRadius="100" Height="120" Width="120"
-                             Source="{Binding User.AvatarUrl}"
-                             PlaceholderSource="../Assets/ChmlFrp.png"
-                             HorizontalAlignment="Center">
-                <labs:AsyncImage.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="刷新" Command="{Binding RefreshCommand}" InputGesture="Ctrl+R" />
-                    </ContextMenu>
-                </labs:AsyncImage.ContextMenu>
-            </labs:AsyncImage>
+        Title="ChmlFrp.SDK.Galley">
 
-            <TextBlock FontSize="28" HorizontalAlignment="Center">
-                <Run Text="Hi, " />
-                <Run Text="{Binding User.Username}" />
-                <Run FontSize="45" Text="👋" />
-            </TextBlock>
+    <Window.Resources>
+        <cvt:TunnelStateToBrushConverter x:Key="TunnelStateToBrushConverter" />
+        <cvt:BytesToGigabytesConverter x:Key="BytesToGigabytesConverter" />
+        <cvt:NodeStateToBrushConverter x:Key="NodeStateToBrushConverter" />
+        <cvt:StringToUpperConverter x:Key="StringToUpperConverter" />
+    </Window.Resources>
 
-            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="8">
-                    <TextBlock FontWeight="Bold" Text="基本信息" FontSize="18" />
-
-                    <TextBlock Text="{Binding User.Email, StringFormat='📧 邮箱: {0}'}" />
-                    <TextBlock Text="{Binding User.QQNumber, StringFormat='💬 QQ: {0}'}" />
-                    <TextBlock Text="{Binding User.UserGroup, StringFormat='👥 用户组: {0}'}" />
-                    <TextBlock Text="{Binding User.MembershipExpiry, StringFormat='⏳ 到期: {0}'}" />
-                    <TextBlock Text="{Binding User.RealNameStatus, StringFormat='🆔 实名: {0}'}" />
-                    <TextBlock Text="{Binding User.RegistrationDate, StringFormat='📅 注册: {0}'}" />
+    <dha:DialogHost Name="DialogHost" CloseOnClickAway="True">
+        <dha:DialogHost.DataTemplates>
+            <DataTemplate x:DataType="models:TunnelData">
+                <StackPanel MinWidth="350" Margin="20" Spacing="10">
+                    <TextBlock Text="隧道详情" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Name, StringFormat='名称: {0}'}" />
+                    <TextBlock Text="{Binding Type, StringFormat='类型: {0}'}" />
+                    <TextBlock Text="{Binding FullRemoteAddress, StringFormat='远程地址: {0}'}" />
+                    <TextBlock Text="{Binding LocalIp, StringFormat='本地IP: {0}'}" />
+                    <TextBlock Text="{Binding LocalPort, StringFormat='本地端口: {0}'}" />
+                    <TextBlock Text="{Binding NodeName, StringFormat='节点: {0}'}" />
+                    <TextBlock Text="{Binding State, StringFormat='在线状态: {0}'}" />
+                    <Button Content="关闭" Command="{Binding #DialogHost.CloseDialogCommand}"
+                            HorizontalAlignment="Center" />
                 </StackPanel>
-            </Border>
+            </DataTemplate>
 
-            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="8">
-                    <TextBlock FontWeight="Bold" Text="隧道信息" FontSize="18" />
-
-                    <TextBlock Text="{Binding User.CreativeTunnelCount, StringFormat='🔗 已建隧道: {0}'}" />
-                    <TextBlock Text="{Binding User.MaxTunnelLimit, StringFormat='📊 隧道上限: {0}'}" />
-                    <TextBlock Text="{Binding User.AvailableTunnelSlots, StringFormat='🆓 剩余槽位: {0}'}" />
+            <DataTemplate x:DataType="models:NodeInfo">
+                <StackPanel MinWidth="400" Margin="20" Spacing="8">
+                    <TextBlock Text="节点详情" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Name, StringFormat='节点名称: {0}'}" />
+                    <TextBlock Text="{Binding Area, StringFormat='地区: {0}'}" />
+                    <TextBlock Text="{Binding Ip, StringFormat='IP: {0}'}" />
+                    <TextBlock Text="{Binding State, StringFormat='在线状态: {0}'}" />
+                    <TextBlock Text="{Binding CpuInfo, StringFormat='CPU: {0}'}" />
+                    <TextBlock Text="{Binding NumCores, StringFormat='核心数: {0}'}" />
                     <TextBlock
-                        Text="{Binding User.CurrentConnectionCount, StringFormat='🌐 当前连接: {0}', TargetNullValue='🌐 无连接数'}" />
-                </StackPanel>
-            </Border>
-
-            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="8">
-                    <TextBlock FontWeight="Bold" Text="流量统计" FontSize="18" />
-
+                        Text="{Binding MemoryTotal, StringFormat='内存: {0} GB', Converter={StaticResource BytesToGigabytesConverter}}" />
                     <TextBlock
-                        Text="{Binding User.TotalUploadBytes,StringFormat='⬆️ 上传: {0} Bytes', TargetNullValue='⬆️ 未上传数据'}" />
-                    <TextBlock
-                        Text="{Binding User.TotalDownloadBytes,StringFormat='⬇️ 下载: {0} Bytes', TargetNullValue='⬆️ 未下载数据'}" />
+                        Text="{Binding StorageTotal, StringFormat='存储: {0} GB', Converter={StaticResource BytesToGigabytesConverter}}" />
+                    <TextBlock Text="{Binding BandwidthUsagePercent, StringFormat='带宽占用: {0}%'}" />
+                    <TextBlock Text="{Binding UptimeSeconds, StringFormat='运行时间: {0} 秒'}" />
+                    <Button Content="关闭" Command="{Binding #DialogHost.CloseDialogCommand}"
+                            HorizontalAlignment="Center" />
                 </StackPanel>
-            </Border>
+            </DataTemplate>
+        </dha:DialogHost.DataTemplates>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <TabControl Margin="5">
+                <TabItem Header="用户页">
+                    <StackPanel Margin="20" Spacing="10">
+                        <labs:AsyncImage CornerRadius="100" Height="150" Width="150"
+                                         Source="{Binding User.AvatarUrl}"
+                                         PlaceholderSource="../Assets/ChmlFrp.png"
+                                         HorizontalAlignment="Center">
+                            <labs:AsyncImage.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="刷新" Command="{Binding RefreshCommand}" InputGesture="Ctrl+R" />
+                                </ContextMenu>
+                            </labs:AsyncImage.ContextMenu>
+                        </labs:AsyncImage>
 
-            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
-                <StackPanel Spacing="8">
-                    <TextBlock FontWeight="Bold" Text="带宽限制" FontSize="18" />
+                        <TextBlock FontSize="28" HorizontalAlignment="Center">
+                            <Run Text="Hi," />
+                            <Run Text="{Binding User.Username}" />
+                            <Run FontSize="45" Text="👋" />
+                        </TextBlock>
 
-                    <TextBlock Text="{Binding User.DomesticBandwidth, StringFormat='🇨🇳 国内: {0} Mbps'}" />
-                    <TextBlock Text="{Binding User.InternationalBandwidth, StringFormat='🌍 国际: {0} Mbps'}" />
-                </StackPanel>
-            </Border>
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                            <StackPanel Spacing="8">
+                                <TextBlock FontWeight="Bold" Text="基本信息" FontSize="18" />
 
-            <Border Background="{DynamicResource ButtonBackground}" CornerRadius="8" Padding="15">
-                <TextBlock FontSize="20" Text="{Binding User.CreditPoints, StringFormat='⭐积分：{0}'}" />
-            </Border>
-        </StackPanel>
-    </ScrollViewer>
+                                <TextBlock Text="{Binding User.Email, StringFormat='📧 邮箱: {0}'}" />
+                                <TextBlock Text="{Binding User.QQNumber, StringFormat='💬 QQ: {0}'}" />
+                                <TextBlock Text="{Binding User.UserGroup, StringFormat='👥 用户组: {0}'}" />
+                                <TextBlock Text="{Binding User.MembershipExpiry, StringFormat='⏳ 到期: {0}'}" />
+                                <TextBlock Text="{Binding User.RealNameStatus, StringFormat='🆔 实名: {0}'}" />
+                                <TextBlock Text="{Binding User.RegistrationDate, StringFormat='📅 注册: {0}'}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                            <StackPanel Spacing="8">
+                                <TextBlock FontWeight="Bold" Text="隧道信息" FontSize="18" />
+
+                                <TextBlock Text="{Binding User.CreativeTunnelCount, StringFormat='🔗 已建隧道: {0}'}" />
+                                <TextBlock Text="{Binding User.MaxTunnelLimit, StringFormat='📊 隧道上限: {0}'}" />
+                                <TextBlock Text="{Binding User.AvailableTunnelSlots, StringFormat='🆓 剩余槽位: {0}'}" />
+                                <TextBlock
+                                    Text="{Binding User.CurrentConnectionCount, StringFormat='🌐 当前连接: {0}', TargetNullValue='🌐 无连接数'}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                            <StackPanel Spacing="8">
+                                <TextBlock FontWeight="Bold" Text="流量统计" FontSize="18" />
+
+                                <TextBlock
+                                    Text="{Binding User.TotalUploadBytes,StringFormat='⬆️ 上传: {0} GB', Converter={StaticResource BytesToGigabytesConverter}, TargetNullValue='⬆️ 未上传数据'}" />
+                                <TextBlock
+                                    Text="{Binding User.TotalDownloadBytes,StringFormat='⬇️ 下载: {0} GB', Converter={StaticResource BytesToGigabytesConverter}, TargetNullValue='⬆️ 未下载数据'}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                            <StackPanel Spacing="8">
+                                <TextBlock FontWeight="Bold" Text="带宽限制" FontSize="18" />
+
+                                <TextBlock Text="{Binding User.DomesticBandwidth, StringFormat='🇨🇳 国内: {0} Mbps'}" />
+                                <TextBlock Text="{Binding User.InternationalBandwidth, StringFormat='🌍 国际: {0} Mbps'}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                            <TextBlock FontSize="20" Text="{Binding User.CreditPoints, StringFormat='⭐积分：{0}'}" />
+                        </Border>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Header="隧道页">
+                    <ListBox
+                        SelectionMode="Toggle"
+                        ItemsSource="{Binding Tunnels}"
+                        Background="Transparent"
+                        SelectionChanged="OnTunnelsSelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}"
+                                        CornerRadius="8"
+                                        Padding="12">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                        <Ellipse Grid.Column="0"
+                                                 Width="12"
+                                                 Height="12"
+                                                 Fill="{Binding State,Converter={StaticResource TunnelStateToBrushConverter}}"
+                                                 Margin="0,0,10,0" />
+
+                                        <StackPanel Grid.Column="1"
+                                                    Orientation="Vertical"
+                                                    Spacing="4"
+                                                    MinWidth="150">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontWeight="Bold"
+                                                       FontSize="16" />
+                                            <TextBlock
+                                                Text="{Binding Type,Converter={StaticResource StringToUpperConverter}}"
+                                                Foreground="Gray"
+                                                FontSize="12" />
+                                        </StackPanel>
+
+                                        <SelectableTextBlock Grid.Column="2"
+                                                             Text="{Binding FullRemoteAddress}"
+                                                             VerticalAlignment="Center"
+                                                             FontFamily="Cascadia Mono, Consolas, Monospace"
+                                                             Margin="20,0,10,0" />
+
+                                        <Border Grid.Column="3"
+                                                Background="{Binding NodeState,Converter={StaticResource NodeStateToBrushConverter}}"
+                                                CornerRadius="4"
+                                                Padding="6,3">
+                                            <TextBlock Text="{Binding NodeStateString}"
+                                                       Foreground="White"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="11" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                <TabItem Header="节点页">
+                    <ListBox ItemsSource="{Binding Nodes}"
+                             Background="Transparent"
+                             SelectionMode="Toggle"
+                             SelectionChanged="OnNodelsSelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}"
+                                        CornerRadius="8"
+                                        Padding="12">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                        <StackPanel Grid.Column="0"
+                                                    Orientation="Vertical"
+                                                    Spacing="4"
+                                                    MinWidth="180">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontWeight="Bold"
+                                                       FontSize="16" />
+                                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                                <TextBlock Text="{Binding Area}"
+                                                           Foreground="Gray"
+                                                           FontSize="12" />
+
+                                                <Border
+                                                    Background="{Binding IsInChina,Converter={StaticResource TunnelStateToBrushConverter}}"
+                                                    CornerRadius="3"
+                                                    Padding="4,2"
+                                                    IsVisible="{Binding IsInChina}">
+                                                    <TextBlock Text="🇨🇳 国内"
+                                                               Foreground="White"
+                                                               FontSize="10" />
+                                                </Border>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1"
+                                                    Orientation="Horizontal"
+                                                    Spacing="8">
+                                            <Border Background="#FF4B6584"
+                                                    CornerRadius="4"
+                                                    Padding="8,4">
+                                                <TextBlock Text="{Binding NodeGroup}"
+                                                           Foreground="White"
+                                                           FontSize="11" />
+                                            </Border>
+
+                                            <Border
+                                                CornerRadius="4"
+                                                Padding="8,4"
+                                                Background="GreenYellow"
+                                                IsVisible="{Binding SupportsUdp}">
+                                                <TextBlock Text="UDP"
+                                                           Foreground="White"
+                                                           FontSize="11" />
+                                            </Border>
+
+                                            <Border
+                                                Background="{Binding HasDefense,Converter={StaticResource TunnelStateToBrushConverter}}"
+                                                CornerRadius="4"
+                                                Padding="8,4"
+                                                IsVisible="{Binding HasDefense}">
+                                                <TextBlock Text="🛡️ 防御"
+                                                           Foreground="White"
+                                                           FontSize="11" />
+                                            </Border>
+
+                                            <Border
+                                                Background="{Binding IsWeb,Converter={StaticResource TunnelStateToBrushConverter}}"
+                                                CornerRadius="4"
+                                                Padding="8,4"
+                                                IsVisible="{Binding IsWeb}">
+                                                <TextBlock Text="🌐 建站"
+                                                           Foreground="White"
+                                                           FontSize="11" />
+                                            </Border>
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding Notes}"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="Gray"
+                                                   FontSize="12"
+                                                   MaxWidth="200"
+                                                   TextWrapping="Wrap"
+                                                   Margin="20,0,0,0" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
+    </dha:DialogHost>
 </Window>
