@@ -1,6 +1,5 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:labs="using:Avalonia.Labs.Controls"
              xmlns:dha="using:DialogHostAvalonia"
              x:Class="ChmlFrp.SDK.Galley.App"
              RequestedThemeVariant="Default">
@@ -8,7 +7,6 @@
 
     <Application.Styles>
         <FluentTheme />
-        <labs:ControlThemes />
         <dha:DialogHostStyles />
     </Application.Styles>
 </Application>

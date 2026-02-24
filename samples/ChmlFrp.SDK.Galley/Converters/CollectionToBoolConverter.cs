@@ -8,11 +8,12 @@ public class CollectionToBoolConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is IEnumerable collection) 
-            return !collection.Cast<object>().Any();
-        
+        if (value is IEnumerable collection)
+            return collection.Cast<object>().Any();
+
         return false;
     }
 
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotImplementedException();
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
 }

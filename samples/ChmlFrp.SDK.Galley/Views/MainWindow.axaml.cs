@@ -6,10 +6,7 @@ namespace ChmlFrp.SDK.Galley.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
-    {
-        InitializeComponent();
-    }
+    public MainWindow() => InitializeComponent();
 
     private void OnTunnelsSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {

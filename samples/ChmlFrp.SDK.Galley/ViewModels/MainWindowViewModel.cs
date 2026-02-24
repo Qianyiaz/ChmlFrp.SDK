@@ -42,9 +42,9 @@ public partial class MainWindowViewModel : ObservableObject
             // ignored
         }
     }
-    
+
     public AvaloniaList<NodeData> Nodes { get; } = [];
-    
+
     [RelayCommand]
     private async Task LoadNodesAsync()
     {

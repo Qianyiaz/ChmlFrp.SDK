@@ -2,12 +2,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ChmlFrp.SDK.Galley.ViewModels"
         xmlns:cvt="using:ChmlFrp.SDK.Galley.Converters"
-        xmlns:labs="using:Avalonia.Labs.Controls"
         xmlns:dha="using:DialogHostAvalonia"
-        xmlns:models="using:ChmlFrp.SDK.Models"
+        xmlns:ail="using:AsyncImageLoader"
+        xmlns:md="using:ChmlFrp.SDK.Models"
         x:Class="ChmlFrp.SDK.Galley.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="ChmlFrp.SDK.Galley">
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+R" Command="{Binding RefreshCommand}"/>
+    </Window.KeyBindings>
 
     <Window.Resources>
         <cvt:TunnelStateToBrushConverter x:Key="TunnelStateToBrushConverter" />
@@ -19,7 +22,7 @@
 
     <dha:DialogHost Name="DialogHost" CloseOnClickAway="True">
         <dha:DialogHost.DataTemplates>
-            <DataTemplate x:DataType="models:TunnelData">
+            <DataTemplate x:DataType="md:TunnelData">
                 <StackPanel MinWidth="350" Margin="20" Spacing="10">
                     <TextBlock Text="隧道详情" FontSize="24" FontWeight="Bold" />
                     <TextBlock Text="{Binding Name, StringFormat='名称: {0}'}" />
@@ -34,7 +37,7 @@
                 </StackPanel>
             </DataTemplate>
 
-            <DataTemplate x:DataType="models:NodeInfo">
+            <DataTemplate x:DataType="md:NodeInfo">
                 <StackPanel MinWidth="400" Margin="20" Spacing="8">
                     <TextBlock Text="节点详情" FontSize="24" FontWeight="Bold" />
                     <TextBlock Text="{Binding Name, StringFormat='节点名称: {0}'}" />
@@ -58,16 +61,18 @@
             <TabControl Margin="5">
                 <TabItem Header="用户页">
                     <StackPanel Margin="20" Spacing="10">
-                        <labs:AsyncImage CornerRadius="100" Height="150" Width="150"
-                                         Source="{Binding User.AvatarUrl}"
-                                         PlaceholderSource="../Assets/ChmlFrp.png"
-                                         HorizontalAlignment="Center">
-                            <labs:AsyncImage.ContextMenu>
+                        <Image ail:ImageLoader.Source="{Binding User.AvatarUrl}"
+                               Height="150" Width="{Binding $self.Height}"
+                               HorizontalAlignment="Center">
+                            <Image.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="刷新" Command="{Binding RefreshCommand}" InputGesture="Ctrl+R" />
+                                    <MenuItem Header="刷新" Command="{Binding RefreshCommand}" HotKey="Ctrl+R" InputGesture="Ctrl+R" />
                                 </ContextMenu>
-                            </labs:AsyncImage.ContextMenu>
-                        </labs:AsyncImage>
+                            </Image.ContextMenu>
+                            <Image.Clip>
+                                <RectangleGeometry Rect="0,0,150,150" RadiusX="75" RadiusY="75"/>
+                            </Image.Clip>
+                        </Image>
 
                         <TextBlock FontSize="28" HorizontalAlignment="Center">
                             <Run Text="Hi," />
@@ -135,12 +140,11 @@
                         <TextBlock Text="暂无隧道数据"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
-                                   FontSize="25"
+                                   FontSize="20"
                                    Foreground="Gray"
                                    IsVisible="{Binding Tunnels, Converter={StaticResource NotEmptyConverter}}" />
 
-                        <ListBox SelectionMode="Toggle"
-                                 ItemsSource="{Binding Tunnels}"
+                        <ListBox ItemsSource="{Binding Tunnels}"
                                  Background="Transparent"
                                  SelectionChanged="OnTunnelsSelectionChanged">
                             <ListBox.ItemTemplate>
@@ -189,6 +193,11 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
+                        <Panel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="刷新" Command="{Binding RefreshCommand}" HotKey="Ctrl+R" InputGesture="Ctrl+R" />
+                            </ContextMenu>
+                        </Panel.ContextMenu>
                     </Panel>
                 </TabItem>
                 <TabItem Header="节点页">
@@ -196,13 +205,12 @@
                         <TextBlock Text="暂无节点数据"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
-                                   FontSize="25"
+                                   FontSize="20"
                                    Foreground="Gray"
                                    IsVisible="{Binding Nodes, Converter={StaticResource NotEmptyConverter}}" />
 
                         <ListBox ItemsSource="{Binding Nodes}"
                                  Background="Transparent"
-                                 SelectionMode="Toggle"
                                  SelectionChanged="OnNodelsSelectionChanged">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
@@ -288,6 +296,11 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
+                        <Panel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="刷新" Command="{Binding RefreshCommand}" HotKey="Ctrl+R" InputGesture="Ctrl+R" />
+                            </ContextMenu>
+                        </Panel.ContextMenu>
                     </Panel>
                 </TabItem>
             </TabControl>
