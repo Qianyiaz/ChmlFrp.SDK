@@ -1,4 +1,4 @@
-name: Package Packing and Pushing
+name: build
 permissions:
   contents: read
   packages: write
@@ -7,10 +7,10 @@ on:
   push:
     paths: [ 'src/**' , '**/Publish.yml' ]
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             .github
