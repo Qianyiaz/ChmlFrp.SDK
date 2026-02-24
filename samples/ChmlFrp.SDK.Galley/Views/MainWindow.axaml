@@ -14,6 +14,7 @@
         <cvt:BytesToGigabytesConverter x:Key="BytesToGigabytesConverter" />
         <cvt:NodeStateToBrushConverter x:Key="NodeStateToBrushConverter" />
         <cvt:StringToUpperConverter x:Key="StringToUpperConverter" />
+        <cvt:CollectionToBoolConverter x:Key="NotEmptyConverter" />
     </Window.Resources>
 
     <dha:DialogHost Name="DialogHost" CloseOnClickAway="True">
@@ -74,7 +75,8 @@
                             <Run FontSize="45" Text="👋" />
                         </TextBlock>
 
-                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8"
+                                Padding="15">
                             <StackPanel Spacing="8">
                                 <TextBlock FontWeight="Bold" Text="基本信息" FontSize="18" />
 
@@ -87,7 +89,8 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8"
+                                Padding="15">
                             <StackPanel Spacing="8">
                                 <TextBlock FontWeight="Bold" Text="隧道信息" FontSize="18" />
 
@@ -99,7 +102,8 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8"
+                                Padding="15">
                             <StackPanel Spacing="8">
                                 <TextBlock FontWeight="Bold" Text="流量统计" FontSize="18" />
 
@@ -110,7 +114,8 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8"
+                                Padding="15">
                             <StackPanel Spacing="8">
                                 <TextBlock FontWeight="Bold" Text="带宽限制" FontSize="18" />
 
@@ -119,153 +124,171 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8" Padding="15">
+                        <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}" CornerRadius="8"
+                                Padding="15">
                             <TextBlock FontSize="20" Text="{Binding User.CreditPoints, StringFormat='⭐积分：{0}'}" />
                         </Border>
                     </StackPanel>
                 </TabItem>
                 <TabItem Header="隧道页">
-                    <ListBox
-                        SelectionMode="Toggle"
-                        ItemsSource="{Binding Tunnels}"
-                        Background="Transparent"
-                        SelectionChanged="OnTunnelsSelectionChanged">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}"
-                                        CornerRadius="8"
-                                        Padding="12">
-                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                        <Ellipse Grid.Column="0"
-                                                 Width="12"
-                                                 Height="12"
-                                                 Fill="{Binding State,Converter={StaticResource TunnelStateToBrushConverter}}"
-                                                 Margin="0,0,10,0" />
+                    <Panel>
+                        <TextBlock Text="暂无隧道数据"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="25"
+                                   Foreground="Gray"
+                                   IsVisible="{Binding Tunnels, Converter={StaticResource NotEmptyConverter}}" />
 
-                                        <StackPanel Grid.Column="1"
-                                                    Orientation="Vertical"
-                                                    Spacing="4"
-                                                    MinWidth="150">
-                                            <TextBlock Text="{Binding Name}"
-                                                       FontWeight="Bold"
-                                                       FontSize="16" />
-                                            <TextBlock
-                                                Text="{Binding Type,Converter={StaticResource StringToUpperConverter}}"
-                                                Foreground="Gray"
-                                                FontSize="12" />
-                                        </StackPanel>
+                        <ListBox SelectionMode="Toggle"
+                                 ItemsSource="{Binding Tunnels}"
+                                 Background="Transparent"
+                                 SelectionChanged="OnTunnelsSelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}"
+                                            CornerRadius="8"
+                                            Padding="12">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                            <Ellipse Grid.Column="0"
+                                                     Width="12"
+                                                     Height="12"
+                                                     Fill="{Binding State,Converter={StaticResource TunnelStateToBrushConverter}}"
+                                                     Margin="0,0,10,0" />
 
-                                        <SelectableTextBlock Grid.Column="2"
-                                                             Text="{Binding FullRemoteAddress}"
-                                                             VerticalAlignment="Center"
-                                                             FontFamily="Cascadia Mono, Consolas, Monospace"
-                                                             Margin="20,0,10,0" />
+                                            <StackPanel Grid.Column="1"
+                                                        Orientation="Vertical"
+                                                        Spacing="4"
+                                                        MinWidth="150">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontWeight="Bold"
+                                                           FontSize="16" />
 
-                                        <Border Grid.Column="3"
-                                                Background="{Binding NodeState,Converter={StaticResource NodeStateToBrushConverter}}"
-                                                CornerRadius="4"
-                                                Padding="6,3">
-                                            <TextBlock Text="{Binding NodeStateString}"
-                                                       Foreground="White"
-                                                       VerticalAlignment="Center"
-                                                       FontSize="11" />
-                                        </Border>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                                                <TextBlock
+                                                    Text="{Binding Type,Converter={StaticResource StringToUpperConverter}}"
+                                                    Foreground="Gray"
+                                                    FontSize="12" />
+                                            </StackPanel>
+
+                                            <SelectableTextBlock Grid.Column="2"
+                                                                 Text="{Binding FullRemoteAddress}"
+                                                                 VerticalAlignment="Center"
+                                                                 FontFamily="Cascadia Mono, Consolas, Monospace"
+                                                                 Margin="20,0,10,0" />
+
+                                            <Border Grid.Column="3"
+                                                    Background="{Binding NodeState,Converter={StaticResource NodeStateToBrushConverter}}"
+                                                    CornerRadius="4"
+                                                    Padding="6,3">
+                                                <TextBlock Text="{Binding NodeStateString}"
+                                                           Foreground="White"
+                                                           VerticalAlignment="Center"
+                                                           FontSize="11" />
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Panel>
                 </TabItem>
                 <TabItem Header="节点页">
-                    <ListBox ItemsSource="{Binding Nodes}"
-                             Background="Transparent"
-                             SelectionMode="Toggle"
-                             SelectionChanged="OnNodelsSelectionChanged">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}"
-                                        CornerRadius="8"
-                                        Padding="12">
-                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                        <StackPanel Grid.Column="0"
-                                                    Orientation="Vertical"
-                                                    Spacing="4"
-                                                    MinWidth="180">
-                                            <TextBlock Text="{Binding Name}"
-                                                       FontWeight="Bold"
-                                                       FontSize="16" />
-                                            <StackPanel Orientation="Horizontal" Spacing="5">
-                                                <TextBlock Text="{Binding Area}"
-                                                           Foreground="Gray"
-                                                           FontSize="12" />
+                    <Panel>
+                        <TextBlock Text="暂无节点数据"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="25"
+                                   Foreground="Gray"
+                                   IsVisible="{Binding Nodes, Converter={StaticResource NotEmptyConverter}}" />
+
+                        <ListBox ItemsSource="{Binding Nodes}"
+                                 Background="Transparent"
+                                 SelectionMode="Toggle"
+                                 SelectionChanged="OnNodelsSelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource SystemControlTransientBackgroundBrush}"
+                                            CornerRadius="8"
+                                            Padding="12">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                            <StackPanel Grid.Column="0"
+                                                        Orientation="Vertical"
+                                                        Spacing="4"
+                                                        MinWidth="180">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontWeight="Bold"
+                                                           FontSize="16" />
+                                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                                    <TextBlock Text="{Binding Area}"
+                                                               Foreground="Gray"
+                                                               FontSize="12" />
+
+                                                    <Border
+                                                        Background="{Binding IsInChina,Converter={StaticResource TunnelStateToBrushConverter}}"
+                                                        CornerRadius="3"
+                                                        Padding="4,2"
+                                                        IsVisible="{Binding IsInChina}">
+                                                        <TextBlock Text="🇨🇳 国内"
+                                                                   Foreground="White"
+                                                                   FontSize="10" />
+                                                    </Border>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1"
+                                                        Orientation="Horizontal"
+                                                        Spacing="8">
+                                                <Border Background="#FF4B6584"
+                                                        CornerRadius="4"
+                                                        Padding="8,4">
+                                                    <TextBlock Text="{Binding NodeGroup}"
+                                                               Foreground="White"
+                                                               FontSize="11" />
+                                                </Border>
+
+                                                <Border CornerRadius="4"
+                                                        Padding="8,4"
+                                                        Background="GreenYellow"
+                                                        IsVisible="{Binding SupportsUdp}">
+                                                    <TextBlock Text="UDP"
+                                                               Foreground="White"
+                                                               FontSize="11" />
+                                                </Border>
 
                                                 <Border
-                                                    Background="{Binding IsInChina,Converter={StaticResource TunnelStateToBrushConverter}}"
-                                                    CornerRadius="3"
-                                                    Padding="4,2"
-                                                    IsVisible="{Binding IsInChina}">
-                                                    <TextBlock Text="🇨🇳 国内"
+                                                    Background="{Binding HasDefense,Converter={StaticResource TunnelStateToBrushConverter}}"
+                                                    CornerRadius="4"
+                                                    Padding="8,4"
+                                                    IsVisible="{Binding HasDefense}">
+                                                    <TextBlock Text="🛡️ 防御"
                                                                Foreground="White"
-                                                               FontSize="10" />
+                                                               FontSize="11" />
+                                                </Border>
+
+                                                <Border
+                                                    Background="{Binding IsWeb,Converter={StaticResource TunnelStateToBrushConverter}}"
+                                                    CornerRadius="4"
+                                                    Padding="8,4"
+                                                    IsVisible="{Binding IsWeb}">
+                                                    <TextBlock Text="🌐 建站"
+                                                               Foreground="White"
+                                                               FontSize="11" />
                                                 </Border>
                                             </StackPanel>
-                                        </StackPanel>
 
-                                        <StackPanel Grid.Column="1"
-                                                    Orientation="Horizontal"
-                                                    Spacing="8">
-                                            <Border Background="#FF4B6584"
-                                                    CornerRadius="4"
-                                                    Padding="8,4">
-                                                <TextBlock Text="{Binding NodeGroup}"
-                                                           Foreground="White"
-                                                           FontSize="11" />
-                                            </Border>
-
-                                            <Border
-                                                CornerRadius="4"
-                                                Padding="8,4"
-                                                Background="GreenYellow"
-                                                IsVisible="{Binding SupportsUdp}">
-                                                <TextBlock Text="UDP"
-                                                           Foreground="White"
-                                                           FontSize="11" />
-                                            </Border>
-
-                                            <Border
-                                                Background="{Binding HasDefense,Converter={StaticResource TunnelStateToBrushConverter}}"
-                                                CornerRadius="4"
-                                                Padding="8,4"
-                                                IsVisible="{Binding HasDefense}">
-                                                <TextBlock Text="🛡️ 防御"
-                                                           Foreground="White"
-                                                           FontSize="11" />
-                                            </Border>
-
-                                            <Border
-                                                Background="{Binding IsWeb,Converter={StaticResource TunnelStateToBrushConverter}}"
-                                                CornerRadius="4"
-                                                Padding="8,4"
-                                                IsVisible="{Binding IsWeb}">
-                                                <TextBlock Text="🌐 建站"
-                                                           Foreground="White"
-                                                           FontSize="11" />
-                                            </Border>
-                                        </StackPanel>
-
-                                        <TextBlock Grid.Column="2"
-                                                   Text="{Binding Notes}"
-                                                   VerticalAlignment="Center"
-                                                   Foreground="Gray"
-                                                   FontSize="12"
-                                                   MaxWidth="200"
-                                                   TextWrapping="Wrap"
-                                                   Margin="20,0,0,0" />
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding Notes}"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="Gray"
+                                                       FontSize="12"
+                                                       MaxWidth="200"
+                                                       TextWrapping="Wrap"
+                                                       Margin="20,0,0,0" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Panel>
                 </TabItem>
             </TabControl>
         </ScrollViewer>

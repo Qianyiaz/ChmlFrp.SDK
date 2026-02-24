@@ -19,7 +19,9 @@ public class ChmlFrpClient : IDisposable
     /// 使用默认的基础地址(https://cf-v2.uapis.cn)初始化 <see cref="ChmlFrpClient"/> 类的新实例。
     /// 此构造函数会创建一个新的 <see cref="HttpClient"/> 实例，并设置其 BaseAddress。
     /// </summary>
-    public ChmlFrpClient() : this(new() { BaseAddress = new("https://cf-v2.uapis.cn") }) { }
+    public ChmlFrpClient() : this(new() { BaseAddress = new("https://cf-v2.uapis.cn") })
+    {
+    }
 
     /// <summary>
     /// 使用自定义的 <see cref="HttpClient"/> 初始化 <see cref="ChmlFrpClient"/> 类的新实例.
@@ -196,9 +198,8 @@ public class ChmlFrpClient : IDisposable
     /// <param name="request">请求数据</param>
     /// <returns>请求结果</returns>
     public async Task<DataResponse<TunnelData>?> UpdateTunnelAsync(UpdateTunnelRequest request) =>
-        await Post<UpdateTunnelRequest, DataResponse<TunnelData>>
-            ("update_tunnel", request, Default.UpdateTunnelRequest, Default.DataResponseTunnelData);
-    
+        await Post("update_tunnel", request, Default.UpdateTunnelRequest, Default.DataResponseTunnelData);
+
     /// <summary>
     /// 删除隧道请求
     /// </summary>

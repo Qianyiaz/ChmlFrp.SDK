@@ -6,13 +6,16 @@ namespace ChmlFrp.SDK.Galley.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow() => InitializeComponent();
+    public MainWindow()
+    {
+        InitializeComponent();
+    }
 
     private void OnTunnelsSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (sender is not ListBox listBox) return;
         if (listBox.SelectedItem is not TunnelData tunnelData) return;
-        
+
         listBox.SelectedItem = null;
         DialogHost.Show(tunnelData);
     }
