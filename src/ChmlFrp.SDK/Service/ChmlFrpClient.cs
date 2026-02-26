@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -44,7 +44,7 @@ public class ChmlFrpClient : IDisposable
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "ChmlFrp", "user.json");
 
-    private async Task SaveTokenAsync(string userToken)
+    private static async Task SaveTokenAsync(string userToken)
     {
         var directory = Path.GetDirectoryName(TokenFilePath);
         if (!Directory.Exists(directory))
@@ -106,7 +106,6 @@ public class ChmlFrpClient : IDisposable
 
         return forecast;
     }
-
 
     /// <summary>
     /// 自动登录
