@@ -4,17 +4,13 @@
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
         <LangVersion>preview</LangVersion>
-        <TargetFramework>net10.0</TargetFramework>
-
-        <PublishAot>true</PublishAot>
         <ImplicitUsings>true</ImplicitUsings>
-        <OptimizationPreference>Size</OptimizationPreference>
+        <TargetFramework>net10.0</TargetFramework>
         <InvariantGlobalization>true</InvariantGlobalization>
-        <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\ChmlFrp.SDK.Extensions\ChmlFrp.SDK.Extensions.csproj"/>
+        <ProjectReference Include="..\..\src\ChmlFrp.SDK\ChmlFrp.SDK.csproj"/>
     </ItemGroup>
 
 </Project>

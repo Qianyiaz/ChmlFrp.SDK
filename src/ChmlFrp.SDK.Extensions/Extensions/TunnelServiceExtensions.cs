@@ -81,7 +81,6 @@ public static class TunnelServiceExtensions
                 logWriter = new StreamWriter(fileStream, Encoding.UTF8) { AutoFlush = true };
             }
 
-#if NET7_0_OR_GREATER
             if (!OperatingSystem.IsWindows())
             {
                 try
@@ -94,7 +93,6 @@ public static class TunnelServiceExtensions
                     // ignored
                 }
             }
-#endif
 
             var process = new Process
             {
@@ -140,11 +138,7 @@ public static class TunnelServiceExtensions
         {
             if (!tunnel.IsRunning()) return;
 
-#if NETCOREAPP3_0_OR_GREATER
             tunnel.GetFrpProcess()!.Kill(true);
-#else
-            tunnel.GetFrpProcess()!.Kill();
-#endif
         }
 
         /// <summary>
@@ -155,13 +149,7 @@ public static class TunnelServiceExtensions
         public void StopTunnel(IEnumerable<TunnelData> tunnels)
         {
             foreach (var tunnel in tunnels.Where(tunnel => tunnel.IsRunning()))
-            {
-#if NETCOREAPP3_0_OR_GREATER
                 tunnel.GetFrpProcess()!.Kill(true);
-#else
-                tunnel.GetFrpProcess()!.Kill();
-#endif
-            }
         }
     }
 

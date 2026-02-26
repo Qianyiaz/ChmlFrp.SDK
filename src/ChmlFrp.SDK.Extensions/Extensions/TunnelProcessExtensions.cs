@@ -17,7 +17,7 @@ public static class TunnelProcessExtensions
     /// <param name="tunnel">扩展隧道</param>
     extension(TunnelData tunnel)
     {
-        internal void SetFrpProcess(Process process) => ProcessInfos.Add(tunnel, process);
+        internal void SetFrpProcess(Process process) => ProcessInfos.AddOrUpdate(tunnel, process);
 
         /// <summary>
         /// 获取进程
