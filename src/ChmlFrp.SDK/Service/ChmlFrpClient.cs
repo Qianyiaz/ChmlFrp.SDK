@@ -207,6 +207,20 @@ public class ChmlFrpClient : IDisposable
     public async Task<BaseResponse?> DeleteTunnelAsync(TunnelData tunnelData) =>
         await Get($"delete_tunnel?tunnelid={tunnelData.Id}", Default.BaseResponse);
 
+    /// <summary>
+    /// 获得面板信息请求
+    /// </summary>
+    /// <returns>请求结果</returns>
+    public async Task<DataResponse<PanelInfo>?> GetPanelInfoAsync() =>
+        await _client.GetFromJsonAsync("panelinfo", Default.DataResponsePanelInfo);
+
+    /// <summary>
+    /// 获得服务器状态请求
+    /// </summary>
+    /// <returns>请求结果</returns>
+    public async Task<ServerMetricsData?> GetServerStatusAsync() =>
+        await _client.GetFromJsonAsync("api/server-status", Default.ServerMetricsData);
+
     private async Task<T?> Get<T>(string url, JsonTypeInfo<T> jsonTypeInfo)
     {
         if (!HasToken(out _))
