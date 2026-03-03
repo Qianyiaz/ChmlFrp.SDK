@@ -14,4 +14,5 @@ namespace ChmlFrp.SDK;
 [JsonSerializable(typeof(DataResponse<TunnelData>))]
 [JsonSerializable(typeof(DataResponse<IReadOnlyList<NodeData>>))]
 [JsonSerializable(typeof(DataResponse<IReadOnlyList<TunnelData>>))]
+[JsonSerializable(typeof(DataResponse<IReadOnlyList<NodeStateData>>))]
 public partial class SourceGeneration : JsonSerializerContext;

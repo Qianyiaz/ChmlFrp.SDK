@@ -220,6 +220,13 @@ public class ChmlFrpClient : IDisposable
     /// <returns>请求结果</returns>
     public async Task<ServerMetricsData?> GetServerStatusAsync() =>
         await _client.GetFromJsonAsync("api/server-status", Default.ServerMetricsData);
+    
+    /// <summary>
+    /// 获得节点状态请求
+    /// </summary>
+    /// <returns>请求结果</returns>
+    public async Task<DataResponse<IReadOnlyList<NodeStateData>>?> GetNodeStatusAsync() =>
+        await _client.GetFromJsonAsync("node_stats", Default.DataResponseIReadOnlyListNodeStateData);
 
     private async Task<T?> Get<T>(string url, JsonTypeInfo<T> jsonTypeInfo)
     {

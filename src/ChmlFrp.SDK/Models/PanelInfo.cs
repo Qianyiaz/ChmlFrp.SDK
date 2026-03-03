@@ -1,5 +1,8 @@
 ﻿namespace ChmlFrp.SDK.Models;
 
+/// <summary>
+/// 面板数据
+/// </summary>
 public class PanelInfo
 {
     /// <summary>
@@ -24,5 +27,5 @@ public class PanelInfo
     /// 友链
     /// </summary>
     [JsonPropertyName("friend_links")]
-    public IReadOnlyList<FriendLinkData> FriendLinks { get; set; }
+    public IReadOnlyList<FriendLinkData> FriendLinks { get; set; } = null!;
 }

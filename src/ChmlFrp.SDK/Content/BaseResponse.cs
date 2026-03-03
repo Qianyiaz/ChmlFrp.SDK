@@ -9,7 +9,7 @@ public class BaseResponse
     /// 返回消息
     /// </summary>
     [JsonPropertyName("msg")]
-    public string? Message { get; set; }
+    public string Message { get; set; } = null!;
 
     /// <summary>
     /// 请求返回 Code

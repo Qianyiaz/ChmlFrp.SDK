@@ -9,25 +9,25 @@ public class CreateTunnelRequest
     /// 隧道名称
     /// </summary>
     [JsonPropertyName("tunnelname")]
-    public string? TunnelName { get; set; }
+    public string TunnelName { get; set; } = null!;
 
     /// <summary>
     /// 隧道所属节点名称
     /// </summary>
     [JsonPropertyName("node")]
-    public string? Node { get; set; }
+    public string Node { get; set; } = null!;
 
     /// <summary>
     /// 隧道类型字符串 tcp/udp/http/https
     /// </summary>
     [JsonPropertyName("porttype")]
-    public string? PortType { get; set; }
+    public string PortType { get; set; } = null!;
 
     /// <summary>
     /// 本地IP地址
     /// </summary>
     [JsonPropertyName("localip")]
-    public string? LocalIp { get; set; }
+    public string LocalIp { get; set; } = null!;
 
     /// <summary>
     /// 本地端口
@@ -45,7 +45,7 @@ public class CreateTunnelRequest
     /// 远程端口或域名(根据隧道类型不同而不同)
     /// </summary>
     [JsonPropertyName("banddomain")]
-    public string? BandDomain { get; set; }
+    public string BandDomain { get; set; } = null!;
 
     /// <summary>
     /// 是否启用加密
@@ -63,5 +63,5 @@ public class CreateTunnelRequest
     /// frp 的额外参数字符串(extraparams)
     /// </summary>
     [JsonPropertyName("extraparams")]
-    public string? ExtraParams { get; set; }
+    public string ExtraParams { get; set; } = null!;
 }

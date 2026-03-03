@@ -9,7 +9,7 @@ public class NodeInfo : NodeData
     /// 在线状态(字符串)
     /// </summary>
     [JsonPropertyName("state")]
-    public string? StateString { get; set; }
+    public string StateString { get; set; } = null!;
 
     /// <summary>
     /// 在线状态
@@ -21,13 +21,13 @@ public class NodeInfo : NodeData
     /// 节点IP地址
     /// </summary>
     [JsonPropertyName("ip")]
-    public string? Ip { get; set; }
+    public string Ip { get; set; } = null!;
 
     /// <summary>
     /// 节点的真实IP
     /// </summary>
     [JsonPropertyName("realIp")]
-    public string? RealIp { get; set; }
+    public string RealIp { get; set; } = null!;
 
     /// <summary>
     /// 节点FRP端口
@@ -39,7 +39,7 @@ public class NodeInfo : NodeData
     /// 节点FRP端口限制
     /// </summary>
     [JsonPropertyName("rport")]
-    public string? RemoteEndpoint { get; set; }
+    public string RemoteEndpoint { get; set; } = null!;
 
     /// <summary>
     /// CPU信息

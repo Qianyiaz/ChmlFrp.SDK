@@ -9,7 +9,7 @@ public class ServerMetricsData
     /// 服务器名称
     /// </summary>
     [JsonPropertyName("serverName")]
-    public string? Name { get; set; }
+    public string Name { get; set; } = null!;
 
     /// <summary>
     /// 服务器负载百分比
@@ -21,5 +21,5 @@ public class ServerMetricsData
     /// 服务器具体负载数据
     /// </summary>
     [JsonPropertyName("metrics")]
-    public MetricsData Metrics { get; set; }
+    public MetricsData Metrics { get; set; } = null!;
 }

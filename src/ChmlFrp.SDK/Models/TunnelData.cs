@@ -9,25 +9,25 @@ public class TunnelData
     /// 隧道的唯一标识ID
     /// </summary>
     [JsonPropertyName("id")]
-    public int? Id { get; set; }
+    public int Id { get; set; }
 
     /// <summary>
     /// 隧道名称
     /// </summary>
     [JsonPropertyName("name")]
-    public string? Name { get; set; }
+    public string Name { get; set; } = null!;
 
     /// <summary>
     /// 本地IP地址
     /// </summary>
     [JsonPropertyName("localip")]
-    public string? LocalIp { get; set; }
+    public string LocalIp { get; set; } = null!;
 
     /// <summary>
     /// 隧道类型(字符串) tcp/udp/http/https
     /// </summary>
     [JsonPropertyName("type")]
-    public string? Type { get; set; }
+    public string Type { get; set; } = null!;
 
     /// <summary>
     /// 本地端口
@@ -39,19 +39,19 @@ public class TunnelData
     /// 远程端口或域名
     /// </summary>
     [JsonPropertyName("dorp")]
-    public string? RemoteEndpoint { get; set; }
+    public string RemoteEndpoint { get; set; } = null!;
 
     /// <summary>
     /// 所属节点名称
     /// </summary>
     [JsonPropertyName("node")]
-    public string? NodeName { get; set; }
+    public string NodeName { get; set; } = null!;
 
     /// <summary>
     /// 节点状态字符串
     /// </summary>
     [JsonPropertyName("nodestate")]
-    public string? NodeStateString { get; set; }
+    public string NodeStateString { get; set; } = null!;
 
     /// <summary>
     /// 节点是否在线
@@ -63,43 +63,43 @@ public class TunnelData
     /// 隧道状态(字符串)
     /// </summary>
     [JsonPropertyName("state")]
-    public string? StateString { get; set; }
+    public string StateString { get; set; } = null!;
 
     /// <summary>
     /// 隧道是否在线
     /// </summary>
     [JsonIgnore]
-    public bool State => StateString != null && bool.Parse(StateString);
+    public bool State => bool.Parse(StateString);
 
     /// <summary>
     ///  加密状态(字符串)
     /// </summary>
     [JsonPropertyName("encryption")]
-    public string? EncryptionString { get; set; }
+    public string EncryptionString { get; set; } = null!;
 
     /// <summary>
     /// 是否启用加密
     /// </summary>
     [JsonIgnore]
-    public bool IsEncrypted => EncryptionString != null && bool.Parse(EncryptionString);
+    public bool IsEncrypted => bool.Parse(EncryptionString);
 
     /// <summary>
     /// 压缩状态(字符串)
     /// </summary>
     [JsonPropertyName("compression")]
-    public string? CompressionString { get; set; }
+    public string CompressionString { get; set; } = null!;
 
     /// <summary>
     /// 是否启用压缩
     /// </summary>
     [JsonIgnore]
-    public bool IsCompressed => CompressionString != null && bool.Parse(CompressionString);
+    public bool IsCompressed => bool.Parse(CompressionString);
 
     /// <summary>
     /// 附加参数
     /// </summary>
     [JsonPropertyName("ap")]
-    public string? AdditionalParameters { get; set; }
+    public string AdditionalParameters { get; set; } = null!;
 
     /// <summary>
     /// 今日上传流量(字节)
@@ -123,7 +123,7 @@ public class TunnelData
     /// 节点IP地址
     /// </summary>
     [JsonPropertyName("ip")]
-    public string? NodeIp { get; set; }
+    public string NodeIp { get; set; } = null!;
 
     private Lazy<string>? _fullRemoteAddress;
 

@@ -15,43 +15,43 @@ public class UserData
     /// 用户名
     /// </summary>
     [JsonPropertyName("username")]
-    public string? Username { get; set; }
+    public string Username { get; set; } = null!;
 
     /// <summary>
     /// 用户身份验证令牌
     /// </summary>
     [JsonPropertyName("usertoken")]
-    public string? UserToken { get; set; }
+    public string UserToken { get; set; } = null!;
 
     /// <summary>
     /// 用户邮箱地址
     /// </summary>
     [JsonPropertyName("email")]
-    public string? Email { get; set; }
+    public string Email { get; set; } = null!;
 
     /// <summary>
     /// 用户的QQ号码
     /// </summary>
     [JsonPropertyName("qq")]
-    public string? QQNumber { get; set; }
+    public string QQNumber { get; set; } = null!;
 
     /// <summary>
     /// 用户所属组别(等级/会员类型)
     /// </summary>
     [JsonPropertyName("usergroup")]
-    public string? UserGroup { get; set; }
+    public string UserGroup { get; set; } = null!;
 
     /// <summary>
     /// 用户组到期时间
     /// </summary>
     [JsonPropertyName("term")]
-    public string? MembershipExpiry { get; set; }
+    public string MembershipExpiry { get; set; } = null!;
 
     /// <summary>
     /// 实名认证状态
     /// </summary>
     [JsonPropertyName("realname")]
-    public string? RealNameStatus { get; set; }
+    public string RealNameStatus { get; set; } = null!;
 
     /// <summary>
     /// 用户隧道数
@@ -111,11 +111,11 @@ public class UserData
     /// 用户头像的URL地址
     /// </summary>
     [JsonPropertyName("userimg")]
-    public string? AvatarUrl { get; set; }
+    public string AvatarUrl { get; set; } = null!;
 
     /// <summary>
     /// 用户注册时间
     /// </summary>
     [JsonPropertyName("regtime")]
-    public string? RegistrationDate { get; set; }
+    public string RegistrationDate { get; set; } = null!;
 }
