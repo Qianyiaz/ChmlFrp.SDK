@@ -56,7 +56,7 @@ public partial class LoginWindowViewModel(WindowNotificationManager manager, Win
         }
         else
         {
-            manager.Show(new Notification("登录成功。", $"Hi,{dataResponse.Data!.Username} 欢迎回来。", NotificationType.Success)
+            manager.Show(new Notification("登录成功。", $"Hi,{dataResponse.Data.Username} 欢迎回来。", NotificationType.Success)
             {
                 OnClose = () =>
                 {

@@ -10,5 +10,5 @@ public class DataResponse<T> : BaseResponse
     /// 数据
     /// </summary>
     [JsonPropertyName("data")]
-    public T? Data { get; set; }
+    public T Data { get; set; } = default!;
 }

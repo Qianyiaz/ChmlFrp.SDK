@@ -72,7 +72,7 @@ if (autoLoginAsync?.State != true)
 
         await Task.Delay(TimeSpan.FromSeconds(2));
     }
-var tunnelResult = await client.GetTunnelResponseAsync();
+await client.GetTunnelResponseAsync();
 var nodeResult = await client.GetNodeResponseAsync();
-var nodeInfoResult = await client.GetNodeInfoResponseAsync(nodeResult.Data[0]);
+await client.GetNodeInfoResponseAsync(nodeResult!.Data[0]);
 WriteLine("Hello World!");

@@ -16,7 +16,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             var result = await App.ChmlFrpClient.RefreshAsync();
             if (result!.State)
-                User = result.Data!;
+                User = result.Data;
             await Task.WhenAll(LoadTunnelsAsync(), LoadNodesAsync());
         }
         catch
@@ -34,8 +34,8 @@ public partial class MainWindowViewModel : ObservableObject
         {
             var result = await App.ChmlFrpClient.GetTunnelResponseAsync();
             Tunnels.Clear();
-            if (result?.State == true)
-                Tunnels.AddRange(result.Data!);
+            if (result!.State)
+                Tunnels.AddRange(result.Data);
         }
         catch
         {
@@ -52,8 +52,8 @@ public partial class MainWindowViewModel : ObservableObject
         {
             var result = await App.ChmlFrpClient.GetNodeResponseAsync();
             Nodes.Clear();
-            if (result?.State == true)
-                Nodes.AddRange(result.Data!);
+            if (result!.State)
+                Nodes.AddRange(result.Data);
         }
         catch
         {

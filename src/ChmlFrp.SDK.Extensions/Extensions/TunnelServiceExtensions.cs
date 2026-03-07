@@ -27,7 +27,7 @@ public static class TunnelServiceExtensions
             if (tunnel.IsRunning())
                 throw new InvalidOperationException("隧道已在运行。");
 
-            var frpProcess = client.StartFrpcProcess(tunnel.Id.ToString()!, options);
+            var frpProcess = client.StartFrpcProcess(tunnel.Id.ToString(), options);
             frpProcess.Exited += (_, _) => TunnelProcessExtensions.ProcessInfos.Remove(tunnel);
             tunnel.SetFrpProcess(frpProcess);
         }

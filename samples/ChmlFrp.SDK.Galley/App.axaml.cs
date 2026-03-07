@@ -22,7 +22,6 @@ public class App : Application
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktopLifetime) return;
 
         var loginWindow = new LoginWindow();
-
         desktopLifetime.MainWindow = loginWindow;
         desktopLifetime.Exit += (_, _) => ChmlFrpClient.Dispose();
 
@@ -30,7 +29,10 @@ public class App : Application
         {
             var autoLoginAsync = await ChmlFrpClient.AutoLoginAsync();
             if (!autoLoginAsync!.State) return;
-            new MainWindow { DataContext = new MainWindowViewModel(autoLoginAsync.Data!) }.Show();
+            
+            var mainWindow = new MainWindow { DataContext = new MainWindowViewModel(autoLoginAsync.Data) };
+            desktopLifetime.MainWindow = mainWindow;
+            mainWindow.Show();
             loginWindow.Close();
         }
         catch

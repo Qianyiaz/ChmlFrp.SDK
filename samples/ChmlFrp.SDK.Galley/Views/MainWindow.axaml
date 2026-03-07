@@ -8,10 +8,6 @@
         x:Class="ChmlFrp.SDK.Galley.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="ChmlFrp.SDK.Galley">
-    <Window.KeyBindings>
-        <KeyBinding Gesture="Ctrl+R" Command="{Binding RefreshCommand}" />
-    </Window.KeyBindings>
-
     <Window.Resources>
         <cvt:TunnelStateToBrushConverter x:Key="TunnelStateToBrushConverter" />
         <cvt:BytesToGigabytesConverter x:Key="BytesToGigabytesConverter" />
@@ -66,8 +62,7 @@
                                HorizontalAlignment="Center">
                             <Image.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="刷新" Command="{Binding RefreshCommand}" HotKey="Ctrl+R"
-                                              InputGesture="Ctrl+R" />
+                                    <MenuItem Header="刷新" Command="{Binding RefreshCommand}" InputGesture="Ctrl+R" />
                                 </ContextMenu>
                             </Image.ContextMenu>
                             <Image.Clip>
@@ -194,12 +189,6 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <Panel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="刷新" Command="{Binding RefreshCommand}" HotKey="Ctrl+R"
-                                          InputGesture="Ctrl+R" />
-                            </ContextMenu>
-                        </Panel.ContextMenu>
                     </Panel>
                 </TabItem>
                 <TabItem Header="节点页">
@@ -298,12 +287,6 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <Panel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="刷新" Command="{Binding RefreshCommand}" HotKey="Ctrl+R"
-                                          InputGesture="Ctrl+R" />
-                            </ContextMenu>
-                        </Panel.ContextMenu>
                     </Panel>
                 </TabItem>
             </TabControl>
