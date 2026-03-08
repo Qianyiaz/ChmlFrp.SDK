@@ -220,7 +220,7 @@ public class ChmlFrpClient : IDisposable
     /// <returns>请求结果</returns>
     public async Task<ServerMetricsData?> GetServerStatusAsync() =>
         await _client!.GetFromJsonAsync("api/server-status", Default.ServerMetricsData);
-    
+
     /// <summary>
     /// 获得节点状态请求
     /// </summary>
@@ -251,7 +251,7 @@ public class ChmlFrpClient : IDisposable
 
         return await response.Content.ReadFromJsonAsync(responseJsonTypeInfo);
     }
-    
+
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {

@@ -29,7 +29,7 @@ public class App : Application
         {
             var autoLoginAsync = await ChmlFrpClient.AutoLoginAsync();
             if (!autoLoginAsync!.State) return;
-            
+
             var mainWindow = new MainWindow { DataContext = new MainWindowViewModel(autoLoginAsync.Data) };
             desktopLifetime.MainWindow = mainWindow;
             mainWindow.Show();

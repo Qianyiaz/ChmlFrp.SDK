@@ -11,10 +11,6 @@ public static class TunnelProcessExtensions
 {
     internal static readonly ConditionalWeakTable<TunnelData, Process> ProcessInfos = new();
 
-    /// <summary>
-    /// 对隧道相关的操作
-    /// </summary>
-    /// <param name="tunnel">扩展隧道</param>
     extension(TunnelData tunnel)
     {
         internal void SetFrpProcess(Process process) => ProcessInfos.AddOrUpdate(tunnel, process);

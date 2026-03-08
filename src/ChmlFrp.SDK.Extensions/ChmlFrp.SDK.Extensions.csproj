@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <Description>一个为 ChmlFrp.SDK 提供相关扩展方法的扩展包.</Description>
     </PropertyGroup>
@@ -8,5 +7,4 @@
         <Content Include="readme.md" Pack="true" PackagePath="\"/>
         <ProjectReference Include="..\ChmlFrp.SDK\ChmlFrp.SDK.csproj"/>
     </ItemGroup>
-
 </Project>

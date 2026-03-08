@@ -1,5 +1,4 @@
 <Project>
-
     <PropertyGroup>
         <Version>2.3.2</Version>
         <Nullable>enable</Nullable>
@@ -16,5 +15,4 @@
         <RepositoryUrl>https://github.com/Qianyiaz/ChmlFrp.SDK</RepositoryUrl>
         <PackageTags>chmlfrp;http;json;aot;trimmable;cross-platform;dotnet</PackageTags>
     </PropertyGroup>
-
 </Project>
