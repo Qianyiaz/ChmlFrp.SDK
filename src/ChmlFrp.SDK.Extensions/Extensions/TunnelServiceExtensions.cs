@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using ChmlFrp.SDK.Content;
 using ChmlFrp.SDK.Models;
 using ChmlFrp.SDK.Service;
 
@@ -79,15 +80,45 @@ public static class TunnelServiceExtensions
         /// 关闭隧道(多个)
         /// </summary>
         /// <param name="tunnels">隧道类列表</param>
-        /// <returns>是否关闭成功</returns>
         public void StopTunnel(IEnumerable<TunnelData> tunnels)
         {
             var tunnelList = tunnels.ToList();
             if (tunnelList.Count == 0)
                 throw new ArgumentException("隧道集合不能为空。", nameof(tunnels));
 
-            foreach (var tunnel in tunnelList.Where(tunnel => tunnel.IsRunning()))
-                tunnel.GetFrpProcess()!.Kill(true);
+            var uniqueProcesses = (from t in tunnelList where t.IsRunning() select t.GetFrpProcess()).ToList();
+            foreach (var process in uniqueProcesses.OfType<Process>())
+            {
+                try
+                {
+                    process.Kill(true);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+
+        /// <summary>
+        /// 重启隧道
+        /// </summary>
+        /// <param name="tunnel"></param>
+        public void Restart(TunnelData tunnel)
+        {
+            client.StopTunnel(tunnel);
+            client.StartTunnel(tunnel);
+        }
+
+        /// <summary>
+        /// 重启多个隧道
+        /// </summary>
+        /// <param name="tunnels"></param>
+        public void Restart(IEnumerable<TunnelData> tunnels)
+        {
+            var tunnelDatas = tunnels.ToList();
+            client.StopTunnel(tunnelDatas);
+            client.StartTunnel(tunnelDatas);
         }
     }
 
@@ -157,10 +188,76 @@ public static class TunnelServiceExtensions
         return process;
     }
 
+    extension(TunnelData tunnel)
+    {
+        /// <summary>
+        /// 启动隧道
+        /// </summary>
+        /// <param name="client"></param>
+        public void Start(ChmlFrpClient client) => client.StartTunnel(tunnel);
+
+        /// <summary>
+        /// 停止隧道
+        /// </summary>
+        /// <param name="client"></param>
+        public void Stop(ChmlFrpClient client) => client.StopTunnel(tunnel);
+
+        /// <summary>
+        /// 停止并删除隧道
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        public async Task<BaseResponse?> DeleteWithStopAsync(ChmlFrpClient client)
+        {
+            tunnel.Stop(client);
+            return await client.DeleteTunnelAsync(tunnel);
+        }
+
+        /// <summary>
+        /// 重启隧道
+        /// </summary>
+        /// <param name="client"></param>
+        public void Restart(ChmlFrpClient client) => client.Restart(tunnel);
+    }
+
+    extension(IEnumerable<TunnelData> tunnels)
+    {
+        /// <summary>
+        /// 启动所有隧道
+        /// </summary>
+        /// <param name="client"></param>
+        public void StartAll(ChmlFrpClient client) => client.StartTunnel(tunnels);
+
+        /// <summary>
+        /// 停止所有隧道
+        /// </summary>
+        /// <param name="client"></param>
+        public void StopAll(ChmlFrpClient client) => client.StopTunnel(tunnels);
+
+        /// <summary>
+        /// 停止并删除所有隧道
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        public async Task<IReadOnlyList<BaseResponse>> DeleteWithStopAsync(ChmlFrpClient client)
+        {
+            var tunnelDatas = tunnels.ToList();
+            tunnelDatas.StopAll(client);
+
+            return (await Task.WhenAll(tunnelDatas.Select(client.DeleteTunnelAsync).ToList()))!;
+        }
+
+        /// <summary>
+        /// 重启所有隧道
+        /// </summary>
+        /// <param name="client"></param>
+        public void Restart(ChmlFrpClient client) => client.Restart(tunnels);
+    }
+
     /// <summary>
     /// 隧道启动配置
     /// </summary>
-    public class TunnelStartOptions
+    public sealed class TunnelStartOptions
     {
         /// <summary>
         /// 是否使用日志文件记录frpc输出

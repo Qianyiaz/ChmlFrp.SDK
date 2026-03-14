@@ -11,9 +11,9 @@ namespace ChmlFrp.SDK.Service;
 /// <summary>
 /// ChmlFrp Http 请求客户端
 /// </summary>
-public class ChmlFrpClient : IDisposable
+public sealed class ChmlFrpClient : IDisposable
 {
-    private HttpClient? _client;
+    private HttpClient _client;
 
     /// <summary>
     /// 使用默认的基础地址(https://cf-v2.uapis.cn)初始化 <see cref="ChmlFrpClient"/> 类的新实例。
@@ -36,7 +36,7 @@ public class ChmlFrpClient : IDisposable
     /// <returns>是否登录</returns>
     public bool HasToken(out string? token)
     {
-        token = _client!.DefaultRequestHeaders.Authorization?.Scheme;
+        token = _client.DefaultRequestHeaders.Authorization?.Scheme;
         return !string.IsNullOrEmpty(token);
     }
 
@@ -74,12 +74,14 @@ public class ChmlFrpClient : IDisposable
     /// <returns>返回用户请求</returns>
     public async Task<DataResponse<UserData>?> LoginAsync(string username, string password, bool saveToken = true)
     {
-        var forecast = await _client!.GetFromJsonAsync($"login?username={username}&password={password}",
+        if (HasToken(out _)) throw new InvalidOperationException("You already login.");
+
+        var forecast = await _client.GetFromJsonAsync($"login?username={username}&password={password}",
             Default.DataResponseUserData);
         if (forecast!.State)
         {
             var token = forecast.Data?.UserToken;
-            _client!.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
             if (saveToken)
                 await SaveTokenAsync(token!);
         }
@@ -95,11 +97,13 @@ public class ChmlFrpClient : IDisposable
     /// <returns>返回用户请求</returns>
     public async Task<DataResponse<UserData>?> LoginByTokenAsync(string userToken, bool saveToken = true)
     {
-        var forecast = await _client!.GetFromJsonAsync("userinfo?token=" + userToken, Default.DataResponseUserData);
+        if (HasToken(out _)) throw new InvalidOperationException("You already login.");
+
+        var forecast = await _client.GetFromJsonAsync("userinfo?token=" + userToken, Default.DataResponseUserData);
         if (forecast!.State)
         {
             var token = forecast.Data?.UserToken;
-            _client!.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
             if (saveToken)
                 await SaveTokenAsync(token!);
         }
@@ -114,23 +118,29 @@ public class ChmlFrpClient : IDisposable
     /// <exception cref="FileNotFoundException">读取文件失败</exception>
     public async Task<DataResponse<UserData>?> AutoLoginAsync()
     {
-        if (File.Exists(TokenFilePath))
+        if (HasToken(out _)) throw new InvalidOperationException("You already login.");
+        if (!File.Exists(TokenFilePath)) throw new FileNotFoundException("File not found.");
+
+        await using var stream = File.OpenRead(TokenFilePath);
+        using var doc = await JsonDocument.ParseAsync(stream);
+
+        if (doc.RootElement.TryGetProperty("usertoken", out var tokenElement))
         {
-            await using var stream = File.OpenRead(TokenFilePath);
-            using var doc = await JsonDocument.ParseAsync(stream);
+            var userToken = tokenElement.GetString()!;
 
-            if (doc.RootElement.TryGetProperty("usertoken", out var tokenElement))
-            {
-                var userToken = tokenElement.GetString()!;
-
-                if (!string.IsNullOrWhiteSpace(userToken))
-                    return await LoginByTokenAsync(userToken, false);
-            }
-
-            throw new NullReferenceException("Token doesn't exists.");
+            if (!string.IsNullOrWhiteSpace(userToken))
+                return await LoginByTokenAsync(userToken, false);
         }
 
-        throw new FileNotFoundException("File not found.");
+        throw new NullReferenceException("Token doesn't exists.");
+    }
+
+    /// <summary>
+    /// 注销登录
+    /// </summary>
+    public void Logout()
+    {
+        if (HasToken(out _)) _client.DefaultRequestHeaders.Authorization = null;
     }
 
     /// <summary>
@@ -212,28 +222,28 @@ public class ChmlFrpClient : IDisposable
     /// </summary>
     /// <returns>请求结果</returns>
     public async Task<DataResponse<PanelInfo>?> GetPanelInfoAsync() =>
-        await _client!.GetFromJsonAsync("panelinfo", Default.DataResponsePanelInfo);
+        await _client.GetFromJsonAsync("panelinfo", Default.DataResponsePanelInfo);
 
     /// <summary>
     /// 获得服务器状态请求
     /// </summary>
     /// <returns>请求结果</returns>
     public async Task<ServerMetricsData?> GetServerStatusAsync() =>
-        await _client!.GetFromJsonAsync("api/server-status", Default.ServerMetricsData);
+        await _client.GetFromJsonAsync("api/server-status", Default.ServerMetricsData);
 
     /// <summary>
     /// 获得节点状态请求
     /// </summary>
     /// <returns>请求结果</returns>
     public async Task<DataResponse<IReadOnlyList<NodeStateData>>?> GetNodeStatusAsync() =>
-        await _client!.GetFromJsonAsync("node_stats", Default.DataResponseIReadOnlyListNodeStateData);
+        await _client.GetFromJsonAsync("node_stats", Default.DataResponseIReadOnlyListNodeStateData);
 
     private async Task<T?> Get<T>(string url, JsonTypeInfo<T> jsonTypeInfo)
     {
         if (!HasToken(out _))
             throw new InvalidOperationException("Not logged in (token missing).");
 
-        return await _client!.GetFromJsonAsync(url, jsonTypeInfo);
+        return await _client.GetFromJsonAsync(url, jsonTypeInfo);
     }
 
     private async Task<TResponse?> Post<TRequest, TResponse>
@@ -247,7 +257,7 @@ public class ChmlFrpClient : IDisposable
         if (!HasToken(out _))
             throw new InvalidOperationException("Not logged in (token missing).");
 
-        using var response = await _client!.PostAsync(url, JsonContent.Create(request, requestJsonTypeInfo));
+        using var response = await _client.PostAsync(url, JsonContent.Create(request, requestJsonTypeInfo));
 
         return await response.Content.ReadFromJsonAsync(responseJsonTypeInfo);
     }
@@ -255,15 +265,7 @@ public class ChmlFrpClient : IDisposable
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    /// <inheritdoc cref="IDisposable.Dispose" />
-    private void Dispose(bool disposing)
-    {
-        if (!disposing) return;
-        _client?.Dispose();
-        _client = null;
+        _client.Dispose();
+        _client = null!;
     }
 }
