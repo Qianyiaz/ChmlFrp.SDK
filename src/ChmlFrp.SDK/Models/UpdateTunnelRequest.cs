@@ -3,7 +3,7 @@
 /// <summary>
 /// 更新隧道请求数据
 /// </summary>
-public class UpdateTunnelRequest : CreateTunnelRequest
+public sealed class UpdateTunnelRequest : CreateTunnelRequest
 {
     /// <summary>
     /// 隧道ID

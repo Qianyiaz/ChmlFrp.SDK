@@ -3,7 +3,7 @@
 /// <summary>
 /// 面板数据
 /// </summary>
-public class PanelInfo
+public sealed class PanelInfo
 {
     /// <summary>
     /// 隧道数

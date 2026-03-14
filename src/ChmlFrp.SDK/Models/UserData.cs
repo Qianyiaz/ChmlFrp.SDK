@@ -3,7 +3,7 @@
 /// <summary>
 /// 用户数据
 /// </summary>
-public class UserData
+public sealed class UserData
 {
     /// <summary>
     /// 用户的唯一标识ID

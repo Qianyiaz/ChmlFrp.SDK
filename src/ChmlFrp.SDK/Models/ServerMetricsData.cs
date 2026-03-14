@@ -3,7 +3,7 @@
 /// <summary>
 /// 服务器负载数据
 /// </summary>
-public class ServerMetricsData
+public sealed class ServerMetricsData
 {
     /// <summary>
     /// 服务器名称

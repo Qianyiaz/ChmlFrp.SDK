@@ -3,7 +3,7 @@
 /// <summary>
 /// 隧道数据
 /// </summary>
-public class TunnelData
+public sealed class TunnelData
 {
     /// <summary>
     /// 隧道的唯一标识ID

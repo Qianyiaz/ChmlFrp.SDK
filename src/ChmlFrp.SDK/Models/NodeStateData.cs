@@ -3,7 +3,7 @@
 /// <summary>
 /// 表示节点的状态数据。
 /// </summary>
-public class NodeStateData
+public sealed class NodeStateData
 {
     /// <summary>
     /// 获取或设置节点总入站流量(bytes)

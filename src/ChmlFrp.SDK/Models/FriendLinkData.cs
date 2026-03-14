@@ -3,7 +3,7 @@
 /// <summary>
 /// 友链,就是在官网底部的友情链接
 /// </summary>
-public class FriendLinkData
+public sealed class FriendLinkData
 {
     /// <summary>
     /// 名称

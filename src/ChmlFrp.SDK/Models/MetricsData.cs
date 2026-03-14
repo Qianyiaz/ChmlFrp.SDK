@@ -3,7 +3,7 @@
 /// <summary>
 /// 服务器具体负载数据
 /// </summary>
-public class MetricsData
+public sealed class MetricsData
 {
     /// <summary>
     /// CPU负载百分比
