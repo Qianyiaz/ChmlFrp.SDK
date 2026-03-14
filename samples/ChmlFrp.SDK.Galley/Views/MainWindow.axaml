@@ -13,7 +13,7 @@
         <cvt:BytesToGigabytesConverter x:Key="BytesToGigabytesConverter" />
         <cvt:NodeStateToBrushConverter x:Key="NodeStateToBrushConverter" />
         <cvt:StringToUpperConverter x:Key="StringToUpperConverter" />
-        <cvt:CollectionToBoolConverter x:Key="NotEmptyConverter" />
+        <cvt:CountToBoolConverter x:Key="CountToBoolConverter" />
     </Window.Resources>
 
     <dha:DialogHost Name="DialogHost" CloseOnClickAway="True">
@@ -138,7 +138,7 @@
                                    VerticalAlignment="Center"
                                    FontSize="20"
                                    Foreground="Gray"
-                                   IsVisible="{Binding Tunnels, Converter={StaticResource NotEmptyConverter}}" />
+                                   IsVisible="{Binding Tunnels.Count, Converter={StaticResource CountToBoolConverter}}" />
 
                         <ListBox ItemsSource="{Binding Tunnels}"
                                  Background="Transparent"
@@ -198,7 +198,7 @@
                                    VerticalAlignment="Center"
                                    FontSize="20"
                                    Foreground="Gray"
-                                   IsVisible="{Binding Nodes, Converter={StaticResource NotEmptyConverter}}" />
+                                   IsVisible="{Binding Nodes.Count, Converter={StaticResource CountToBoolConverter}}" />
 
                         <ListBox ItemsSource="{Binding Nodes}"
                                  Background="Transparent"

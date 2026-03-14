@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Globalization;
+﻿using System.Globalization;
 using Avalonia.Data.Converters;
 
 namespace ChmlFrp.SDK.Galley.Converters;
 
-public class CollectionToBoolConverter : IValueConverter
+public class CountToBoolConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not IEnumerable collection) return false;
-        return !collection.Cast<object>().Any();
+        if (value is int count)
+            return count == 0;
+
+        return true;
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>

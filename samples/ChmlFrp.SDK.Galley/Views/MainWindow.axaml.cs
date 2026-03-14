@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using ChmlFrp.SDK.Models;
+using ChmlFrp.SDK.Service;
 using DialogHostAvalonia;
 
 namespace ChmlFrp.SDK.Galley.Views;
@@ -25,7 +26,7 @@ public partial class MainWindow : Window
         listBox.SelectedItem = null;
         try
         {
-            var nodeInfoResponse = await App.ChmlFrpClient.GetNodeInfoResponseAsync(nodeData);
+            var nodeInfoResponse = await nodeData.GetInfoAsync(App.ChmlFrpClient);
 
             if (nodeInfoResponse?.State == true)
                 await DialogHost.Show(nodeInfoResponse.Data);
