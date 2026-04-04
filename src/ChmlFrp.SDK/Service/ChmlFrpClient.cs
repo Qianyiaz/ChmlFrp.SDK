@@ -80,10 +80,10 @@ public sealed class ChmlFrpClient : IDisposable
             Default.DataResponseUserData);
         if (forecast!.State)
         {
-            var token = forecast.Data?.UserToken;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
+            var token = forecast.Data.UserToken;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token);
             if (saveToken)
-                await SaveTokenAsync(token!);
+                await SaveTokenAsync(token);
         }
 
         return forecast;
@@ -102,10 +102,10 @@ public sealed class ChmlFrpClient : IDisposable
         var forecast = await _client.GetFromJsonAsync("userinfo?token=" + userToken, Default.DataResponseUserData);
         if (forecast!.State)
         {
-            var token = forecast.Data?.UserToken;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!);
+            var token = forecast.Data.UserToken;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token);
             if (saveToken)
-                await SaveTokenAsync(token!);
+                await SaveTokenAsync(token);
         }
 
         return forecast;
